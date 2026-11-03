@@ -1,0 +1,12 @@
+# build outputs
+build/
+*.o
+*.out
+*.dSYM/
+# results are committed, but not the big raw logs over 1 MB or scratch runs
+results/scratch-*/
+results/**/*.core
+# editors
+.DS_Store
+.vscode/
+__pycache__/

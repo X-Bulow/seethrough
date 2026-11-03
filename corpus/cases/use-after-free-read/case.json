@@ -1,0 +1,11 @@
+{
+  "case": 5,
+  "class": "use-after-free",
+  "access": "read",
+  "title": "TODO",
+  "object": "TODO",
+  "control": "TODO",
+  "expected": {},
+  "measured": {},
+  "status": "skeleton"
+}

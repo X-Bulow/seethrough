@@ -1,0 +1,24 @@
+{
+  "case": 0,
+  "class": "heap-overflow",
+  "access": "write",
+  "title": "1-byte write past the end of a 24-byte object into its neighbour",
+  "object": "a, 24 bytes, the first of two consecutive st_alloc(24)",
+  "offset_bytes": 24,
+  "neighbour": "b, allocated immediately after a",
+  "control": "writes a[23] instead of a[24]; allocation traffic identical",
+  "expected": {
+    "asan":     { "malloc": "DETECTED", "arena": "MISSED", "arena+annot": "DETECTED", "freelist": "MISSED", "freelist+annot": "DETECTED",
+                  "why": "ASan checks shadow bytes; malloc objects are separated by redzones, arena objects are contiguous inside one poisoned-then-unpoisoned block unless the allocator re-poisons the gap" },
+    "valgrind": { "malloc": "DETECTED", "arena": "MISSED", "arena+annot": "DETECTED",
+                  "why": "Memcheck tracks addressability per malloc block; mempool requests restore per-object addressability" },
+    "hwasan":   { "malloc": "DETECTED", "arena": "MISSED", "arena+annot": "UNSUPPORTED",
+                  "why": "tags are per 16-byte granule and per malloc; 24 rounds to 32 so a[24] is still in a's granule -- revisit the sizes (see C3.5)" },
+    "ubsan":    { "malloc": "MISSED", "arena": "MISSED",
+                  "why": "-fsanitize=bounds needs a statically known array bound; a pointer from an allocator has none" },
+    "lowfat":   { "malloc": "DETECTED", "arena": "MISSED",
+                  "why": "bounds come from the malloc size class; an arena object inherits the whole arena's bounds" }
+  },
+  "measured": {},
+  "status": "written, not run"
+}
