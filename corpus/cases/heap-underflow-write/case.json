@@ -1,11 +1,69 @@
 {
-  "case": 2,
+  "case": 5,
   "class": "heap-underflow",
   "access": "write",
-  "title": "TODO",
-  "object": "TODO",
-  "control": "TODO",
-  "expected": {},
-  "measured": {},
-  "status": "skeleton"
+  "title": "1-byte write before the start of an object",
+  "object": "a, 24 bytes, allocated after another 24-byte object `first`",
+  "offset_bytes": -1,
+  "neighbour": "under a 16-byte-aligned arena *(a-1) is first's last slack byte (first's offset 31)",
+  "control": "writes a[0], the first valid byte",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "ASan's left redzone on malloc; in an arena the byte is first's alignment slack, poisoned when the allocator unpoisons exactly n."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "As above, via the mempool request's size."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "The preceding granule belongs to another allocation and carries another tag. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "Asymmetry worth reporting: an object's base is aligned to its LowFat region, so an underflow is always out of bounds while an overflow inside the size class is not. LowFat detects case 5 and misses case 1."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
 }

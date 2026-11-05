@@ -33,9 +33,11 @@ void st_free(void *p) {
 }
 void *st_realloc(void *p, size_t n) { (void)p; (void)n; return NULL; /* TODO(B1.2) */ }
 void st_alloc_fini(void) {
+    if (!base) return;                           /* idempotent: case 12 calls it, then main does */
     ST_POOL_DESTROY(base);
     ST_UNPOISON(base, (size_t)(end - base));     /* hand the block back clean */
     free(base);
     base = cur = end = NULL;
 }
 const char *st_alloc_name(void) { return "arena"; }
+size_t      st_alloc_pool_bytes(void) { return (size_t)(end - base); }

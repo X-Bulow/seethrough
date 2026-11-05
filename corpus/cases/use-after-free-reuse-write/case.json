@@ -1,0 +1,71 @@
+{
+  "case": 10,
+  "class": "use-after-free",
+  "access": "write",
+  "title": "write through a stale pointer after the storage was reissued to another live object",
+  "object": "a, 24 bytes, freed; b = st_alloc(24) receives a's storage; the write goes through a and lands in b",
+  "control": "the write goes through b, the live pointer to that storage",
+  "requires": {
+    "marker": "ST NOTE reuse=1",
+    "why": "the allocator must hand the freed block straight back, or there is no aliasing and the case reduces to case 8. ASan's quarantine stops malloc from reusing, and a bump arena never reuses, so those columns are UNSUPPORTED by construction, not missed."
+  },
+  "expected": {
+    "asan": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "THE CEILING ON ANNOTATION, and the most important row in the study. At the moment of the write the memory IS live and owned by b, so it must be unpoisoned or b's own accesses would be false positives. No poison-on-free scheme can separate the two pointers to one address; only a mechanism that tags the POINTER can."
+    },
+    "valgrind": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "Same: the mempool interface describes memory, not pointer identity."
+    },
+    "hwasan": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "DETECTED (to verify)",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "The row where HWASan should win on its own, with no annotation: the stale pointer still carries a's tag while the granule now carries b's. If C3 shows HWASan can run, this is the cell to report."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "LowFat checks bounds only; it has no notion of a lifetime."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

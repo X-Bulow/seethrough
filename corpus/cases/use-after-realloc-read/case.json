@@ -1,0 +1,72 @@
+{
+  "case": 11,
+  "class": "use-after-free",
+  "access": "read",
+  "title": "read through a pointer st_realloc invalidated by moving the object",
+  "object": "a, 24 bytes, grown to 4096 by st_realloc, which frees the old block when it moves",
+  "control": "reads through the pointer st_realloc returned",
+  "requires": {
+    "marker": "moved=1",
+    "why": "st_realloc must have succeeded AND moved the object. An allocator that returns NULL (the arena, currently) or grows in place has no stale pointer and no defect."
+  },
+  "note": "The shape of SQLite's agginfo defect (capstone case 01) and of PostgreSQL's repalloc rows: no free() appears in the source, which is why it survives code review.",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "On malloc realloc's old block goes to the quarantine. The arena has no realloc at all. A free list that copies must poison the old block in its own realloc for the annotated arm to work."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "As above, with MEMPOOL_FREE on the old block."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "malloc retags the old block; no CMA interface for the others."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "LowFat checks bounds only; it has no notion of a lifetime."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-use-after-free",
+        "malloc+annot": "DETECTED heap-use-after-free",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

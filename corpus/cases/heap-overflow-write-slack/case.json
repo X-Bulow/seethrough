@@ -1,0 +1,69 @@
+{
+  "case": 2,
+  "class": "heap-overflow",
+  "access": "write",
+  "title": "write 4 bytes into the allocator's 16-byte alignment slack (offset 28 of a 24-byte request)",
+  "object": "a, 24 bytes requested, 32 bytes occupied under any 16-byte-aligned allocator",
+  "offset_bytes": 28,
+  "neighbour": "b, which starts at offset 32: the defect never reaches it",
+  "control": "writes a[23], the last byte of the request",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "The dividing line of this case: ASan remembers the REQUEST (24) and poisons 24..31, so it reports on malloc and on an annotated arena that unpoisons exactly n."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "VALGRIND_MEMPOOL_ALLOC is given n, not the rounded size, so the slack stays NOACCESS."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "Short granules again: the tail of the granule carries the 24. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "Offset 28 is inside the 32-byte size class, so LowFat is in bounds by construction. This is the case that separates request-granular tools from block-granular ones."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

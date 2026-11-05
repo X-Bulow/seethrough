@@ -1,0 +1,72 @@
+{
+  "case": 12,
+  "class": "use-after-free",
+  "access": "read",
+  "title": "read through a pointer into a pool whose whole lifetime has ended",
+  "object": "a, 24 bytes, never freed individually; st_alloc_fini releases the pool it lives in",
+  "control": "the read happens before st_alloc_fini",
+  "note": "The defect that exists BECAUSE of the custom allocator: PostgreSQL's MemoryContextReset, Apache's apr_pool_destroy, every arena's free-everything-at-end-of-request. st_alloc_fini runs here and again in harness/main.c, so every allocator must make it idempotent (alloc.h).",
+  "expected": {
+    "asan": {
+      "malloc": "UNSUPPORTED",
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "The mirror image of case 8, and the cleanest asymmetry in the study: an arena HIDES accesses inside its pool and EXPOSES accesses after its pool, because the pool itself is one malloc block whose lifetime malloc-granular tools do see. No annotation needed, and the annotated arm adds nothing. malloc has no pool, so that column is UNSUPPORTED (see requires)."
+    },
+    "valgrind": {
+      "malloc": "UNSUPPORTED",
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "Same: the pool block was freed. malloc has no pool (see requires)."
+    },
+    "hwasan": {
+      "malloc": "UNSUPPORTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "The pool's granules are retagged when the block is freed. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "LowFat checks bounds only; it has no notion of a lifetime."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "DETECTED heap-use-after-free",
+        "arena+annot": "DETECTED heap-use-after-free"
+      },
+      "none": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)",
+  "requires": {
+    "marker": "ST NOTE pool=1",
+    "why": "the allocator must carve from a pool whose lifetime st_alloc_fini ends. Under malloc st_alloc_fini is a no-op, the object stays live and the read is legitimate; that column is UNSUPPORTED by construction and the malloc equivalent is case 9."
+  }
+}

@@ -12,3 +12,4 @@ void        st_free(void *p)            { free(p);          /* TODO(B1.3) placeh
 void       *st_realloc(void *p, size_t n) { return realloc(p, n); }
 void        st_alloc_fini(void)         { }
 const char *st_alloc_name(void)         { return "freelist"; }
+size_t      st_alloc_pool_bytes(void)   { return 0; /* TODO(B1.3): the size of the block the size classes are carved from */ }

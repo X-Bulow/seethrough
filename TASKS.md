@@ -15,20 +15,20 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 ## A. Test Corpus & Harness（Part A）
 
 ### A1 接口与骨架
-- [ ] P0 A1.1 写 `corpus/include/alloc.h`：`st_alloc / st_free / st_realloc`，由 `-DST_ALLOC=` 选实现
-- [ ] P0 A1.2 写 `corpus/include/harness.h`：`ST_CASE(n)`、`ST_READY()`、`ST_NEGATIVE_CONTROL` 约定、`st_sink` 防优化
+- [x] P0 A1.1 写 `corpus/include/alloc.h`：`st_alloc / st_free / st_realloc`，由 `-DST_ALLOC=` 选实现
+- [x] P0 A1.2 写 `corpus/include/harness.h`：`ST_CASE(n)`、`ST_READY()`、`ST_NEGATIVE_CONTROL` 约定、`st_sink` 防优化
 - [ ] P0 A1.3 写 `harness/main.c`：调用 case，打印 `ST READY` / `ST DONE` 标记（判 reached / completed 用）
 
-### A2 核心漏洞测试（每个 case：case.c + case.json + README.md）
-- [ ] P0 A2.1 heap-overflow-write（1 字节越界写）
-- [ ] P0 A2.2 heap-overflow-read
-- [ ] P0 A2.3 heap-underflow-write
-- [ ] P0 A2.4 heap-underflow-read
-- [ ] P0 A2.5 use-after-free-write
-- [ ] P0 A2.6 use-after-free-read
-- [ ] P0 A2.7 double-free
-- [ ] P0 A2.8 每个 case 的 negative control：分配/释放流量逐字节相同，只替换非法访问那一行
-- [ ] P0 A2.9 每个 case 的 README：触发方式、内存布局图、预期每个 tool 的结果及理由（教授要求）
+### A2 核心漏洞测试（每个 case：case.c + case.json + README.md；索引见 `corpus/cases/INDEX.md`）
+- [x] P0 A2.1 heap overflow：0 越界写 1 字节 / 1 越界读 / 2 写进对齐 slack（偏移 28）/ 3 远距离写进第三个活对象（偏移 64）/ 4 读出 pool 之外
+- [x] P0 A2.2 heap underflow：5 越界写前 1 字节 / 6 越界读 / 7 覆写 header 所在的 8 字节
+- [x] P0 A2.3 use after free：8 写 / 9 读 / 10 重用后写（标注的天花板）/ 11 realloc 搬走后读 / 12 整个 pool 销毁后读
+- [x] P0 A2.4 free 类错误：13 double free / 14 释放内部指针 / 15 重用后 double free
+- [x] P0 A2.5 每个 case 的 negative control：分配/释放流量逐字节相同，只替换非法访问那一行（13 的两个 image 都是 2 次 free）
+- [x] P0 A2.6 前置条件机制：case 10/11/15 打印 marker，`case.json` 的 `requires` 让条件不满足的行记 UNSUPPORTED 而不是 MISSED
+- [x] P0 A2.7 `st_alloc_pool_bytes()` 加进 `alloc.h`（case 4 要定位 pool 边界）；`st_alloc_fini()` 要求幂等（case 12）
+- [x] P0 A2.8 每个 case 的 README：触发方式、内存布局图、预期每个 tool 的结果及理由（教授要求）
+- [ ] P1 A2.9 在服务器上跑完 16 个 case 并把 `measured` 填回每个 `case.json`，注明 bundle
 
 ### A3 控制组
 - [ ] P0 A3.1 positive control：malloc 的 UAF，ASan/Valgrind/HWASan 必须报；不报则本轮 exit 75 无 verdict

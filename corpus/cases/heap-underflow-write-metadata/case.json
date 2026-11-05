@@ -1,0 +1,70 @@
+{
+  "case": 7,
+  "class": "heap-underflow",
+  "access": "write",
+  "title": "write the 8 bytes immediately before an object: where an allocator keeps its header",
+  "object": "a, 24 bytes; the write covers a-8 .. a-1",
+  "offset_bytes": -8,
+  "neighbour": "glibc keeps the chunk size there; a bump arena keeps nothing; a free list may keep its own header",
+  "control": "writes the object's own first 8 bytes",
+  "note": "The ground-truth counterpart of capstone's memsys5 in-band free-list demonstrator: an allocator that stores bookkeeping next to or inside user blocks turns a small write into corruption of itself. Which is why `none` (no tool) is an interesting column here: it records whether the program crashed later, inside the allocator.",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED (to verify)",
+      "why": "On malloc the left redzone catches the write before libc ever reads the corrupted header. In an arena the 8 bytes are first's slack. For a free list it depends on whether the annotated build poisons its OWN header, which it should: allocator-private bytes are not user-addressable."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED (to verify)",
+      "why": "As above."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "The preceding granule is tagged differently on malloc. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "Underflow below a region-aligned base, as case 5."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

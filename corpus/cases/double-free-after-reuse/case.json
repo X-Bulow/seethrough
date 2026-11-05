@@ -1,0 +1,71 @@
+{
+  "case": 15,
+  "class": "double-free",
+  "access": "free",
+  "title": "free a pointer whose storage has been reissued, so a live object's block is freed under it",
+  "object": "a, 24 bytes, freed; b = st_alloc(24) receives a's storage; st_free(a) then frees b's storage",
+  "control": "frees b, which is the correct second free",
+  "requires": {
+    "marker": "ST NOTE reuse=1",
+    "why": "without reuse this is case 13. ASan's quarantine and the arena's absent reuse make those columns UNSUPPORTED by construction."
+  },
+  "expected": {
+    "asan": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "Contrast with case 10, which annotation cannot win: here the stale free POISONS b's storage in the annotated arm, and the read that follows is then an access to poisoned memory. The detection comes from the read, not from the free, and the report must say so."
+    },
+    "valgrind": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "Same path: MEMPOOL_FREE(a) is accepted because a is a live pool address, then the read of b hits NOACCESS."
+    },
+    "hwasan": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED (to verify)",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "A free list that reissues without retagging gives b the same tag, so the stale free and the read both look legitimate; to verify."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "LowFat checks bounds only; it has no notion of a lifetime."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

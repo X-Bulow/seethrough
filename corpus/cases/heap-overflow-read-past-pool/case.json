@@ -1,0 +1,69 @@
+{
+  "case": 4,
+  "class": "heap-overflow",
+  "access": "read",
+  "title": "read past the end of the allocator's own backing block",
+  "object": "a, 24 bytes; the access is at a + st_alloc_pool_bytes() + 64",
+  "offset_bytes": "st_alloc_pool_bytes() + 64, or 24 when the allocator has no pool",
+  "control": "reads a[23]",
+  "note": "The Tier-1 analogue of corpus/real cases 29 and 31, whose fuzz images over-read about 2 KB and leave the 256 KiB memsys5 arena entirely. Detection here says the access escaped the container, not that the tool understands the container.",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "The pool is one malloc block, so an access past its end is an ordinary heap-buffer-overflow of that block. Every malloc-granular tool recovers its sight; the annotation columns add nothing."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "Same: the byte is outside the block Memcheck tracks."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "The byte past the pool carries a different tag. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "MISSED",
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "On malloc the offset degenerates to 24, inside the size class, so LowFat misses its own baseline (see case 1). Past the pool it is far outside the pool's class and LowFat reports."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "DETECTED heap-buffer-overflow",
+        "arena+annot": "DETECTED heap-buffer-overflow"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}
