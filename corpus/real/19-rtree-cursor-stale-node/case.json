@@ -1,0 +1,68 @@
+{
+  "id": "19",
+  "capstone_dir": "19_c8c9cdd9dd_rtree_cursor_stale_node",
+  "tag": "rtreecursor",
+  "class": "use-after-free",
+  "access": "read",
+  "temporal": true,
+  "title": "DELETE on an R-Tree while a read cursor is open frees nodes the cursor still holds",
+  "upstream_fix": "c8c9cdd9dd (fixed in 3.24.0: SQLITE_LOCKED_VTAB)",
+  "object": "RtreeNode (488 bytes, sqlite3_malloc) in the cursor's search-point stack",
+  "lifetime_ender": "the nested DELETE frees the nodes; the next sqlite3_step reads pNode->nRef in nodeRelease",
+  "fault_site": "nodeRelease",
+  "reached": "rtreecursor nested delete rc=0",
+  "reached_why": "rc=0 on the nested write is the missing guard: the fixed engine returns SQLITE_LOCKED_VTAB",
+  "engine": {
+    "group": "rtree",
+    "flags": [
+      "-USQLITE_OMIT_INCRBLOB",
+      "-DSQLITE_ENABLE_RTREE",
+      "-DSQLITE_RTREE_INT_ONLY",
+      "-USQLITE_OMIT_SHARED_CACHE"
+    ]
+  },
+  "sources": [],
+  "layer_by_arm": {
+    "memsys5": "memsys5 arena",
+    "default": "malloc (488 bytes via sqlite3_malloc, not a connection-owned lookaside object)",
+    "rewrite": "malloc"
+  },
+  "expected": {
+    "asan": {
+      "memsys5": "MISSED",
+      "default": "DETECTED",
+      "rewrite": "DETECTED",
+      "why": "RtreeNode is a plain sqlite3_malloc; only memsys5 hides it"
+    },
+    "valgrind": {
+      "memsys5": "MISSED",
+      "default": "DETECTED",
+      "rewrite": "DETECTED",
+      "why": "same"
+    },
+    "lowfat": {
+      "memsys5": "UNSUPPORTED",
+      "default": "UNSUPPORTED",
+      "rewrite": "UNSUPPORTED",
+      "why": "bounds only"
+    }
+  },
+  "sqlite": "3.22.0",
+  "sqlite3_c_sha256": "7991acd0d8c78435d47523a43aeeb117f0aa264c4d7d0d10410f0128ed1f6004",
+  "arms": [
+    "memsys5",
+    "default",
+    "rewrite"
+  ],
+  "measured": {},
+  "status": "ported, not run",
+  "capstone": {
+    "repo": "project-starch/llvm-capstone",
+    "branch": "dev",
+    "commit": "9bb68291dcf21ea96a2c7a10a525d520c44ff1e0",
+    "path": "capstone/bug-corpora/sqlite/engine-repros/19_c8c9cdd9dd_rtree_cursor_stale_node",
+    "copied": "2026-11-05",
+    "case_c_sha256": "d1b3220590c6394f728deb0a7e89fa320fe6878c438e6d9ac2199a2ffc845515",
+    "host_asan_reference": "results/2026-10-11-host-asan/results.json"
+  }
+}

@@ -12,6 +12,7 @@ Valgrind and HWASan patterns against real output on the server before trusting t
 """
 import re
 
+CRASH = re.compile(r"(SEGV|BUS|FPE|ILL|ABRT|TRAP)\b")
 REPORT = {
     "asan":     re.compile(r"ERROR: AddressSanitizer: (\S+)"),
     "hwasan":   re.compile(r"ERROR: HWAddressSanitizer: (\S+)"),
@@ -26,6 +27,11 @@ def classify(tool, stdout, stderr, exit_code):
     done = "ST DONE" in stdout
     # tool "none" is the plain run: it only tells reached / completed / crashed
     m = None if tool == "none" else (REPORT[tool].search(stderr) or REPORT[tool].search(stdout))
+    if m and CRASH.match(m.group(1)):
+        # ASan/HWASan also print "ERROR: AddressSanitizer: SEGV on unknown address" from their
+        # signal handler. That is the hardware catching a wild pointer, not the tool catching the
+        # bug (seen on corpus/real case 19 under memsys5: a stale RtreeNode read yields 0x2).
+        return ("MISSED" if reached else "TOOL-ERROR"), f"crashed {m.group(1)} (tool signal handler, not a detection)"
     if m:
         return ("DETECTED" if reached else "TOOL-ERROR"), m.group(1)
     if done and exit_code == 0:

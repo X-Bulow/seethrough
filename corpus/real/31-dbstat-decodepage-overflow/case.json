@@ -1,0 +1,68 @@
+{
+  "id": "31",
+  "capstone_dir": "31_fz10_dbstat_decodepage_overflow",
+  "tag": "fz10",
+  "class": "heap-overflow",
+  "access": "read",
+  "temporal": false,
+  "title": "a corrupt page makes statDecodePage's cell-pointer walk leave the page buffer",
+  "upstream_fix": "fz10 (R2 fuzz-corpus diff image; trigger re-derived by capstone 2026-10-03)",
+  "object": "a page buffer of the page cache (pcache1)",
+  "lifetime_ender": "not a lifetime defect: the cell-pointer walk leaves the buffer",
+  "fault_site": "statDecodePage",
+  "reached": "fz10 open_rc=0",
+  "reached_why": "the image opened; s0_rc=11 means the engine rejected the image before the defect",
+  "engine": {
+    "group": "memfsdb",
+    "flags": [
+      "-USQLITE_OMIT_INCRBLOB",
+      "-DSQLITE_ENABLE_DBSTAT_VTAB"
+    ]
+  },
+  "sources": [
+    "corpus/real/shared/repro322_memfs.c"
+  ],
+  "layer_by_arm": {
+    "memsys5": "memsys5 arena",
+    "default": "pcache1 bulk pool",
+    "rewrite": "malloc, one block per page"
+  },
+  "expected": {
+    "asan": {
+      "memsys5": "MISSED",
+      "default": "MISSED (to verify)",
+      "rewrite": "DETECTED",
+      "why": "as case 29"
+    },
+    "valgrind": {
+      "memsys5": "MISSED",
+      "default": "MISSED (to verify)",
+      "rewrite": "DETECTED",
+      "why": "same"
+    },
+    "lowfat": {
+      "memsys5": "MISSED",
+      "default": "MISSED (to verify)",
+      "rewrite": "DETECTED",
+      "why": "same"
+    }
+  },
+  "sqlite": "3.22.0",
+  "sqlite3_c_sha256": "7991acd0d8c78435d47523a43aeeb117f0aa264c4d7d0d10410f0128ed1f6004",
+  "arms": [
+    "memsys5",
+    "default",
+    "rewrite"
+  ],
+  "measured": {},
+  "status": "ported, not run",
+  "capstone": {
+    "repo": "project-starch/llvm-capstone",
+    "branch": "dev",
+    "commit": "9bb68291dcf21ea96a2c7a10a525d520c44ff1e0",
+    "path": "capstone/bug-corpora/sqlite/engine-repros/31_fz10_dbstat_decodepage_overflow",
+    "copied": "2026-11-05",
+    "case_c_sha256": "27bbc3ea441985123d8beeaf33a6d1bed54672645461e77315767d78f478801e",
+    "host_asan_reference": "results/2026-10-11-host-asan/results.json"
+  }
+}

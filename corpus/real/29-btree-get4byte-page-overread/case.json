@@ -1,0 +1,68 @@
+{
+  "id": "29",
+  "capstone_dir": "29_fz02_btree_get4byte_page_overread",
+  "tag": "fz02",
+  "class": "heap-overflow",
+  "access": "read",
+  "temporal": false,
+  "title": "a corrupt page header sends sqlite3Get4byte past the end of the page buffer",
+  "upstream_fix": "fz02 (R2 fuzz-corpus diff image; trigger re-derived by capstone 2026-10-03)",
+  "object": "a page buffer of the page cache (pcache1)",
+  "lifetime_ender": "not a lifetime defect: the read leaves the page buffer",
+  "fault_site": "sqlite3Get4byte",
+  "reached": "fz02 open_rc=0",
+  "reached_why": "the image opened; s0_rc=11 (SQLITE_CORRUPT) on the dbstat statement means the engine rejected the image before the defect",
+  "engine": {
+    "group": "memfsdb",
+    "flags": [
+      "-USQLITE_OMIT_INCRBLOB",
+      "-DSQLITE_ENABLE_DBSTAT_VTAB"
+    ]
+  },
+  "sources": [
+    "corpus/real/shared/repro322_memfs.c"
+  ],
+  "layer_by_arm": {
+    "memsys5": "memsys5 arena",
+    "default": "pcache1 bulk pool (SQLITE_DEFAULT_PCACHE_INITSZ=20 pages carved from one block)",
+    "rewrite": "malloc, one block per page"
+  },
+  "expected": {
+    "asan": {
+      "memsys5": "MISSED",
+      "default": "MISSED (to verify: the page may come from the bulk pool)",
+      "rewrite": "DETECTED",
+      "why": "the over-read stays inside the arena or the bulk pool; with INITSZ=0 every page is its own block with redzones"
+    },
+    "valgrind": {
+      "memsys5": "MISSED",
+      "default": "MISSED (to verify)",
+      "rewrite": "DETECTED",
+      "why": "same"
+    },
+    "lowfat": {
+      "memsys5": "MISSED",
+      "default": "MISSED (to verify)",
+      "rewrite": "DETECTED",
+      "why": "bounds come from the malloc'd block; the pool is one block"
+    }
+  },
+  "sqlite": "3.22.0",
+  "sqlite3_c_sha256": "7991acd0d8c78435d47523a43aeeb117f0aa264c4d7d0d10410f0128ed1f6004",
+  "arms": [
+    "memsys5",
+    "default",
+    "rewrite"
+  ],
+  "measured": {},
+  "status": "ported, not run",
+  "capstone": {
+    "repo": "project-starch/llvm-capstone",
+    "branch": "dev",
+    "commit": "9bb68291dcf21ea96a2c7a10a525d520c44ff1e0",
+    "path": "capstone/bug-corpora/sqlite/engine-repros/29_fz02_btree_get4byte_page_overread",
+    "copied": "2026-11-05",
+    "case_c_sha256": "1fe8091464688d399abf66795d9a7d73ae4dae71992fd8a701d9eb328741364e",
+    "host_asan_reference": "results/2026-10-11-host-asan/results.json"
+  }
+}

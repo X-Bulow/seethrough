@@ -1,0 +1,67 @@
+{
+  "id": "03",
+  "capstone_dir": "03_e464802d49_blob_close_after_db_close",
+  "tag": "blobclose",
+  "class": "use-after-free",
+  "access": "read",
+  "temporal": true,
+  "title": "sqlite3_blob_close() reads the connection after sqlite3_close_v2() freed it",
+  "upstream_fix": "e464802d49 (fixed in 3.29.0)",
+  "object": "the sqlite3 connection struct (sqlite3MallocZero: a plain engine allocation, not lookaside)",
+  "lifetime_ender": "sqlite3_close_v2 with a blob still open makes the db a zombie; the finalize inside blob_close frees it, then sqlite3DbFree reads db->lookaside",
+  "fault_site": "sqlite3DbFreeNN",
+  "reached": "blobclose close_v2 rc=0",
+  "reached_why": "close_v2 returning 0 means the zombie path was taken; plain close returns SQLITE_BUSY and there is no UAF",
+  "engine": {
+    "group": "core",
+    "flags": [
+      "-USQLITE_OMIT_INCRBLOB",
+      "-DSQLITE_ENABLE_PREUPDATE_HOOK",
+      "-DSQLITE_COUNTOFVIEW_OPTIMIZATION"
+    ]
+  },
+  "sources": [],
+  "layer_by_arm": {
+    "memsys5": "memsys5 arena",
+    "default": "malloc (the connection is not a lookaside object; lookaside is a field of it)",
+    "rewrite": "malloc"
+  },
+  "expected": {
+    "asan": {
+      "memsys5": "MISSED",
+      "default": "DETECTED",
+      "rewrite": "DETECTED",
+      "why": "the freed object is the connection itself, a plain sqlite3_malloc; only memsys5 hides it"
+    },
+    "valgrind": {
+      "memsys5": "MISSED",
+      "default": "DETECTED",
+      "rewrite": "DETECTED",
+      "why": "same: Memcheck tracks malloc lifetimes"
+    },
+    "lowfat": {
+      "memsys5": "UNSUPPORTED",
+      "default": "UNSUPPORTED",
+      "rewrite": "UNSUPPORTED",
+      "why": "LowFat checks bounds, not lifetimes"
+    }
+  },
+  "sqlite": "3.22.0",
+  "sqlite3_c_sha256": "7991acd0d8c78435d47523a43aeeb117f0aa264c4d7d0d10410f0128ed1f6004",
+  "arms": [
+    "memsys5",
+    "default",
+    "rewrite"
+  ],
+  "measured": {},
+  "status": "ported, not run",
+  "capstone": {
+    "repo": "project-starch/llvm-capstone",
+    "branch": "dev",
+    "commit": "9bb68291dcf21ea96a2c7a10a525d520c44ff1e0",
+    "path": "capstone/bug-corpora/sqlite/engine-repros/03_e464802d49_blob_close_after_db_close",
+    "copied": "2026-11-05",
+    "case_c_sha256": "23fd9ac311f4a76c8bedec548ac1887c7a7a12b054752b0b6245baf1622125e6",
+    "host_asan_reference": "results/2026-10-11-host-asan/results.json"
+  }
+}

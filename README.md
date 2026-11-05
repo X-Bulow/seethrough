@@ -19,9 +19,9 @@ is [TASKS.md](TASKS.md).
 
 | directory | owner | what lives there |
 |---|---|---|
-| `corpus/` | A | the test programs: one directory per case, each with `case.c`, `case.json`, `README.md`; the unified allocator interface `corpus/include/alloc.h`; the positive controls |
+| `corpus/` | A | the test programs: one directory per case, each with `case.c`, `case.json`, `README.md`; the unified allocator interface `corpus/include/alloc.h`; the positive controls; `corpus/real/` holds four real SQLite 3.22.0 defects ported from capstone's engine-repros (Tier 2) |
 | `allocators/` | B | one implementation of `alloc.h` per allocator layer: `malloc`, `arena`, `freelist`, `sqlite` (memsys5 / lookaside); `annotations/` holds the ASan and Valgrind annotation macros |
-| `harness/` | A | `run-matrix.py` builds and runs tool x allocator x annotation x case and writes one CSV; `classify.py` turns a tool's output into a verdict |
+| `harness/` | A | `run-matrix.py` builds and runs tool x allocator x annotation x case and writes one CSV; `run-real.py` does the same for `corpus/real/` over tool x arm; `classify.py` turns a tool's output into a verdict |
 | `tools/` | C | compile flags per tool (`flags.mk`), `setup-server.sh` that installs or builds the pinned tool versions on the lab server, `env.sh` that records them |
 | `benchmarks/` | C | Q2: SQLite speedtest1, PostgreSQL subset, Lua or CPython |
 | `results/` | all | raw outputs and CSVs, one directory per run, never edited by hand |
@@ -60,6 +60,7 @@ was DETECTED in the same run; otherwise the whole cell is TOOL-ERROR, not MISSED
     make case CASE=heap-overflow-write TOOL=asan ALLOC=malloc ANNOT=0
     make control CASE=heap-overflow-write TOOL=asan ALLOC=arena ANNOT=1
     python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena --out results/$(date +%F)-local
+    python3 harness/run-real.py   --tools asan valgrind --out results/$(date +%F)-local-real   # corpus/real, fetches SQLite 3.22.0 into vendor/
 
 All measured runs happen natively on the lab's x86-64 Linux server, with the tool versions
 pinned in `tools/setup-server.sh` and recorded by `tools/env.sh` into every results bundle.

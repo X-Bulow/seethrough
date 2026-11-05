@@ -4,7 +4,8 @@
 |---|---|
 | `main.c` | the `main()` linked into every case image; prints `ST BEGIN` / `ST DONE` |
 | `run-matrix.py` | enumerates tool x alloc x annot x case x {bug, control}, builds via `make image`, runs, classifies, writes `matrix.csv` |
-| `classify.py` | output + exit code → verdict; one regex per tool |
+| `classify.py` | output + exit code → verdict; one regex per tool; a sanitizer `SEGV`/`BUS`/... report is a crash, recorded MISSED |
+| `run-real.py` | `corpus/real/` (A7): tool x arm x case over SQLite 3.22.0, builds via `make real-image`, gates on asan/rewrite, writes `real.csv` |
 | `render-matrix.py` | TODO(A4.5): `matrix.csv` → the Detection Matrix table for the report |
 
 ## matrix.csv columns
@@ -24,6 +25,19 @@
 
 The bug row's verdict already accounts for its control: a bug row says FALSE-POSITIVE when the
 control image was reported, and TOOL-ERROR when the control never reached READY.
+
+## real.csv columns (corpus/real)
+
+| column | values |
+|---|---|
+| `tool` | as above |
+| `arm` | memsys5, default, rewrite (`corpus/real/README.md`) |
+| `case`, `class`, `access` | from the case's `case.json` |
+| `layer` | where the object sits on this arm (`layer_by_arm`) |
+| `verdict` | DETECTED, MISSED, UNSUPPORTED (build failed, or the asan/rewrite gate failed), TOOL-ERROR (reachability line missing) |
+| `note` | report kind; "left the arena" when ASan hit the arena's redzone rather than the object's |
+
+No control rows: the case's positive control is its own asan/rewrite row.
 
 ## A bundle is never edited
 

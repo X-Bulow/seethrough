@@ -10,3 +10,5 @@ results/**/*.core
 .DS_Store
 .vscode/
 __pycache__/
+# third-party sources fetched by tools/fetch-sqlite.sh (pinned by hash, never committed)
+vendor/
