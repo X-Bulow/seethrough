@@ -89,10 +89,10 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P0 C1.5 确认三人都能登录服务器、共享同一份 clone、`results/` 目录可写
 
 ### C3 HWASan（Week 1 必须出结论；x86-64 上是真问题）
-- [ ] P0 C3.1 查服务器 CPU 是否支持 LAM（Linear Address Masking，`grep lam /proc/cpuinfo`）、内核是否 ≥ 6.2 并启用 LAM；clang 版本是否支持 `-fsanitize=hwaddress` 在 x86_64
-- [ ] P0 C3.2 直接试：`clang -fsanitize=hwaddress corpus/controls/positive-uaf.c`，运行，看是否 DETECTED；把输出粘进 `docs/hwasan.md`
-- [ ] P0 C3.3 若原生不行，试备选 A：aarch64 交叉编译 + `qemu-aarch64` 用户态运行（HWASan 的 TBI 在 qemu-user 下可用）；备选 B：组员的 Apple Silicon 机器上的 aarch64 Linux VM
-- [ ] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入
+- [x] P0 C3.1 查服务器 CPU 是否支持 LAM（Linear Address Masking，`grep lam /proc/cpuinfo`）、内核是否 ≥ 6.2 并启用 LAM；clang 版本是否支持 `-fsanitize=hwaddress` 在 x86_64
+- [x] P0 C3.2 直接试：`clang -fsanitize=hwaddress corpus/controls/positive-uaf.c`，运行，看是否 DETECTED；把输出粘进 `docs/hwasan.md`
+- [x] P0 C3.3 若原生不行，试备选 A：aarch64 交叉编译 + `qemu-aarch64` 用户态运行（HWASan 的 TBI 在 qemu-user 下可用）；备选 B：组员的 Apple Silicon 机器上的 aarch64 Linux VM
+- [x] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入
 - [ ] P1 C3.5 若可行：HWASan 的 tag 粒度（16 字节）对 1 字节 overflow 的影响，设计 case 时要让越界跨 granule
 
 ### C4 LowFat（服务器是 x86-64 Linux，正是 LowFat 的平台，升为 P1）
@@ -100,8 +100,8 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P1 C4.2 跑 `corpus/controls/`；不行就记录错误，降回 P2 不再投入
 
 ### C5 Q2 性能
-- [ ] P0 C5.1 SQLite speedtest1：baseline -O2，ASan，Valgrind；5 次取中位数，wall time + peak RSS
-- [ ] P0 C5.2 同上加 SQLite 自带 memsys5 开关，看 CMA 对 overhead 的影响
+- [x] P0 C5.1 SQLite speedtest1：baseline -O2，ASan，Valgrind；5 次取中位数，wall time + peak RSS
+- [x] P0 C5.2 同上加 SQLite 自带 memsys5 开关，看 CMA 对 overhead 的影响
 - [ ] P1 C5.3 annotated vs unannotated 的 overhead（配合 B2）
 - [ ] P1 C5.4 HWASan overhead（若 C3 可行）
 - [ ] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
