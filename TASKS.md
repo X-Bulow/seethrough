@@ -6,7 +6,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 
 ## 0. 三人共同（Week 1 第一天）
 
-- [ ] P0 C0.1 确认统一 allocator 接口 `corpus/include/alloc.h`（A 起草，B 确认可以实现）
+- [x] P0 C0.1 确认统一 allocator 接口 `corpus/include/alloc.h`（A 分支已合入 B 工作分支；malloc / arena 已按新增接口构建验证）
 - [ ] P0 C0.2 确认 CSV 列和 verdict 五种取值（`harness/README.md`）
 - [ ] P0 C0.3 确认测试矩阵：tool × allocator × annotation × case × {bug, control}
 - [ ] P0 C0.4 建 Git 远端，三人都能 push；`results/` 只增不改
@@ -77,8 +77,8 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 
 ## B. CMA & Annotations（Part B）
 
-- [ ] P0 B1.1 实现 `allocators/malloc/`：直接转发 malloc（基线）
-- [ ] P0 B1.2 实现 `allocators/arena/`：bump-pointer arena，一次 malloc 大块，free 不归还
+- [x] P0 B1.1 实现 `allocators/malloc/`：直接转发 malloc（基线）
+- [x] P0 B1.2 实现 `allocators/arena/`：bump-pointer arena，一次 malloc 大块，free 不归还；side table 记录大小和存活状态，`realloc` 搬迁，`fini` 可重复调用
 - [ ] P0 B1.3 实现 `allocators/freelist/`：固定 size-class free list，free 立即重用
 - [ ] P0 B2.1 ASan manual poisoning：`ASAN_POISON_MEMORY_REGION` / `UNPOISON`，`-DST_ANNOT=1` 时启用
 - [ ] P0 B2.2 Valgrind mempool：`VALGRIND_CREATE_MEMPOOL` / `MEMPOOL_ALLOC` / `MEMPOOL_FREE`
