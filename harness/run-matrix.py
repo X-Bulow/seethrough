@@ -13,9 +13,13 @@ Then for every (tool, alloc, annot, case): build the bug image and the control i
 stdout/stderr of every run is kept beside the CSV, named like the row, so a verdict can be
 re-read without re-running.
 
-TODO(A4.1): the build and run commands below are the contract with Makefile and tools/flags.mk;
-fill in as those land. Nothing here is specific to the lab server except the assumption that
-the tools are on PATH (tools/setup-server.sh).
+A case may declare a precondition in case.json ("requires": {"marker", "why"}): the marker it
+prints when the allocator really has the property the case needs (reuse on free, a realloc that
+moves). A bug row whose marker is absent is UNSUPPORTED, so a case that could not be constructed
+on this allocator never reads as a missed detection.
+
+Nothing here is specific to the lab server except the assumption that the tools are on PATH
+(tools/setup-server.sh).
 """
 import argparse, csv, json, os, subprocess, sys, time
 from pathlib import Path
@@ -94,7 +98,7 @@ def main():
         for alloc in a.allocs:
             for annot in a.annots:
                 for name, meta in cases(a.cases):
-                    verdicts = {}
+                    verdicts, bug_stdout = {}, ""
                     for control in (False, True):
                         image = "control" if control else "bug"
                         stem = f"{meta['case']:02d}-{name}-{tool}-{alloc}-a{annot}-{image}"
@@ -104,6 +108,8 @@ def main():
                             (bundle / (stem + ".build.log")).write_text(log)
                             verdicts[image] = ("UNSUPPORTED", "build failed", 0, 0.0); continue
                         out, err, code, secs = run(tool, exe)
+                        if not control:
+                            bug_stdout = out
                         (bundle / (stem + ".stdout")).write_text(out)
                         (bundle / (stem + ".stderr")).write_text(err)
                         v, n = classify(tool, out, err, code)
@@ -116,6 +122,13 @@ def main():
                         bv, bn = "FALSE-POSITIVE", f"control also reported: {cn}"
                     elif cv == "TOOL-ERROR":
                         bv, bn = "TOOL-ERROR", f"control: {cn}"
+                    # A case may state a precondition on the allocator (case.json "requires"): the
+                    # marker it prints when the precondition held. Without it the case tested nothing on
+                    # this allocator, which is UNSUPPORTED, not a miss -- a vacuous pass must never be
+                    # read as a tool failing to see a bug.
+                    req = meta.get("requires")
+                    if req and bv != "UNSUPPORTED" and req["marker"] not in bug_stdout:
+                        bv, bn = "UNSUPPORTED", f"precondition not met ({req['marker']}): {req['why']}"
                     for image, (v, n, c, s) in (("bug", (bv, bn, bc, bs)), ("control", (cv, cn, cc, cs))):
                         rows.append(dict(bundle=bundle.name, tool=tool, alloc=alloc, annot=annot,
                                          case=meta["case"], **{"class": meta["class"]}, access=meta["access"],

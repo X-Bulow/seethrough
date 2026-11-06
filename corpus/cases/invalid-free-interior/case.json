@@ -1,0 +1,67 @@
+{
+  "case": 14,
+  "class": "invalid-free",
+  "access": "free",
+  "title": "free a pointer 8 bytes into an object instead of the one st_alloc returned",
+  "object": "a, 24 bytes; st_free(a + 8)",
+  "control": "frees a; one alloc and one free in both images",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED (to verify)",
+      "why": "The one class where the malloc baseline is enforced by the ALLOCATOR and not only by the tool: the chunk header is not where libc expects. A bump arena ignores its argument and cannot tell a+8 from a. A free list pushes a+8 onto a size-class list and misaligns every later object in that class, so the damage appears far from here -- which is why the case records what it did instead of waiting for a crash."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED (to verify)",
+      "why": "MEMPOOL_FREE of an address that is not a pool allocation is reported."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "malloc's own check. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "DETECTED (to verify)",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "LowFat can check that a freed pointer is its region's base, which is a bounds question; to verify."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED attempting",
+        "malloc+annot": "DETECTED attempting",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED crashed exit=-5",
+        "malloc+annot": "MISSED crashed exit=-5",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

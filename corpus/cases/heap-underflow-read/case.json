@@ -1,11 +1,69 @@
 {
-  "case": 3,
+  "case": 6,
   "class": "heap-underflow",
   "access": "read",
-  "title": "TODO",
-  "object": "TODO",
-  "control": "TODO",
-  "expected": {},
-  "measured": {},
-  "status": "skeleton"
+  "title": "1-byte read before the start of an object",
+  "object": "a, 24 bytes, allocated after another 24-byte object `first`",
+  "offset_bytes": -1,
+  "neighbour": "first's last slack byte",
+  "control": "reads a[0]",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "As case 5; read and write are separate rows because the instrumentation is."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "As case 5."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "As case 5. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "As case 5: the base is region-aligned, so below it is out of bounds."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
 }

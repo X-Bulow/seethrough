@@ -1,11 +1,67 @@
 {
-  "case": 4,
+  "case": 8,
   "class": "use-after-free",
   "access": "write",
-  "title": "TODO",
-  "object": "TODO",
-  "control": "TODO",
-  "expected": {},
-  "measured": {},
-  "status": "skeleton"
+  "title": "write through a stale pointer, with no allocation between the free and the use",
+  "object": "a, 24 bytes, freed and then written",
+  "control": "the same single alloc and single free, with the write before the free instead of after it",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "THE ANNOTATION-FEASIBILITY ROW. ASan's quarantine and shadow catch it on malloc. A bump-pointer arena cannot poison on free because st_free does not know the object's size (allocators/arena/arena.c TODO), so even the annotated arena stays blind -- an annotation arm can fail for reasons of allocator DESIGN, not of tool support. A free list knows the size class, so its annotated arm works."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "Same split, via VALGRIND_MEMPOOL_FREE, which the arena never calls."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "malloc retags on free, so the stale pointer's tag no longer matches. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "LowFat checks bounds only; it has no notion of a lifetime."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-use-after-free",
+        "malloc+annot": "DETECTED heap-use-after-free",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
 }

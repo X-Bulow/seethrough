@@ -1,11 +1,67 @@
 {
-  "case": 5,
+  "case": 9,
   "class": "use-after-free",
   "access": "read",
-  "title": "TODO",
-  "object": "TODO",
-  "control": "TODO",
-  "expected": {},
-  "measured": {},
-  "status": "skeleton"
+  "title": "read through a stale pointer, with no allocation between the free and the use",
+  "object": "a, 24 bytes, freed and then read",
+  "control": "the read happens before the free",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "As case 8, and the read returns the object's own old bytes under an arena, so the program cannot notice either."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "As case 8."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "As case 8. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "LowFat checks bounds only; it has no notion of a lifetime."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-use-after-free",
+        "malloc+annot": "DETECTED heap-use-after-free",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
 }

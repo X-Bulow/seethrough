@@ -19,7 +19,7 @@ is [TASKS.md](TASKS.md).
 
 | directory | owner | what lives there |
 |---|---|---|
-| `corpus/` | A | the test programs: one directory per case, each with `case.c`, `case.json`, `README.md`; the unified allocator interface `corpus/include/alloc.h`; the positive controls; `corpus/real/` holds four real SQLite 3.22.0 defects ported from capstone's engine-repros (Tier 2) |
+| `corpus/` | A | the test programs. `cases/` holds 16 constructed defects with known ground truth (five classes, read and write forms, plus the variants that isolate one allocator property) and their negative controls; `include/alloc.h` is the unified allocator interface; `controls/` the positive controls; `real/` four real SQLite 3.22.0 defects ported from capstone's engine-repros (Tier 2) |
 | `allocators/` | B | one implementation of `alloc.h` per allocator layer: `malloc`, `arena`, `freelist`, `sqlite` (memsys5 / lookaside); `annotations/` holds the ASan and Valgrind annotation macros |
 | `harness/` | A | `run-matrix.py` builds and runs tool x allocator x annotation x case and writes one CSV; `run-real.py` does the same for `corpus/real/` over tool x arm; `classify.py` turns a tool's output into a verdict |
 | `tools/` | C | compile flags per tool (`flags.mk`), `setup-server.sh` that installs or builds the pinned tool versions on the lab server, `env.sh` that records them |
