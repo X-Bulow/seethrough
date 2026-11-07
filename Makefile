@@ -1,7 +1,7 @@
 # seethrough -- build one image of the matrix.
 #
-#   make image TOOL=asan ALLOC=arena ANNOT=1 CASE=heap-overflow-write CONTROL=0 OUT=build/x
-#   make case  TOOL=asan ALLOC=malloc CASE=heap-overflow-write        # build + run the bug image
+#   make image TOOL=asan ALLOC=arena ANNOT=1 CASE=case00-heap-overflow-write CONTROL=0 OUT=build/x
+#   make case  TOOL=asan ALLOC=malloc CASE=case00-heap-overflow-write        # build + run the bug image
 #   make control ...                                                   # build + run the control image
 #   make control-image TOOL=asan SRC=corpus/controls/positive-uaf.c OUT=build/pc
 #   make real  TOOL=asan ARM=rewrite REAL=03-blob-close-after-db-close   # build + run a real SQLite case
@@ -16,7 +16,7 @@ include tools/flags.mk
 TOOL    ?= none
 ALLOC   ?= malloc
 ANNOT   ?= 0
-CASE    ?= heap-overflow-write
+CASE    ?= case00-heap-overflow-write
 CONTROL ?= 0
 BUILD   ?= build
 OUT     ?= $(BUILD)/$(CASE)-$(TOOL)-$(ALLOC)-a$(ANNOT)-$(if $(filter 1,$(CONTROL)),control,bug)

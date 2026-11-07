@@ -1,0 +1,50 @@
+# case00-heap-overflow-write — a one-byte write past the end
+
+## Defect
+- Class: heap overflow; access: write
+- Object: `a`, a 24-byte request, the first of two consecutive `st_alloc(24)` calls
+- In one line: writes `a[24]`, one byte past the end of the request
+
+## Trigger
+```
+a = st_alloc(24);  b = st_alloc(24);
+memset(a, 0x5a, 24);  memset(b, 0x5a, 24);
+ST_READY();
+a[24] = 1;              // the defect
+```
+The control replaces this line with `a[23] = 1` (the last valid byte); allocation and freeing are identical.
+
+## Memory layout
+```
+malloc + ASan:   [left redzone ≥16][ a: 24 ][right redzone ≥16] ... [left redzone][ b: 24 ]...
+                 a[24] lands in the right redzone, whose shadow marks it unaddressable → reported
+
+arena (16-aligned):  [ a: 24 | slack 8 ][ b: 24 | slack 8 ][ ... ]
+                 offset:  0      24  32            56  64
+                 a[24] lands in a's own alignment slack (24..31), not in b's data
+                 unannotated: to ASan the whole arena is one live object → not reported
+                 annotated:   the arena unpoisons only 24 bytes per object, 24..31 stay poisoned → reported
+```
+**What lets annotation win this row back is the alignment slack.** If the overflow landed exactly on `b[0]` (offset 32), it would hit a byte of a live object, which has to be unpoisoned, and annotation would be powerless — that is what case 3 measures.
+
+## Expected results
+See `expected` in `case.json`. The main points:
+- ASan remembers the **requested size**, so offset 24 is reported on malloc and on the annotated arena
+- LowFat's bound is the **size class** (24 → 32), so offset 24 is in bounds and not reported even on malloc. This is LowFat's known sub-object precision limit, not something the CMA causes; compare case 3
+- UBSan needs a static array bound, and a pointer returned by an allocator has none → nothing is reported in any column
+
+## Local smoke run (2026-11-05, macOS arm64, Apple clang 21, development only, not citable)
+| tool | malloc | arena a0 | arena a1 |
+|---|---|---|---|
+| asan | DETECTED heap-buffer-overflow | MISSED | DETECTED **use-after-poison** |
+| none | MISSED | MISSED | MISSED |
+
+Note that on the annotated arena ASan reports `use-after-poison`, not `heap-buffer-overflow`: the verdict is the same, the **kind** of report differs. The report's tables and any script that counts by keyword need to know this.
+
+## Local smoke run (2026-11-07, after merging B1.2/B1.3, macOS arm64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED heap-buffer-overflow | MISSED | DETECTED use-after-poison | MISSED | DETECTED use-after-poison |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+The two free-list columns agree with the two arena columns.

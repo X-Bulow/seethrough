@@ -3,29 +3,31 @@
 Dense numbering; `ST_CASE(n)` in each `case.c` must match `case` in its `case.json`, and
 `harness/main.c` is built with `-DST_CASE_N=<n>`. Numbers 1-6 were reassigned on 2026-11-05 when
 the corpus grew from 7 placeholders to these 16 cases; nothing outside this directory had cited
-them yet.
+them yet. Each directory is named `caseNN-<slug>` after its two-digit number (renamed on
+2026-11-07), and `harness/run-matrix.py` refuses a directory whose prefix disagrees with
+`case.json`.
 
 Four classes, each with its read and write form, plus the variants that isolate one property of
 the allocator rather than one bug class. 16 bug programs and 16 negative controls.
 
 | n | directory | class | access | what it isolates |
 |---|---|---|---|---|
-| 0 | heap-overflow-write | heap overflow | write | 1 byte past the end, into the alignment slack |
-| 1 | heap-overflow-read | heap overflow | read | the same access as a read |
-| 2 | heap-overflow-write-slack | heap overflow | write | request bounds vs block bounds (offset 28 of 24) |
-| 3 | heap-overflow-write-far | heap overflow | write | 40 past the end, into a live third object: where annotation fails |
-| 4 | heap-overflow-read-past-pool | heap overflow | read | leaving the pool: every tool sees it again |
-| 5 | heap-underflow-write | heap underflow | write | 1 byte before the start |
-| 6 | heap-underflow-read | heap underflow | read | the same access as a read |
-| 7 | heap-underflow-write-metadata | heap underflow | write | the 8 bytes an allocator keeps a header in |
-| 8 | use-after-free-write | use after free | write | lifetime end with no reuse; can the allocator poison on free at all |
-| 9 | use-after-free-read | use after free | read | the same access as a read |
-| 10 | use-after-free-reuse-write | use after free | write | two pointers to one live address: the ceiling on annotation |
-| 11 | use-after-realloc-read | use after free | read | the free hidden inside realloc |
-| 12 | use-after-pool-destroy-read | use after free | read | the pool's lifetime, not the object's |
-| 13 | double-free | double free | free | ownership, which poisoning cannot express |
-| 14 | invalid-free-interior | invalid free | free | a pointer the allocator never handed out |
-| 15 | double-free-after-reuse | double free | free | freeing a live object's storage under it |
+| 0 | case00-heap-overflow-write | heap overflow | write | 1 byte past the end, into the alignment slack |
+| 1 | case01-heap-overflow-read | heap overflow | read | the same access as a read |
+| 2 | case02-heap-overflow-write-slack | heap overflow | write | request bounds vs block bounds (offset 28 of 24) |
+| 3 | case03-heap-overflow-write-far | heap overflow | write | 40 past the end, into a live third object: where annotation fails |
+| 4 | case04-heap-overflow-read-past-pool | heap overflow | read | leaving the pool: every tool sees it again |
+| 5 | case05-heap-underflow-write | heap underflow | write | 1 byte before the start |
+| 6 | case06-heap-underflow-read | heap underflow | read | the same access as a read |
+| 7 | case07-heap-underflow-write-metadata | heap underflow | write | the 8 bytes an allocator keeps a header in |
+| 8 | case08-use-after-free-write | use after free | write | lifetime end with no reuse; can the allocator poison on free at all |
+| 9 | case09-use-after-free-read | use after free | read | the same access as a read |
+| 10 | case10-use-after-free-reuse-write | use after free | write | two pointers to one live address: the ceiling on annotation |
+| 11 | case11-use-after-realloc-read | use after free | read | the free hidden inside realloc |
+| 12 | case12-use-after-pool-destroy-read | use after free | read | the pool's lifetime, not the object's |
+| 13 | case13-double-free | double free | free | ownership, which poisoning cannot express |
+| 14 | case14-invalid-free-interior | invalid free | free | a pointer the allocator never handed out |
+| 15 | case15-double-free-after-reuse | double free | free | freeing a live object's storage under it |
 
 ## Preconditions
 

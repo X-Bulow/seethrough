@@ -57,8 +57,8 @@ was DETECTED in the same run; otherwise the whole cell is TOOL-ERROR, not MISSED
 ## Running
 
     make help                                  # all targets
-    make case CASE=heap-overflow-write TOOL=asan ALLOC=malloc ANNOT=0
-    make control CASE=heap-overflow-write TOOL=asan ALLOC=arena ANNOT=1
+    make case CASE=case00-heap-overflow-write TOOL=asan ALLOC=malloc ANNOT=0
+    make control CASE=case00-heap-overflow-write TOOL=asan ALLOC=arena ANNOT=1
     python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena --out results/$(date +%F)-local
     python3 harness/run-real.py   --tools asan valgrind --out results/$(date +%F)-local-real   # corpus/real, fetches SQLite 3.22.0 into vendor/
 

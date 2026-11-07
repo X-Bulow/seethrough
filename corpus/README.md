@@ -2,7 +2,7 @@
 
 One directory per case under `cases/`. A case is three files:
 
-    cases/<class>-<access>/
+    cases/caseNN-<class>-<access>[-<variant>]/    NN = the case number, two digits (case08-use-after-free-write)
         case.c       the sequence, inside ST_CASE(NN); the negative control under -DST_NEGATIVE_CONTROL
         case.json    machine-readable claims: class, access, object, offset, expected verdicts, measured verdicts
         README.md    the explanation the professor asked for (template: docs/test-programs.md)

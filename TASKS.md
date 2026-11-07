@@ -10,7 +10,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P0 C0.2 确认 CSV 列和 verdict 五种取值（`harness/README.md`）
 - [ ] P0 C0.3 确认测试矩阵：tool × allocator × annotation × case × {bug, control}
 - [ ] P0 C0.4 建 Git 远端，三人都能 push；`results/` 只增不改
-- [ ] P0 C0.5 第一条端到端：heap-overflow-write 在 malloc / arena / arena+annot 下各跑一次 ASan，拿到 3 个 verdict
+- [ ] P0 C0.5 第一条端到端：case00-heap-overflow-write 在 malloc / arena / arena+annot 下各跑一次 ASan，拿到 3 个 verdict
 
 ## A. Test Corpus & Harness（Part A）
 

@@ -38,7 +38,15 @@ def cases(selection):
     dirs = sorted(d for d in index.iterdir() if (d / "case.json").exists())
     if selection != ["all"]:
         dirs = [d for d in dirs if d.name in selection]
-    return [(d.name, json.loads((d / "case.json").read_text())) for d in dirs]
+    out = []
+    for d in dirs:
+        meta = json.loads((d / "case.json").read_text())
+        # Directories are caseNN-<slug>, NN being case.json's number: result files are named after
+        # the directory, so a mismatch would file one case's output under another's number.
+        if not d.name.startswith(f"case{meta['case']:02d}-"):
+            sys.exit(f"{d.name}: directory prefix does not match case {meta['case']} in case.json")
+        out.append((d.name, meta))
+    return out
 
 
 def build(tool, alloc, annot, case_dir, control, out):
@@ -101,7 +109,7 @@ def main():
                     verdicts, bug_stdout = {}, ""
                     for control in (False, True):
                         image = "control" if control else "bug"
-                        stem = f"{meta['case']:02d}-{name}-{tool}-{alloc}-a{annot}-{image}"
+                        stem = f"{name}-{tool}-{alloc}-a{annot}-{image}"   # name is caseNN-<slug>
                         exe = ROOT / "build" / bundle.name / stem
                         built, log = build(tool, alloc, annot, name, control, exe)
                         if not built:
@@ -133,9 +141,9 @@ def main():
                         rows.append(dict(bundle=bundle.name, tool=tool, alloc=alloc, annot=annot,
                                          case=meta["case"], **{"class": meta["class"]}, access=meta["access"],
                                          image=image, verdict=v, note=n, exit_code=c, seconds=f"{s:.2f}",
-                                         stdout=f"{meta['case']:02d}-{name}-{tool}-{alloc}-a{annot}-{image}.stdout",
-                                         stderr=f"{meta['case']:02d}-{name}-{tool}-{alloc}-a{annot}-{image}.stderr"))
-                    print(f"{tool:9s} {alloc:9s} annot={annot} {name:24s} {bv:15s} {bn}")
+                                         stdout=f"{name}-{tool}-{alloc}-a{annot}-{image}.stdout",
+                                         stderr=f"{name}-{tool}-{alloc}-a{annot}-{image}.stderr"))
+                    print(f"{tool:9s} {alloc:9s} annot={annot} {name:36s} {bv:15s} {bn}")
     with open(bundle / "matrix.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=COLUMNS); w.writeheader(); w.writerows(rows)
     if refused:

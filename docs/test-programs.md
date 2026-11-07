@@ -1,32 +1,38 @@
-# 测试程序说明（模板）
+# Test program READMEs (template)
 
-每个 `corpus/cases/<case>/README.md` 按下面的标题写。报告里的 Test Corpus 一节由这些文件汇总。
+Every `corpus/cases/caseNN-<slug>/README.md` is written in English under the headings below. The
+report's Test Corpus section is compiled from these files.
 
 ```
-# <case 名>
+# caseNN-<slug> — <one-line title>
 
-## 漏洞
-- 类别：heap overflow / underflow / use-after-free / double free
-- 访问：read / write
-- 一句话：什么对象、在什么时候、被怎样非法访问
+## Defect
+- Class: heap overflow / underflow / use-after-free / double free / invalid free
+- Access: read / write / free
+- In one line: which object, when, and how it is accessed illegally
 
-## 触发方式
-- 分配序列（按 alloc.h 的调用列出，大小、顺序）
-- 非法访问在哪一行，偏移多少字节
+## Trigger
+- The allocation sequence (as alloc.h calls, with sizes and order)
+- Which line holds the illegal access, and at what offset
 
-## 内存布局
-- malloc 下：对象之间是什么（malloc header、ASan redzone、对齐填充）
-- arena 下：对象紧挨着，中间没有任何东西
-- freelist 下：同一 size class，free 后下一次分配拿到同一块
-（画一张小图，ASCII 即可）
+## Memory layout
+- under malloc: what lies between objects (malloc header, ASan redzone, alignment padding)
+- under the arena: objects sit back to back, with only alignment slack between them
+- under the free list: same size class; after a free, the next allocation gets the same block
+(draw a small picture; ASCII is fine)
 
-## 预期结果和理由
-| tool | malloc | CMA 未标注 | CMA 标注 | 理由 |
+## Expected results and rationale
+| tool | malloc | CMA unannotated | CMA annotated | rationale |
 |---|---|---|---|---|
-| ASan | DETECTED | MISSED | DETECTED | 越界 1 字节落在 ... |
+| ASan | DETECTED | MISSED | DETECTED | the 1-byte overflow lands in ... |
 | Valgrind | ... | ... | ... | |
-| HWASan | ... | ... | n/a | 无 CMA 标注接口 |
+| HWASan | ... | ... | n/a | no CMA annotation interface |
 
-## 对照组
-- `-DST_NEGATIVE_CONTROL` 改了哪一行，为什么分配流量和 bug 版本完全一样
+## Negative control
+- which line `-DST_NEGATIVE_CONTROL` changes, and why the allocation traffic is identical to the bug version
 ```
+
+The full expected table lives in `case.json` (`expected`: one row per tool, one column per
+allocator arm, plus a `why`); the README explains the rows that matter. Dated local runs go at the
+end, each under its own `## Local smoke run (<date>, <machine>, development only, not citable)`
+heading. An old run's section is never edited; a new run gets a new section.
