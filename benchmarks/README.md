@@ -9,5 +9,29 @@
 Protocol (from the proposal, kept): `-O2`, median of 5 runs, wall-clock time and peak RSS
 (`/usr/bin/time -v`, `Maximum resident set size`), baseline uninstrumented, then each tool,
 then each tool with annotations on. One CSV per benchmark, columns:
-`bundle, benchmark, config, tool, annot, run, seconds, peak_rss_kb`. `plot.py` (TODO C5.6)
+`bundle, benchmark, config, tool, annot, run, seconds, peak_rss_kb`. `plot.py`
 draws the figures from the CSVs and nothing else.
+
+## 性能图（C5.6）
+
+在仓库根目录执行（Python 3 + matplotlib）：
+
+```bash
+python3 -m venv build/plot-venv
+build/plot-venv/bin/python -m pip install -r benchmarks/requirements.txt
+build/plot-venv/bin/python benchmarks/plot.py
+```
+
+默认读取 `results/*/benchmark.csv`。也可显式指定一份或多份 CSV：
+
+```bash
+build/plot-venv/bin/python benchmarks/plot.py results/2026-11-05-sqlite-speedtest1-A3VkNv/benchmark.csv results/2026-11-05-sqlite-speedtest1-memsys5-LGSfcu/benchmark.csv
+```
+
+输出为 `report/figures/benchmark-performance.{png,pdf}`（耗时及峰值 RSS）、
+`report/figures/benchmark-overhead.{png,pdf}`（相对各自 baseline 的倍数），
+以及 `report/tables/benchmark-summary.csv`。PDF 可直接用于报告。
+
+每个 bundle、配置、annotation 和工具分别取 5 次运行的中位数；RSS 从 KiB 换算为 MiB。
+脚本检查运行编号恰为 1–5，保持不同 bundle 的结果独立，缺少同组 baseline 时直接报错。
+倍数是工具中位数除以 baseline 中位数，不能用较低的开销推断较好的检测能力。

@@ -4,14 +4,14 @@
 
 | 项目 | 值 | 记录人 | 日期 |
 |---|---|---|---|
-| 服务器 | 实验室 x86-64 Linux：CPU 型号、核数、内存 | | |
-| 内核 | `uname -r`；是否启用 LAM | | |
-| 发行版 / glibc | | | |
-| clang | 版本、来源（apt / 源码 / 预编译 tarball） | | |
-| gcc | 版本 | | |
-| valgrind | 版本 | | |
-| HWASan | 方式（原生 x86-64 LAM / qemu-aarch64 / aarch64 VM）、clang 版本 | | |
-| LowFat | commit、构建命令 | | |
-| SQLite | 版本（amalgamation）、memsys5 编译选项 | | |
-| PostgreSQL / Lua / CPython | 版本 | | |
-| 编译优化 | 检测实验 -O0 -g；性能实验 -O2 | | |
+| 服务器 | 实验室 VirtualBox x86-64 Linux VM；AMD Ryzen 7 3700X，4 个可见逻辑 CPU，内存约 7.25 GiB | C | 2026-11-07 |
+| 内核 | `7.0.0-38-generic`；未暴露 LAM，HWASan 所需 tagged address ABI 不可用 | C | 2026-11-07 |
+| 发行版 / glibc | Ubuntu 26.04 LTS / glibc 2.43（`2.43-2ubuntu2.4`） | C | 2026-11-07 |
+| clang | 21.1.8（`1:21.1.8-6ubuntu1`，Ubuntu 包；安装途径未记录） | C | 2026-11-07 |
+| gcc | 15.2.0（`15.2.0-16ubuntu1`） | C | 2026-11-07 |
+| valgrind | 3.26.0（`1:3.26.0-0ubuntu1`） | C | 2026-11-07 |
+| HWASan | clang 21.1.8；原生 x86-64 与 aarch64 + QEMU 均未成功运行，本轮不采用，见 [hwasan.md](hwasan.md) | C | 2026-11-07 |
+| LowFat | 未测试 | C | 2026-11-07 |
+| SQLite | 3.50.4 amalgamation；memsys5：`-DSQLITE_ENABLE_MEMSYS5` | C | 2026-11-07 |
+| PostgreSQL / Lua / CPython | 未测试 | C | 2026-11-07 |
+| 编译优化 | 检测实验默认 `-O0 -g`；性能实验 `-O2 -g -fno-omit-frame-pointer`，ASan 加 `-fsanitize=address` | C | 2026-11-07 |
