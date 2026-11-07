@@ -1,16 +1,23 @@
 #include "harness.h"
 
-/* Case 5 -- use-after-free-read. TODO(A): write the sequence. Rules in corpus/README.md:
- * same st_alloc/st_free traffic in both images, ST_READY() right before the
- * defect, st_sink() on anything read, the control replaces only the access. */
-ST_CASE(5) {
+/* Case 9 -- use after free, read, with no allocation in between. Case 8's
+ * twin. A stale read is the quietest memory-safety defect there is: it
+ * corrupts nothing, so no later crash will ever point at it, and under an
+ * allocator whose free is a no-op it returns the object's own old contents --
+ * the program cannot tell, and neither can a tool that only knows malloc
+ * lifetimes.
+ *
+ * NEGATIVE CONTROL: the read happens before the free. */
+ST_CASE(9) {
     unsigned char *a = st_alloc(24);
     memset(a, ST_FILL, 24);
-    ST_READY();
 #ifdef ST_NEGATIVE_CONTROL
-    st_sink(a[0]);
-#else
-    st_sink(a[0]);             /* TODO: the defect */
-#endif
+    ST_READY();
+    st_sink(a[0]);             /* while still live */
     st_free(a);
+#else
+    st_free(a);
+    ST_READY();
+    st_sink(a[0]);             /* the defect: after the free */
+#endif
 }

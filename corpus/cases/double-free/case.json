@@ -1,11 +1,67 @@
 {
-  "case": 6,
+  "case": 13,
   "class": "double-free",
   "access": "free",
-  "title": "TODO",
-  "object": "TODO",
-  "control": "TODO",
-  "expected": {},
-  "measured": {},
-  "status": "skeleton"
+  "title": "free the same pointer twice, with the free count equal in both images",
+  "object": "a, 24 bytes; b is allocated so the control has a second legitimate free",
+  "control": "frees b instead of a the second time, so both images make exactly two st_free calls. The bug image leaves b to st_alloc_fini, which is a leak Valgrind is run with --leak-check=no to ignore.",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "WHAT ASAN'S ANNOTATION INTERFACE CANNOT EXPRESS. Poison and unpoison describe ADDRESSABILITY; a double free is an error of OWNERSHIP, and there is no access to instrument. A bump arena's st_free is a no-op, so the second call corrupts nothing and the program's contract violation leaves no trace at all."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED (to verify)",
+      "why": "THE ROW WHERE VALGRIND'S INTERFACE BEATS ASAN'S: VALGRIND_MEMPOOL_FREE models allocation identity, so freeing a block the pool does not currently hold is reported. The arena never calls it, so only the annotated free list can win here."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "malloc's own metadata check. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "UNSUPPORTED",
+      "arena": "UNSUPPORTED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "UNSUPPORTED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "Bounds only; a free is not an access. to verify whether LowFat's runtime rejects it at the allocator level."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED attempting",
+        "malloc+annot": "DETECTED attempting",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED crashed exit=-5",
+        "malloc+annot": "MISSED crashed exit=-5",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
 }

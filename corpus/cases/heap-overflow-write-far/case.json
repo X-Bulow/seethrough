@@ -1,0 +1,69 @@
+{
+  "case": 3,
+  "class": "heap-overflow",
+  "access": "write",
+  "title": "write 40 bytes past the end: over the neighbour, into a third live object",
+  "object": "a, 24 bytes, the first of three consecutive st_alloc(24)",
+  "offset_bytes": 64,
+  "neighbour": "under a 16-byte-aligned arena a=[0,32) b=[32,64) c=[64,96), so a[64] is c[0]",
+  "control": "writes a[23]",
+  "expected": {
+    "asan": {
+      "malloc": "MISSED (to verify)",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "The row where ANNOTATION FAILS FOR A SPATIAL BUG: a[64] lands on c[0], which is a live object and must stay unpoisoned, so no poison-on-allocate scheme can object. On malloc the verdict depends on ASan's redzone width: if offset 64 clears a's right redzone and lands in b's data it is also MISSED, which is what must be measured."
+    },
+    "valgrind": {
+      "malloc": "MISSED (to verify)",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "Same reasoning: the destination byte is addressable and owned."
+    },
+    "hwasan": {
+      "malloc": "DETECTED (to verify)",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "On malloc a[64] should land in a differently tagged allocation, so the tag check fires wherever it lands -- the one mechanism here that does not depend on redzone placement. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "Offset 64 leaves the 32-byte size class, so LowFat reports on malloc -- the opposite of cases 1 and 2. Under an arena the bounds are the pool's and nothing leaves it."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+}

@@ -1,16 +1,21 @@
 #include "harness.h"
 
-/* Case 3 -- heap-underflow-read. TODO(A): write the sequence. Rules in corpus/README.md:
- * same st_alloc/st_free traffic in both images, ST_READY() right before the
- * defect, st_sink() on anything read, the control replaces only the access. */
-ST_CASE(3) {
+/* Case 6 -- heap underflow, read, 1 byte before the start. Case 5's twin;
+ * see that file for why the two sides of an object are not symmetric.
+ *
+ * NEGATIVE CONTROL: reads a[0]. */
+ST_CASE(6) {
+    unsigned char *first = st_alloc(24);
     unsigned char *a = st_alloc(24);
+    memset(first, ST_FILL, 24);
     memset(a, ST_FILL, 24);
     ST_READY();
 #ifdef ST_NEGATIVE_CONTROL
-    st_sink(a[0]);
+    st_sink(a[0]);             /* first valid byte */
 #else
-    st_sink(a[0]);             /* TODO: the defect */
+    st_sink(*(a - 1));         /* the defect: one before the start */
 #endif
+    st_sink(first[0]);
     st_free(a);
+    st_free(first);
 }

@@ -2,10 +2,68 @@
   "case": 1,
   "class": "heap-overflow",
   "access": "read",
-  "title": "TODO",
-  "object": "TODO",
-  "control": "TODO",
-  "expected": {},
-  "measured": {},
-  "status": "skeleton"
+  "title": "1-byte read past the end of a 24-byte object",
+  "object": "a, 24 bytes, the first of two consecutive st_alloc(24)",
+  "offset_bytes": 24,
+  "neighbour": "b, allocated immediately after a",
+  "control": "reads a[23] instead of a[24]; allocation traffic identical",
+  "expected": {
+    "asan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "ASan keeps the request size, so offset 24 is in the right redzone on malloc and in the arena's 16-byte alignment slack (24..31) when the allocator unpoisons exactly n."
+    },
+    "valgrind": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "Memcheck reports an invalid read only for an unaddressable byte; inside an arena every byte is addressable until a mempool request says otherwise."
+    },
+    "hwasan": {
+      "malloc": "DETECTED",
+      "arena": "MISSED",
+      "arena+annot": "UNSUPPORTED",
+      "freelist": "MISSED",
+      "freelist+annot": "UNSUPPORTED",
+      "why": "A 24-byte malloc block ends mid-granule, and HWASan's short-granule tagging stores the size in the last byte of the granule, so offset 24 is caught. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+    },
+    "ubsan": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "-fsanitize=bounds needs a statically known array bound; a pointer out of an allocator has none. The row is kept so the report can say UBSan is not a heap tool rather than leaving it out."
+    },
+    "lowfat": {
+      "malloc": "MISSED",
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "LowFat's bounds are the SIZE CLASS, 32 bytes for a 24-byte request, so offset 24 is in bounds even on malloc. Documented sub-object imprecision, not an allocator effect: compare case 3, where the offset leaves the class."
+    }
+  },
+  "measured": {
+    "2026-11-05 macOS arm64 smoke (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED"
+      }
+    }
+  },
+  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
 }
