@@ -40,3 +40,11 @@ arena (16 对齐):  [ a: 24 | slack 8 ][ b: 24 | slack 8 ][ ... ]
 | none | MISSED | MISSED | MISSED |
 
 注意已标注 arena 下 ASan 报的是 `use-after-poison` 而不是 `heap-buffer-overflow`：verdict 相同，报告**种类**不同。报告里的表格和任何按关键字统计的脚本都要知道这件事。
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED heap-buffer-overflow | MISSED | DETECTED use-after-poison | MISSED | DETECTED use-after-poison |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+free list 两列和 arena 两列结论相同。

@@ -31,3 +31,11 @@ arena (16 对齐):  [ first: 24 |slack 24..31 ][ a: 24 |slack ]
 |---|---|---|---|
 | asan | DETECTED heap-buffer-overflow | MISSED | DETECTED use-after-poison |
 | none | MISSED | MISSED | MISSED |
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED heap-buffer-overflow | MISSED | DETECTED use-after-poison | MISSED | DETECTED use-after-poison |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+free list 两列和 arena 两列结论相同。

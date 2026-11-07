@@ -34,4 +34,12 @@ case 10 的访问发生时内存是活的，标注无能为力。这里不同：
 | asan | UNSUPPORTED（quarantine，未重用） | UNSUPPORTED（arena 不重用） | UNSUPPORTED |
 | none | MISSED（已重用，无 tool 可报） | UNSUPPORTED | UNSUPPORTED |
 
-真正的测量要等 B1.3 的 free list 实现。
+当时没有会重用的分配器，真正的测量要等 B1.3 的 free list，见下一节。
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | UNSUPPORTED（quarantine，未重用） | UNSUPPORTED（arena 不重用） | UNSUPPORTED | MISSED | DETECTED use-after-poison |
+| none | MISSED（已重用，无 tool 可报） | UNSUPPORTED（arena 不重用） | UNSUPPORTED | MISSED | MISSED |
+
+free list 前置条件满足。未标注 MISSED；已标注时那次过期的 free 把 `b` 的存储 poison 掉，随后的读被报成 use-after-poison，所以 DETECTED。和预测一致：检出来自那次读，不是来自 free。

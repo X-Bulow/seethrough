@@ -8,11 +8,12 @@
  *
  * That is exactly what a custom allocator does not record. malloc puts the
  * block in a quarantine and ASan paints its shadow "freed"; a bump-pointer
- * arena's st_free is a no-op, so the bytes are as live after the free as
- * before, and there is nothing for any malloc-granular tool to see. An
+ * arena reclaims nothing on st_free, so the bytes are as live after the free
+ * as before, and there is nothing for any malloc-granular tool to see. An
  * annotated arena has to poison the object at free time to win this back,
- * which needs the object's size -- and a bump arena does not keep it (see the
- * TODO in allocators/arena/arena.c).
+ * which needs the object's size. A pure bump arena does not keep it; ours
+ * keeps a side table of sizes outside the pool for exactly this reason
+ * (B1.2), and that bookkeeping is part of what annotation costs.
  *
  * NEGATIVE CONTROL: the same single alloc and single free, with the write
  * before the free instead of after it. */

@@ -65,7 +65,25 @@
         "arena": "UNSUPPORTED precondition not met",
         "arena+annot": "UNSUPPORTED precondition not met"
       }
+    },
+    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
     }
   },
-  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
 }

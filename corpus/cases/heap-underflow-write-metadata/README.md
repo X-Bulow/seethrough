@@ -15,7 +15,7 @@
 |---|---|---|
 | malloc | chunk header（size） | ASan 的左 redzone 先报；不挂 tool 时 `free()` 可能 abort |
 | bump arena | 没有 header，只是 `first` 的 slack | 谁都不会注意到 |
-| free list | 可能是它自己的 header 或链接 | 破坏分配器状态，后果出现在很远的地方 |
+| free list（B1.3） | 也只是 `first` 的 slack：记账在 pool 外的 side table，链接字只写进已释放的 slot | 未标注时谁都不会注意到；已标注时这段是 poison 的，检出 |
 
 `none`（不挂任何 tool）这一列在这个 case 里特别有信息量：它记录程序有没有稍后在分配器内部崩掉。
 
@@ -28,10 +28,18 @@ glibc:   [ prev_size | size (8B) ][ a: 24 ...
 ```
 
 ## 预期结果
-见 `case.json`。free list 的已标注列标了 to verify：取决于 B 的实现会不会把自己的 header 也 poison 掉（应该要，分配器私有字节对用户来说本就不可寻址）。
+见 `case.json`。free list 的已标注列原先标了 to verify，取决于 B 的实现有没有 in-band header。B1.3 的 free list 没有：`a-8..a-1` 是 `first` 的 slack，已标注时是 poison 的，本机 ASan 冒烟确认为 DETECTED。我们的两个 pool 分配器都没有 in-band header，所以这个 case 里能被写坏的分配器状态只有 glibc 的 header。
 
 ## 本机冒烟（2026-11-05，macOS arm64，仅供开发，不可引用）
 | tool | malloc | arena a0 | arena a1 |
 |---|---|---|---|
 | asan | DETECTED heap-buffer-overflow | MISSED | DETECTED use-after-poison |
 | none | MISSED | MISSED | MISSED |
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED heap-buffer-overflow | MISSED | DETECTED use-after-poison | MISSED | DETECTED use-after-poison |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+free list 已标注列确认为 DETECTED（原先标了 to verify）：B1.3 的 free list 没有 in-band header，`a-8..a-1` 是 `first` 的 slack，已标注时一直是 poison 的。

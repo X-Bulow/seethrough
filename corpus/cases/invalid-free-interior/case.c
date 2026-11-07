@@ -9,8 +9,9 @@
  *
  * glibc and ASan both reject it outright -- the chunk header is not where they
  * expect -- so this is the rare class where the malloc baseline is DETECTED by
- * the allocator itself and not only by the tool. A bump arena's st_free ignores
- * its argument entirely and cannot tell a + 8 from a. A free list pushes a + 8
+ * the allocator itself and not only by the tool. Our arena looks a + 8 up in
+ * its side table (B1.2), finds no object and leaves it alone; annotated, it
+ * still hands a + 8 to VALGRIND_MEMPOOL_FREE. A free list pushes a + 8
  * onto a size-class list and later hands it out, so every subsequent object in
  * that class is misaligned with respect to the block it occupies: the damage is
  * real but shows up far from here, which is why the case records what it did

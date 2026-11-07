@@ -9,18 +9,18 @@
     "asan": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "MISSED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
       "freelist+annot": "DETECTED",
-      "why": "THE ANNOTATION-FEASIBILITY ROW. ASan's quarantine and shadow catch it on malloc. A bump-pointer arena cannot poison on free because st_free does not know the object's size (allocators/arena/arena.c TODO), so even the annotated arena stays blind -- an annotation arm can fail for reasons of allocator DESIGN, not of tool support. A free list knows the size class, so its annotated arm works."
+      "why": "THE ANNOTATION-FEASIBILITY ROW. ASan's quarantine and shadow catch it on malloc. To win it back an annotated allocator must re-poison the object at free time, which needs the object's size. A pure bump arena does not keep it, so before B1.2 the annotated arena stayed blind (the 2026-11-05 smoke); B1.2 added a side table of sizes and liveness outside the pool, and the annotated arena now catches it. The price of annotation is per-object bookkeeping the allocator did not otherwise need, not only the macros. The free list knows its size class, so its annotated arm works the same way. Both unannotated pools stay blind: the storage is still inside one live malloc block."
     },
     "valgrind": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "MISSED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
       "freelist+annot": "DETECTED",
-      "why": "Same split, via VALGRIND_MEMPOOL_FREE, which the arena never calls."
+      "why": "Same split, via VALGRIND_MEMPOOL_FREE, which both annotated pools call in st_free and which makes the block NOACCESS. Before B1.2 the arena never called it."
     },
     "hwasan": {
       "malloc": "DETECTED",
@@ -61,7 +61,25 @@
         "arena": "MISSED",
         "arena+annot": "MISSED"
       }
+    },
+    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-use-after-free",
+        "malloc+annot": "DETECTED heap-use-after-free",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
     }
   },
-  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
 }

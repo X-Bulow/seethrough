@@ -44,4 +44,12 @@ free list, size class 32:
 | asan | UNSUPPORTED（quarantine，未重用） | UNSUPPORTED（arena 不重用） | UNSUPPORTED |
 | none | MISSED（已重用，无 tool 可报） | UNSUPPORTED | UNSUPPORTED |
 
-真正的测量要等 B1.3 的 free list 实现。
+当时没有会重用的分配器，真正的测量要等 B1.3 的 free list，见下一节。
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | UNSUPPORTED（quarantine，未重用） | UNSUPPORTED（arena 不重用） | UNSUPPORTED | MISSED | MISSED |
+| none | MISSED（已重用，无 tool 可报） | UNSUPPORTED（arena 不重用） | UNSUPPORTED | MISSED | MISSED |
+
+B1.3 的 free list 会立即重用，前置条件满足（`ST NOTE reuse=1`）。ASan 两列都是 MISSED：写下去的时候那块内存属于活着的 `b`，必须是 unpoison 的。和"天花板"的预测一致。

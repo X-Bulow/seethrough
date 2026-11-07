@@ -12,15 +12,15 @@
       "arena+annot": "MISSED",
       "freelist": "MISSED",
       "freelist+annot": "MISSED",
-      "why": "WHAT ASAN'S ANNOTATION INTERFACE CANNOT EXPRESS. Poison and unpoison describe ADDRESSABILITY; a double free is an error of OWNERSHIP, and there is no access to instrument. A bump arena's st_free is a no-op, so the second call corrupts nothing and the program's contract violation leaves no trace at all."
+      "why": "WHAT ASAN'S ANNOTATION INTERFACE CANNOT EXPRESS. Poison and unpoison describe ADDRESSABILITY; a double free is an error of OWNERSHIP, and there is no access to instrument. The arena's st_free only clears a liveness flag in its side table, so the second call finds the object dead and does nothing ASan can see. The free list pushes the block a second time, unpoisoning the link word before it writes it, so ASan sees nothing there either."
     },
     "valgrind": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "MISSED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
-      "freelist+annot": "DETECTED (to verify)",
-      "why": "THE ROW WHERE VALGRIND'S INTERFACE BEATS ASAN'S: VALGRIND_MEMPOOL_FREE models allocation identity, so freeing a block the pool does not currently hold is reported. The arena never calls it, so only the annotated free list can win here."
+      "freelist+annot": "DETECTED",
+      "why": "THE ROW WHERE VALGRIND'S INTERFACE BEATS ASAN'S: VALGRIND_MEMPOOL_FREE models allocation identity, so freeing a block the pool does not currently hold is reported as an invalid free. Both annotated pools pass every st_free to it (the arena since B1.2), so both annotated arms win and the unannotated ones cannot."
     },
     "hwasan": {
       "malloc": "DETECTED",
@@ -61,7 +61,25 @@
         "arena": "MISSED",
         "arena+annot": "MISSED"
       }
+    },
+    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED attempting",
+        "malloc+annot": "DETECTED attempting",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED crashed exit=-5",
+        "malloc+annot": "MISSED crashed exit=-5",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
     }
   },
-  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
 }

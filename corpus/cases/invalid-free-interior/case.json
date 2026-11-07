@@ -11,16 +11,16 @@
       "arena": "MISSED",
       "arena+annot": "MISSED",
       "freelist": "MISSED",
-      "freelist+annot": "DETECTED (to verify)",
-      "why": "The one class where the malloc baseline is enforced by the ALLOCATOR and not only by the tool: the chunk header is not where libc expects. A bump arena ignores its argument and cannot tell a+8 from a. A free list pushes a+8 onto a size-class list and misaligns every later object in that class, so the damage appears far from here -- which is why the case records what it did instead of waiting for a crash."
+      "freelist+annot": "MISSED",
+      "why": "The one class where the malloc baseline is enforced by the ALLOCATOR and not only by the tool: the chunk header is not where libc expects. The arena looks a+8 up in its side table, finds no object and leaves it alone. The free list pushes a+8 onto a size-class list and misaligns every later object in that class, so the damage appears far from here -- which is why the case records what it did instead of waiting for a crash. Its annotated arm unpoisons the link word before writing it, so ASan sees no bad access: MISSED, for the same reason as case 13 (measured 2026-11-07; the earlier DETECTED was a guess marked to verify)."
     },
     "valgrind": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "MISSED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
-      "freelist+annot": "DETECTED (to verify)",
-      "why": "MEMPOOL_FREE of an address that is not a pool allocation is reported."
+      "freelist+annot": "DETECTED",
+      "why": "MEMPOOL_FREE of an address that is not a pool allocation is reported as an invalid free; both annotated pools pass a+8 to it (the arena since B1.2)."
     },
     "hwasan": {
       "malloc": "DETECTED",
@@ -61,7 +61,25 @@
         "arena": "MISSED",
         "arena+annot": "MISSED"
       }
+    },
+    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED attempting",
+        "malloc+annot": "DETECTED attempting",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      },
+      "none": {
+        "malloc": "MISSED crashed exit=-5",
+        "malloc+annot": "MISSED crashed exit=-5",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
     }
   },
-  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
 }

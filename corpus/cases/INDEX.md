@@ -29,11 +29,13 @@ the allocator rather than one bug class. 16 bug programs and 16 negative control
 
 ## Preconditions
 
-Cases 10, 11 and 15 need a property of the allocator (reuse on free, a realloc that moves). Each
-prints a marker and declares it in `case.json` `requires`; `harness/run-matrix.py` records a row
-whose marker is missing as UNSUPPORTED, never as MISSED. ASan's quarantine stops malloc from
-reusing a freed block, and a bump arena never reuses, so those columns are UNSUPPORTED by
-construction and the comparison for those cases is between the free list and its annotated arm.
+Cases 10, 11, 12 and 15 need a property of the allocator (reuse on free, a realloc that moves, a
+pool to destroy). Each prints a marker and declares it in `case.json` `requires`;
+`harness/run-matrix.py` records a row whose marker is missing as UNSUPPORTED, never as MISSED.
+ASan's quarantine stops malloc from reusing a freed block, and a bump arena never reuses, so in
+cases 10 and 15 those columns are UNSUPPORTED by construction and the comparison is between the
+free list and its annotated arm. Since B1.2 the arena's realloc always moves, so case 11 is
+measurable on every allocator. malloc has no pool, so case 12's malloc column is UNSUPPORTED.
 
 ## Reading the expected verdicts
 
@@ -42,10 +44,13 @@ construction and the comparison for those cases is between the free list and its
 study's main claims:
 
 - **case 3** — annotation cannot catch a spatial overflow that lands in another LIVE object.
-- **case 8** — the annotated arena still misses, because a bump arena's `st_free` does not know the
-  object's size. An annotation arm can fail by allocator design rather than tool support.
+- **case 8** — annotation needs the allocator's cooperation: to re-poison on free, `st_free` must
+  know the object's size. A pure bump arena does not, and its annotated arm missed (2026-11-05
+  smoke); once B1.2 added a side table of sizes, the same arm detects it (2026-11-07). What
+  annotation costs is per-object bookkeeping, not only the macros.
 - **case 10** — no memory-poisoning scheme can separate two pointers to one live address; only a
   pointer-tagging mechanism (HWASan) can.
 - **case 12** — an arena hides accesses inside its pool and exposes accesses after it.
 - **case 13** — ASan's poison interface describes addressability, Valgrind's mempool interface
-  describes ownership, and only the second can express a double free.
+  describes ownership, and only the second can express a double free or an invalid free
+  (case 14: the annotated free list is MISSED under ASan).

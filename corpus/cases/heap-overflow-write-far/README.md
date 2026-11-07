@@ -34,3 +34,11 @@ malloc + ASan:  [rz][ a: 24 ][rz ≥16][rz][ b ]...
 | none | MISSED | MISSED | MISSED |
 
 malloc 下 ASan 漏报已经在本机复现（预测时标的是 to verify），服务器上要再确认一次 Linux 的 ASan redzone 宽度是否相同。已标注 arena 下的漏报是设计使然，不是 bug。
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | MISSED | MISSED | MISSED | MISSED | MISSED |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+free list 两列和 arena 两列结论相同。

@@ -7,33 +7,33 @@
   "control": "reads through the pointer st_realloc returned",
   "requires": {
     "marker": "moved=1",
-    "why": "st_realloc must have succeeded AND moved the object. An allocator that returns NULL (the arena, currently) or grows in place has no stale pointer and no defect."
+    "why": "st_realloc must have succeeded AND moved the object. An allocator that returns NULL or grows in place has no stale pointer and no defect. The arena (since B1.2) and the free list always move."
   },
   "note": "The shape of SQLite's agginfo defect (capstone case 01) and of PostgreSQL's repalloc rows: no free() appears in the source, which is why it survives code review.",
   "expected": {
     "asan": {
       "malloc": "DETECTED",
-      "arena": "UNSUPPORTED",
-      "arena+annot": "UNSUPPORTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
       "freelist+annot": "DETECTED",
-      "why": "On malloc realloc's old block goes to the quarantine. The arena has no realloc at all. A free list that copies must poison the old block in its own realloc for the annotated arm to work."
+      "why": "On malloc realloc's old block goes to the quarantine. Both pool allocators implement st_realloc as allocate, copy, st_free (B1.2, B1.3), so the old block is re-poisoned exactly when the annotated arm is on; unannotated, the old bytes stay readable inside the live pool."
     },
     "valgrind": {
       "malloc": "DETECTED",
-      "arena": "UNSUPPORTED",
-      "arena+annot": "UNSUPPORTED",
+      "arena": "MISSED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
       "freelist+annot": "DETECTED",
       "why": "As above, with MEMPOOL_FREE on the old block."
     },
     "hwasan": {
       "malloc": "DETECTED",
-      "arena": "UNSUPPORTED",
+      "arena": "MISSED",
       "arena+annot": "UNSUPPORTED",
       "freelist": "MISSED",
       "freelist+annot": "UNSUPPORTED",
-      "why": "malloc retags the old block; no CMA interface for the others."
+      "why": "malloc retags the old block. Inside a pool the stale pointer keeps the pool's tag, so the unannotated columns are MISSED; HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -66,7 +66,25 @@
         "arena": "UNSUPPORTED precondition not met",
         "arena+annot": "UNSUPPORTED precondition not met"
       }
+    },
+    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+      "asan": {
+        "malloc": "DETECTED heap-use-after-free",
+        "malloc+annot": "DETECTED heap-use-after-free",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED use-after-poison",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED use-after-poison"
+      },
+      "none": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
     }
   },
-  "status": "written, smoke-run on malloc and arena; server run pending (A5)"
+  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
 }

@@ -32,3 +32,11 @@ malloc 没有 pool，这时"容器"就是对象本身，偏移退化成 24，cas
 | none | MISSED | MISSED | MISSED |
 
 旧冒烟使用 `+64`；上表仅记录当时的开发结果。新偏移的 `ST NOTE` 会在后续运行的 stdout 中保留，便于复核。
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED heap-buffer-overflow | DETECTED heap-buffer-overflow | DETECTED heap-buffer-overflow | DETECTED heap-buffer-overflow | DETECTED heap-buffer-overflow |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+这次用的是 `+8192` 的偏移：arena 和 free list 下 stdout 记的是 `ST NOTE pool_bytes=1048576 offset=1056768`，malloc 下退化为 `offset=24`。free list 两列和 arena 两列一样，都报 pool 之外的越界。

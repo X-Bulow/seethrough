@@ -14,7 +14,7 @@
 
 ## 前置条件
 `ST NOTE realloc=1 moved=1` 表示调用成功**且**对象真的搬了家。`case.json` 的 `requires` 盯住 `moved=1`：
-- 现在的 arena `st_realloc` 返回 NULL → 整列 UNSUPPORTED（B1.2 要补）
+- arena 和 free list 的 `st_realloc` 都是"新分配、复制、`st_free` 旧块"，总是搬家（arena 自 B1.2 起；之前返回 NULL，整列 UNSUPPORTED）
 - 原地扩张成功的分配器 `moved=0` → 旧指针仍然有效，没有缺陷可报
 
 ## 触发方式
@@ -33,3 +33,11 @@ st_sink(a[0]);                 // 缺陷
 |---|---|---|---|
 | asan | DETECTED heap-use-after-free | UNSUPPORTED（无 realloc） | UNSUPPORTED |
 | none | MISSED | UNSUPPORTED | UNSUPPORTED |
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED heap-use-after-free | **MISSED** | **DETECTED use-after-poison** | MISSED | DETECTED use-after-poison |
+| none | MISSED | **MISSED** | **MISSED** | MISSED | MISSED |
+
+加粗的格子与 2026-11-05 那次不同：B1.2 之前 arena 的 `st_realloc` 返回 NULL，整列 UNSUPPORTED；现在它总是搬家，未标注 MISSED，已标注 DETECTED。

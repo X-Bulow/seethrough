@@ -29,6 +29,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 A2.7 `st_alloc_pool_bytes()` 加进 `alloc.h`（case 4 要定位 pool 边界）；`st_alloc_fini()` 要求幂等（case 12）
 - [x] P0 A2.8 每个 case 的 README：触发方式、内存布局图、预期每个 tool 的结果及理由（教授要求）
 - [ ] P1 A2.9 在服务器上跑完 16 个 case 并把 `measured` 填回每个 `case.json`，注明 bundle
+- [x] P0 A2.10 合入 B1.2/B1.3 后重推预期：case 7、8、9、11、13、14 按新 arena（side table、会搬迁的 realloc）和 free list 改了 ASan/Valgrind/HWASan 预期；2026-11-07 本机冒烟（asan + none × malloc/arena/freelist）与 ASan 预期 80 格全部一致，新旧两次冒烟都留在 `measured`。Valgrind 格仍是预测，等 A2.9
 
 ### A3 控制组
 - [ ] P0 A3.1 positive control：malloc 的 UAF，ASan/Valgrind/HWASan 必须报；不报则本轮 exit 75 无 verdict

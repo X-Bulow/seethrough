@@ -14,7 +14,7 @@ glibc 和 ASan 都会直接拒绝：chunk header 不在它们预期的位置。�
 | 分配器 | `st_free(a + 8)` 的后果 |
 |---|---|
 | malloc | 立刻拒绝（ASan：`attempting free on address which was not malloc()-ed`） |
-| bump arena | `st_free` 完全忽略参数，分不出 `a+8` 和 `a` |
+| arena（B1.2） | 在 side table 里查不到 `a+8`，什么也不做；已标注时把 `a+8` 交给 `VALGRIND_MEMPOOL_FREE` |
 | free list | 把 `a+8` 压进某个 size class 链表，之后交出去，该 class 里后续每个对象都与它所占的块错位 8 字节 —— 破坏是真实的，但出现在很远的地方 |
 
 正因为 free list 的后果出现得很远，这个 case 只记录"它做了什么"，不依赖后续崩溃来证明。
@@ -28,10 +28,18 @@ st_free(a + 8);    // 缺陷
 对照组释放 `a`。两个 image 各一次分配、一次释放。
 
 ## 预期结果
-见 `case.json`。已标注的 free list 列标了 to verify 的 DETECTED：`VALGRIND_MEMPOOL_FREE` 传入一个不是 pool 分配的地址会被报出来。
+见 `case.json`。ASan 的已标注 free list 列原先标了 to verify 的 DETECTED，2026-11-07 本机实测是 MISSED：free list 写链接字之前先把那 8 字节 unpoison，ASan 看不到任何坏访问，和 case 13 同理。Valgrind 的两个已标注列预测 DETECTED：`VALGRIND_MEMPOOL_FREE` 传入一个不是 pool 分配的地址会被报成 invalid free。
 
 ## 本机冒烟（2026-11-05，macOS arm64，仅供开发，不可引用）
 | tool | malloc | arena a0 | arena a1 |
 |---|---|---|---|
 | asan | DETECTED `attempting free on address which was not malloc()-ed` | MISSED | MISSED |
 | none | MISSED | MISSED | MISSED |
+
+## 本机冒烟（2026-11-07，合入 B1.2/B1.3 之后，macOS arm64，仅供开发，不可引用）
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| asan | DETECTED `attempting free on address which was not malloc()-ed` | MISSED | MISSED | MISSED | MISSED |
+| none | MISSED | MISSED | MISSED | MISSED | MISSED |
+
+已标注 free list 是 MISSED，原先标了 to verify 的 DETECTED 是错的：free list 写链接字之前先把那 8 字节 unpoison，ASan 看不到任何坏访问。

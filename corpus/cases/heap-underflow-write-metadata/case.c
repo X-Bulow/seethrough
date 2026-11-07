@@ -12,7 +12,9 @@
  * the measurement: on malloc the write hits the chunk header (ASan's left
  * redzone catches it first, and without a tool free() may abort); on a
  * bump-pointer arena there is no header at all, so it is just the previous
- * object's tail and nothing anywhere notices.
+ * object's tail, which nothing notices unless an annotated build has poisoned
+ * that slack. Our free list (B1.3) keeps no header either: its bookkeeping is
+ * in a side table outside the pool.
  *
  * NEGATIVE CONTROL: writes the first 8 bytes of the object instead. */
 ST_CASE(7) {
