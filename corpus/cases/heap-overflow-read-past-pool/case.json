@@ -3,8 +3,8 @@
   "class": "heap-overflow",
   "access": "read",
   "title": "read past the end of the allocator's own backing block",
-  "object": "a, 24 bytes; the access is at a + st_alloc_pool_bytes() + 64",
-  "offset_bytes": "st_alloc_pool_bytes() + 64, or 24 when the allocator has no pool",
+  "object": "a, 24 bytes; the access is at a + st_alloc_pool_bytes() + 8192",
+  "offset_bytes": "st_alloc_pool_bytes() + 8192, or 24 when the allocator has no pool",
   "control": "reads a[23]",
   "note": "The Tier-1 analogue of corpus/real cases 29 and 31, whose fuzz images over-read about 2 KB and leave the 256 KiB memsys5 arena entirely. Detection here says the access escaped the container, not that the tool understands the container.",
   "expected": {

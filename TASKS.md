@@ -6,7 +6,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 
 ## 0. 三人共同（Week 1 第一天）
 
-- [ ] P0 C0.1 确认统一 allocator 接口 `corpus/include/alloc.h`（A 起草，B 确认可以实现）
+- [x] P0 C0.1 确认统一 allocator 接口 `corpus/include/alloc.h`（A 分支已合入 B 工作分支；malloc / arena 已按新增接口构建验证）
 - [ ] P0 C0.2 确认 CSV 列和 verdict 五种取值（`harness/README.md`）
 - [ ] P0 C0.3 确认测试矩阵：tool × allocator × annotation × case × {bug, control}
 - [ ] P0 C0.4 建 Git 远端，三人都能 push；`results/` 只增不改
@@ -77,12 +77,12 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 
 ## B. CMA & Annotations（Part B）
 
-- [ ] P0 B1.1 实现 `allocators/malloc/`：直接转发 malloc（基线）
-- [ ] P0 B1.2 实现 `allocators/arena/`：bump-pointer arena，一次 malloc 大块，free 不归还
-- [ ] P0 B1.3 实现 `allocators/freelist/`：固定 size-class free list，free 立即重用
-- [ ] P0 B2.1 ASan manual poisoning：`ASAN_POISON_MEMORY_REGION` / `UNPOISON`，`-DST_ANNOT=1` 时启用
-- [ ] P0 B2.2 Valgrind mempool：`VALGRIND_CREATE_MEMPOOL` / `MEMPOOL_ALLOC` / `MEMPOOL_FREE`
-- [ ] P1 B2.3 记录每个 allocator 标注了哪些边界，哪些标注不了（如 freelist 重用后的 UAF）
+- [x] P0 B1.1 实现 `allocators/malloc/`：直接转发 malloc（基线）
+- [x] P0 B1.2 实现 `allocators/arena/`：bump-pointer arena，一次 malloc 大块，free 不归还；side table 记录大小和存活状态，`realloc` 搬迁，`fini` 可重复调用
+- [x] P0 B1.3 实现 `allocators/freelist/`：固定 size-class free list，free 立即重用
+- [x] P0 B2.1 ASan manual poisoning：`ASAN_POISON_MEMORY_REGION` / `UNPOISON`，`-DST_ANNOT=1` 时启用；Arena / Free list 本机开发验证通过
+- [x] P0 B2.2 Valgrind mempool：`VALGRIND_CREATE_MEMPOOL` / `MEMPOOL_ALLOC` / `MEMPOOL_FREE`；Arena / Free list 在 Linux 开发容器验证通过，正式服务器复核仍属 A5
+- [x] P1 B2.3 记录每个 allocator 标注了哪些边界，哪些标注不了（`docs/allocator-annotations.md`）
 - [ ] P1 B3.1 SQLite memsys5 作为 `allocators/sqlite/`（`SQLITE_ENABLE_MEMSYS5`，`sqlite3_malloc` 走它）
 - [ ] P2 B3.2 SQLite lookaside 作为另一层
 - [ ] P0 B4.1 CMA rewrite：把 arena / freelist 改写成直接 malloc/free（教授提示的 "undo the CMA"），记录改了几行

@@ -30,12 +30,14 @@
 #  define ST_POOL_ALLOC(pool, p, n)         VALGRIND_MEMPOOL_ALLOC((pool), (p), (n))
 #  define ST_POOL_FREE(pool, p)             VALGRIND_MEMPOOL_FREE((pool), (p))
 #  define ST_NOACCESS(p, n)                 VALGRIND_MAKE_MEM_NOACCESS((p), (n))
+#  define ST_DEFINED(p, n)                  VALGRIND_MAKE_MEM_DEFINED((p), (n))
 #else
 #  define ST_POOL_CREATE(pool, rz, zeroed)  ((void)0)
 #  define ST_POOL_DESTROY(pool)             ((void)0)
 #  define ST_POOL_ALLOC(pool, p, n)         ((void)0)
 #  define ST_POOL_FREE(pool, p)             ((void)0)
 #  define ST_NOACCESS(p, n)                 ((void)0)
+#  define ST_DEFINED(p, n)                  ((void)0)
 #endif
 
 #endif
