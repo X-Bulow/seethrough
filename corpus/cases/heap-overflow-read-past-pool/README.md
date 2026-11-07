@@ -2,7 +2,7 @@
 
 ## 漏洞
 - 类别：heap overflow　访问：read
-- 对象：`a`，24 字节；访问点是 `a + st_alloc_pool_bytes() + 64`
+- 对象：`a`，24 字节；访问点是 `a + st_alloc_pool_bytes() + 8192`
 - 一句话：读到 CMA 向 malloc 要的那一整块的**外面**
 
 ## 这个 case 是其他越界行的对照
@@ -15,10 +15,10 @@
 ## 偏移量是算出来的，不是写死的
 ```c
 size_t pool = st_alloc_pool_bytes();
-size_t off  = pool ? pool + 64 : 24;
+size_t off  = pool ? pool + 8192 : 24;
 st_sink(a[off]);
 ```
-每个 `st_alloc` 的结果都在 pool 的基址之后，所以 `a + pool + 64` 一定在 pool 末尾之外，不管 a 落在 pool 的哪个位置。`st_alloc_pool_bytes()` 是为这个 case 加进 `alloc.h` 的（A2.7），没有 pool 的分配器返回 0。
+每个 `st_alloc` 的结果都在 pool 的基址之后，所以 `a + pool + 8192` 一定在 pool 末尾之外，不管 a 落在 pool 的哪个位置。原先的 `+64` 在 Linux Valgrind 开发环境中恰好落到紧邻 pool 的元数据分配块，造成假漏报；改为 `+8192` 后，ASan 和 Valgrind 都报告池边界越界。这个距离仍需在正式服务器复核。`st_alloc_pool_bytes()` 是为这个 case 加进 `alloc.h` 的（A2.7），没有 pool 的分配器返回 0。
 
 malloc 没有 pool，这时"容器"就是对象本身，偏移退化成 24，case 退化成 case 1 —— 这一列必须 DETECTED，它是整行的基线。
 
@@ -31,4 +31,4 @@ malloc 没有 pool，这时"容器"就是对象本身，偏移退化成 24，cas
 | asan | DETECTED heap-buffer-overflow | DETECTED heap-buffer-overflow | DETECTED heap-buffer-overflow |
 | none | MISSED | MISSED | MISSED |
 
-arena 下的 `ST NOTE pool_bytes=1048576 offset=1048640` 记在 stdout 里，便于复核偏移算得对不对。
+旧冒烟使用 `+64`；上表仅记录当时的开发结果。新偏移的 `ST NOTE` 会在后续运行的 stdout 中保留，便于复核。

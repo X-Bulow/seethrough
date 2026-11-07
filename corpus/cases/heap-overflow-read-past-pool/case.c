@@ -11,15 +11,17 @@
  * have to.
  *
  * The offset is computed, never assumed: every st_alloc result is at or after
- * the pool's base, so a + pool_bytes + 64 is past the pool's end wherever a
- * landed. With no pool (malloc) the container is the object itself, so the case
+ * the pool's base, so a + pool_bytes + 8192 is past the pool's end wherever a
+ * landed. The extra distance avoids the adjacent allocator bookkeeping and
+ * stdio blocks that can make a pool + 64 read appear valid to Memcheck.
+ * With no pool (malloc) the container is the object itself, so the case
  * degenerates to case 1 and reads one byte past the end -- which must be
  * DETECTED, and that is what makes the malloc column the baseline for the row.
  *
  * NEGATIVE CONTROL: reads a[23]. */
 ST_CASE(4) {
     size_t pool = st_alloc_pool_bytes();
-    size_t off = pool ? pool + 64 : 24;
+    size_t off = pool ? pool + 8192 : 24;
     unsigned char *a = st_alloc(24);
     memset(a, ST_FILL, 24);
     printf("ST NOTE pool_bytes=%zu offset=%zu\n", pool, off);
