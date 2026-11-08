@@ -86,7 +86,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 C1.2 `tools/env.sh`：打印 CPU 型号、内核版本、clang / gcc / valgrind 版本、flags，写进每个 results bundle 的 `env.txt`
 - [x] P0 C1.3 `tools/flags.mk`：每个 tool 的 CFLAGS / LDFLAGS / 环境变量（`ASAN_OPTIONS` 等）
 - [x] P0 C1.4 `docs/environment.md`：填表（服务器 CPU、内核、工具版本）
-- [ ] P0 C1.5 确认三人都能登录服务器、共享同一份 clone、`results/` 目录可写
+- [~] P0 C1.5 确认三人可登录各自实验 VM、通过 Git 同步同一远程仓库、各自的 `results/` 目录可写（复现步骤已上传，见 [docs/reproducibility.md](docs/reproducibility.md)；C 已确认登录、Git 同步及结果写入；A/B 待按步骤确认）
 
 ### C3 HWASan（Week 1 必须出结论；x86-64 上是真问题）
 - [x] P0 C3.1 查服务器 CPU 是否支持 LAM（Linear Address Masking，`grep lam /proc/cpuinfo`）、内核是否 ≥ 6.2 并启用 LAM；clang 版本是否支持 `-fsanitize=hwaddress` 在 x86_64
@@ -104,7 +104,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 C5.2 同上加 SQLite 自带 memsys5 开关，看 CMA 对 overhead 的影响
 - [ ] P1 C5.3 annotated vs unannotated 的 overhead（配合 B2）
 - [ ] P1 C5.4 HWASan overhead（若 C3 可行）
-- [ ] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
+- [x] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
 - [x] P1 C5.6 `benchmarks/plot.py`：CSV → 性能图
 - [ ] P1 C5.7 报告章节：Tool Setup、Performance Methodology、Q2 Results
 

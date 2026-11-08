@@ -4,7 +4,7 @@
 |---|---|---|---|
 | `sqlite-speedtest1/` | SQLite `speedtest1` | the proposal's main benchmark; memsys5 and lookaside are compile/config switches | `-DSQLITE_ENABLE_MEMSYS5` + `SQLITE_CONFIG_HEAP`; lookaside via `SQLITE_CONFIG_LOOKASIDE` |
 | `postgres/` | a regression subset | memory contexts (aset / slab) | none upstream; the rewrite question is "what would it cost" |
-| `lua/` | Lua test suite or a fixed script | `lua_Alloc` is one function pointer, the easiest CMA to undo | replace `l_alloc` |
+| `lua/` | fixed Lua allocation/sort/GC workload | independent interpreter overhead benchmark | original Lua allocator; no CMA switch in this experiment |
 
 Protocol (from the proposal, kept): `-O2`, median of 5 runs, wall-clock time and peak RSS
 (`/usr/bin/time -v`, `Maximum resident set size`), baseline uninstrumented, then each tool,
@@ -24,7 +24,7 @@ build/plot-venv/bin/python -m pip install -r benchmarks/requirements.txt
 build/plot-venv/bin/python benchmarks/plot.py
 ```
 
-默认读取 `results/*/benchmark.csv`。也可显式指定一份或多份 CSV：
+默认读取 `results/*/benchmark.csv`，仅允许同一 benchmark。结果目录同时包含 SQLite 和 Lua 时，须显式指定同一 benchmark 的一份或多份 CSV：
 
 ```bash
 build/plot-venv/bin/python benchmarks/plot.py results/2026-11-05-sqlite-speedtest1-A3VkNv/benchmark.csv results/2026-11-05-sqlite-speedtest1-memsys5-LGSfcu/benchmark.csv

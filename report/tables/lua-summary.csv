@@ -1,0 +1,4 @@
+bundle,benchmark,config,annot,tool,runs,median_seconds,median_rss_mib,time_ratio,rss_ratio
+2026-11-08-lua-36YPxm,lua,lua-default,0,asan,5,13.850000,473.351562,2.978495,15.938182
+2026-11-08-lua-36YPxm,lua,lua-default,0,none,5,4.650000,29.699219,1.000000,1.000000
+2026-11-08-lua-36YPxm,lua,lua-default,0,valgrind,5,133.640000,188.441406,28.739785,6.344995
