@@ -1,0 +1,16 @@
+bundle,benchmark,config,tool,annot,run,seconds,peak_rss_kb
+2026-11-08-lua-36YPxm,lua,lua-default,none,0,1,4.71,30392
+2026-11-08-lua-36YPxm,lua,lua-default,asan,0,1,15.06,484788
+2026-11-08-lua-36YPxm,lua,lua-default,valgrind,0,1,134.60,193084
+2026-11-08-lua-36YPxm,lua,lua-default,none,0,2,4.75,30412
+2026-11-08-lua-36YPxm,lua,lua-default,asan,0,2,13.40,484712
+2026-11-08-lua-36YPxm,lua,lua-default,valgrind,0,2,134.29,193088
+2026-11-08-lua-36YPxm,lua,lua-default,none,0,3,4.34,30452
+2026-11-08-lua-36YPxm,lua,lua-default,asan,0,3,13.85,484660
+2026-11-08-lua-36YPxm,lua,lua-default,valgrind,0,3,132.31,192844
+2026-11-08-lua-36YPxm,lua,lua-default,none,0,4,4.65,30332
+2026-11-08-lua-36YPxm,lua,lua-default,asan,0,4,14.35,484704
+2026-11-08-lua-36YPxm,lua,lua-default,valgrind,0,4,130.16,192964
+2026-11-08-lua-36YPxm,lua,lua-default,none,0,5,4.30,30444
+2026-11-08-lua-36YPxm,lua,lua-default,asan,0,5,13.25,485372
+2026-11-08-lua-36YPxm,lua,lua-default,valgrind,0,5,133.64,192940
