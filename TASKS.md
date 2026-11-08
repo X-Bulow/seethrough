@@ -95,9 +95,9 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入
 - [ ] P1 C3.5 若可行：HWASan 的 tag 粒度（16 字节）对 1 字节 overflow 的影响，设计 case 时要让越界跨 granule
 
-### C4 LowFat（服务器是 x86-64 Linux，正是 LowFat 的平台，升为 P1）
-- [ ] P1 C4.1 在服务器上构建 LowFat clang（https://github.com/GJDuck/LowFat），记录 commit 和构建命令
-- [ ] P1 C4.2 跑 `corpus/controls/`；不行就记录错误，降回 P2 不再投入
+### C4 LowFat（本轮构建配置检查失败，降为 P2）
+- [-] P2 C4.1 在服务器上构建 LowFat clang（https://github.com/GJDuck/LowFat），记录 commit 和构建命令（原版构建在 joinid 偏移检查失败，见 `docs/lowfat.md`；本轮不再投入）
+- [-] P2 C4.2 跑 `corpus/controls/`；不行就记录错误，降回 P2 不再投入（未生成可用编译器，无法运行 controls）
 
 ### C5 Q2 性能
 - [x] P0 C5.1 SQLite speedtest1：baseline -O2，ASan，Valgrind；5 次取中位数，wall time + peak RSS
@@ -113,6 +113,6 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P0 D1 Introduction、Related Work（CMASan、MSET、Jung CGO'25）
 - [ ] P0 D2 回应教授三点：CMA rewrite、测试程序解释、HWASan 结论
 - [ ] P0 D3 Discussion / Limitations / Conclusion
-- [ ] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图
+- [~] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图（C 部分已复现，见 `docs/reproducibility.md`；Detection Matrix 待完成）
 - [ ] P0 D5 15 页报告定稿，11 月 19 日前提交
 - [ ] P1 D6 演示视频（如果课程要求）

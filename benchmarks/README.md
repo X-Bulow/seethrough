@@ -16,6 +16,8 @@ draws the figures from the CSVs and nothing else.
 
 在仓库根目录执行（Python 3 + matplotlib）：
 
+Ubuntu 26.04 若提示缺少 `ensurepip`，先执行 `sudo apt install python3.14-venv`，再重试下列命令。
+
 ```bash
 python3 -m venv build/plot-venv
 build/plot-venv/bin/python -m pip install -r benchmarks/requirements.txt
