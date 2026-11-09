@@ -11,7 +11,7 @@
 | gcc | 15.2.0（`15.2.0-16ubuntu1`） | C | 2026-11-07 |
 | valgrind | 3.26.0（`1:3.26.0-0ubuntu1`） | C | 2026-11-07 |
 | HWASan | clang 21.1.8；原生 x86-64 与 aarch64 + QEMU 均未成功运行，本轮不采用，见 [hwasan.md](hwasan.md) | C | 2026-11-07 |
-| LowFat | commit `20f8075`；配置检查报 `joinid offset (0x628) is wrong`，构建失败，见 [lowfat.md](lowfat.md) | C | 2026-11-07 |
+| LowFat | commit `20f8075`；Ubuntu 18.04 Docker / glibc 2.27 中构建 clang 4.0.0，跨分配边界写入检测通过，见 [lowfat.md](lowfat.md) | C | 2026-11-09 |
 | SQLite | 3.50.4 amalgamation；memsys5：`-DSQLITE_ENABLE_MEMSYS5` | C | 2026-11-07 |
 | PostgreSQL / Lua / CPython | Lua 5.4.9：baseline、ASan、Valgrind 已测；PostgreSQL、CPython 未测试 | C | 2026-11-08 |
 | 编译优化 | 检测实验默认 `-O0 -g`；性能实验 `-O2 -g -fno-omit-frame-pointer`，ASan 加 `-fsanitize=address` | C | 2026-11-07 |

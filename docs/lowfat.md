@@ -1,40 +1,87 @@
-# LowFat 构建尝试
+# LowFat 构建与验证
 
-- 日期：2026-11-07；记录人：C。
-- 环境：实验室 VirtualBox Ubuntu 26.04 x86-64；glibc 2.43；GCC/g++ 15.2.0；CMake 4.2.3。
-- 上游：https://github.com/GJDuck/LowFat
-- commit：`20f8075dd1fd6588700262353c7ba619d82cea8f`。
-- 在项目根目录执行的构建命令：
+环境：实验室 VirtualBox VM 内的 Ubuntu 18.04 Docker 容器，glibc `2.27-3ubuntu1.6`；生成的编译器为 clang 4.0.0。
+上游：https://github.com/GJDuck/LowFat；commit：`20f8075dd1fd6588700262353c7ba619d82cea8f`。
+
+在项目根目录构建（需要 Docker；以下目录和容器名尚未存在）：
 
 ```bash
-mkdir -p build &&
-git clone https://github.com/GJDuck/LowFat build/LowFat &&
-(
-  set -o pipefail
-  cd build/LowFat &&
-  git rev-parse HEAD | tee commit.txt &&
-  bash build.sh 2>&1 | tee build.log
-)
+set -euo pipefail
+mkdir -p build
+git clone https://github.com/GJDuck/LowFat build/LowFat-ubuntu18
+git -C build/LowFat-ubuntu18 checkout --detach \
+  20f8075dd1fd6588700262353c7ba619d82cea8f
+sudo docker run --name seethrough-lowfat18 --cpuset-cpus=0,1 \
+  --mount "type=bind,src=$PWD/build/LowFat-ubuntu18,dst=/work" \
+  --workdir /work ubuntu:18.04 bash -c '
+    set -euo pipefail
+    sed -i "s|http://archive.ubuntu.com/ubuntu|http://sg.archive.ubuntu.com/ubuntu|g" /etc/apt/sources.list
+    apt-get update
+    apt-get install -y --no-install-recommends \
+      build-essential cmake python zlib1g-dev libtinfo-dev xz-utils
+    bash build.sh 2>&1 | tee build.log
+  '
+sudo docker commit seethrough-lowfat18 seethrough-lowfat18:built
 ```
 
-构建日志摘录：
+编译器路径：容器内 `/work/build/bin/clang`。构建日志：`build/LowFat-ubuntu18/build.log`。
 
-```text
-build.sh: using the default LowFat configuration (sizes.cfg 32)...
-build.sh: warning: one or more of clang-4.0/clang++-4.0/llvm-config-4.0 is not installed!
-build.sh: will try gcc.
-build.sh: checking the CPU...[bmi][bmi2][lzcnt]
-build.sh: building the LowFat config builder...
-build.sh: building the LowFat config...
-build.sh: building the LowFat config check...
-build.sh: checking the LowFat config...
-build.sh: ERROR: configuration check failed!
-error: joinid offset (0x628) is wrong!
+在宿主 Ubuntu 中创建边界验证程序：
+
+```bash
+mkdir -p build/lowfat-controls
+cat > build/lowfat-controls/bounds-check.c <<'EOF'
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+    char *p = malloc(64);
+    if (!p) return 2;
+    volatile size_t index = argc > 1 ? 128 : 0;
+    puts("ST READY");
+    fflush(stdout);
+    p[index] = 1;
+    puts("ST DONE");
+    free(p);
+    return 0;
+}
+EOF
 ```
 
-[上游配置生成器](https://github.com/GJDuck/LowFat/blob/20f8075dd1fd6588700262353c7ba619d82cea8f/config/lowfat-config.c)
-将 `LOWFAT_JOINID_OFFSET` 固定为 `0x628`；
-[配置检查程序](https://github.com/GJDuck/LowFat/blob/20f8075dd1fd6588700262353c7ba619d82cea8f/config/lowfat-check-config.c)
-在线程 detach 后读取该偏移，并检查其值是否等于线程自身。当前环境未满足这一内部线程布局假设；实际可用偏移未调查。
+在同一容器环境中编译并运行原有 controls 和边界验证程序：
 
-结论：本轮原版 LowFat 构建在配置检查阶段失败，未进入后续 LLVM 构建及项目 `corpus/controls/` 测试，不能评价检测能力。按任务清单降为 P2，本轮不继续投入；不修改上游源码，不跳过检查。本结果仅适用于上述 commit 和环境。
+```bash
+sudo docker run --rm --volumes-from seethrough-lowfat18 \
+  --mount "type=bind,src=$PWD,dst=/project" --workdir /project \
+  seethrough-lowfat18:built bash -c '
+    set -eu
+    for name in positive-overflow positive-uaf; do
+      /work/build/bin/clang -O0 -g -fsanitize=lowfat \
+        "corpus/controls/$name.c" -o "build/lowfat-controls/$name"
+      status=0
+      "build/lowfat-controls/$name" \
+        > "build/lowfat-controls/$name.log" 2>&1 || status=$?
+      cat "build/lowfat-controls/$name.log"
+      echo "$name: exit=$status"
+    done
+    /work/build/bin/clang -O0 -g -fsanitize=lowfat \
+      build/lowfat-controls/bounds-check.c -o build/lowfat-controls/bounds-check
+    build/lowfat-controls/bounds-check
+    status=0
+    build/lowfat-controls/bounds-check overflow \
+      > build/lowfat-controls/bounds-check.log 2>&1 || status=$?
+    cat build/lowfat-controls/bounds-check.log
+    echo "bounds-check overflow: exit=$status"
+  '
+```
+
+验证结果：原版配置检查输出 `OK`，完整构建及自带测试通过。项目测试均使用 `-O0 -g -fsanitize=lowfat`。
+
+| 测试 | 结果 |
+| --- | --- |
+| `positive-overflow.c`：`malloc(64)` 后写 `p[64]` | `ST DONE`，exit 0，未检测 |
+| `positive-uaf.c` | `ST DONE`，exit 0，未检测 |
+| 安全访问：`malloc(64)` 后写 `p[0]` | `ST DONE`，正常退出 |
+| 越界访问：同一程序写 `p[128]` | `LOWFAT ERROR: out-of-bounds error detected!`，exit 134 |
+
+越界日志报告 `operation = write`、`size = 80`、`overflow = +48`：64 字节请求实际分配为 80 字节，`p[64]` 位于填充空间，`p[128]` 超出分配边界。已验证该容器中的分配边界检测；两个原有 positive controls 未通过，完整矩阵和性能实验尚未运行。

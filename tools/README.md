@@ -18,4 +18,4 @@ with `OPT="-O1 -g"`; the heap case through `st_alloc` remained unreported at tha
 At the default `-O0`, clang warns that `object-size` has no effect. Use `OPT="-O1 -g"`
 for UBSan object-size experiments and record this optimization difference. Compiler flags
 remain unchanged; sanitizer runtime options are set by `harness/run-matrix.py`.
-HWASan is unavailable in the tested environment (see `docs/hwasan.md`); LowFat failed its configuration check (see `docs/lowfat.md`).
+HWASan is unavailable in the tested environment (see `docs/hwasan.md`). LowFat builds and detects a write beyond allocation bounds in an Ubuntu 18.04 Docker container; its original positive controls are missed (see `docs/lowfat.md`).
