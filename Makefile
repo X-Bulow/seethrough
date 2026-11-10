@@ -34,12 +34,11 @@ LDFLAGS := $(LD_$(TOOL))
 # "arena-rewrite" lives in allocators/arena/rewrite/arena-rewrite.c
 ALLOC_SRC := $(if $(findstring -rewrite,$(ALLOC)),allocators/$(subst -rewrite,,$(ALLOC))/rewrite/$(ALLOC).c,$(if $(filter memsys5 lookaside,$(ALLOC)),allocators/sqlite/$(ALLOC).c,allocators/$(ALLOC)/$(ALLOC).c))
 SQLITE353 = $(shell tools/fetch-sqlite.sh 3.53.3)
-SQLITE_CASE_SRC = $(if $(filter memsys5,$(ALLOC)),$(if $(filter 1,$(ANNOT)),build/sqlite-memsys5-annot/sqlite3.c,$(SQLITE353)/sqlite3.c),)
-SQLITE_CASE_DEPS = $(if $(filter lookaside,$(ALLOC)),$(SQLITE353)/sqlite3.c,)
-SQLITE_CASE_FLAGS = $(if $(filter memsys5,$(ALLOC)),-DSQLITE_ENABLE_MEMSYS5,)
+SQLITE_CASE_SRC = $(if $(filter memsys5,$(ALLOC)),$(if $(filter 1,$(ANNOT)),build/sqlite-memsys5-annot/sqlite3.c,$(SQLITE353)/sqlite3.c),$(if $(filter lookaside,$(ALLOC)),$(SQLITE353)/sqlite3.c,))
+SQLITE_CASE_FLAGS = $(if $(filter memsys5,$(ALLOC)),-DSQLITE_ENABLE_MEMSYS5,$(if $(filter lookaside,$(ALLOC)),-DSQLITE_PRIVATE=,))
 SQLITE_CASE_INCS = $(if $(filter memsys5 lookaside,$(ALLOC)),-I$(SQLITE353),)
 SQLITE_CASE_LIBS = $(if $(filter memsys5 lookaside,$(ALLOC)),-lm -pthread,)
-SQLITE_CASE_OBJ := $(if $(filter memsys5,$(ALLOC)),build/sqlite/memsys5-$(TOOL)-a$(ANNOT).o,)
+SQLITE_CASE_OBJ := $(if $(filter memsys5 lookaside,$(ALLOC)),build/sqlite/$(ALLOC)-$(TOOL)-a$(ANNOT).o,)
 SRCS := harness/main.c $(CASE_DIR)/case.c $(ALLOC_SRC)
 
 build/sqlite-memsys5-annot/sqlite3.c: allocators/sqlite/patch_memsys5.py allocators/sqlite/memsys5-annot.patch
@@ -59,7 +58,7 @@ help:
 	@sed -n '2,13p' Makefile
 
 image: $(OUT)
-$(OUT): $(SRCS) $(SQLITE_CASE_OBJ) $(SQLITE_CASE_DEPS) corpus/include/alloc.h corpus/include/harness.h tools/flags.mk
+$(OUT): $(SRCS) $(SQLITE_CASE_OBJ) corpus/include/alloc.h corpus/include/harness.h tools/flags.mk
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(SQLITE_CASE_FLAGS) $(SQLITE_CASE_INCS) $(SRCS) $(SQLITE_CASE_OBJ) -o $@ $(LDFLAGS) $(SQLITE_CASE_LIBS)
 

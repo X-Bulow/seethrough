@@ -10,9 +10,11 @@ one-version data.
 | `memsys5` | `st_alloc` → `sqlite3_malloc64` → SQLite memsys5 | The heap is a single `malloc` block. memsys5 divides it into power-of-two buddy blocks, with control bytes in a separate region of that heap. Minimum block is 16 bytes in this arm; a 24-byte request occupies 32 bytes. | Freed buddies can coalesce; the next request may reuse the same address, but reuse is not guaranteed. |
 | `lookaside` | `st_alloc` → SQLite's internal `sqlite3DbMallocRaw` on an in-memory database | 8192 external 128-byte lookaside slots; a request larger than a slot falls back to SQLite's global allocator. Slot bookkeeping is in the slot while free. | A freed slot is pushed onto a free list and is normally returned by the next fitting request. |
 
-The lookaside arm includes the amalgamation in its translation unit because
-`sqlite3DbMallocRaw` is an internal SQLite API. This is a deliberately narrow
-test adapter, not a public SQLite extension. `st_alloc_fini` releases the
+The lookaside arm links the amalgamation with `SQLITE_PRIVATE=` to export
+`sqlite3DbMallocRaw` and two companion internal functions. This is a
+deliberately narrow test adapter, not a public SQLite extension. The
+amalgamation is compiled once per tool/annotation arm and reused across the
+16 cases. `st_alloc_fini` releases the
 database and backing buffer and is idempotent in both arms.
 
 The memsys5 arm also has `ANNOT=1`. `patch_memsys5.py` applies the recorded

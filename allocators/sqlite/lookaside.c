@@ -1,15 +1,17 @@
-/* Database-local lookaside slots; internal allocation API needs the amalgamation here. */
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+/* Database-local lookaside slots. The pinned amalgamation is linked separately. */
 #include <limits.h>
 #include <stdlib.h>
 #include "alloc.h"
+#include "sqlite3.h"
 
 #if ST_ANNOT
 #error "SQLite lookaside has no verified custom-boundary annotation arm; use ANNOT=0"
 #endif
-#include "sqlite3.c"
+
+/* These three internal entry points are exported only in this test build. */
+extern void *sqlite3DbMallocRaw(sqlite3 *, sqlite3_uint64);
+extern void sqlite3DbFree(sqlite3 *, void *);
+extern void *sqlite3DbRealloc(sqlite3 *, void *, sqlite3_uint64);
 
 #define ST_LOOKASIDE_SLOT 128
 #define ST_LOOKASIDE_COUNT 8192
