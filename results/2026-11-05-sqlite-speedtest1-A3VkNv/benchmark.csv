@@ -1,0 +1,16 @@
+bundle,benchmark,config,tool,annot,run,seconds,peak_rss_kb
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,none,0,1,2.30,78992
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,asan,0,1,6.50,604256
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,valgrind,0,1,63.17,194256
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,none,0,2,2.24,78904
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,asan,0,2,6.09,626160
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,valgrind,0,2,62.04,194108
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,none,0,3,2.26,78884
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,asan,0,3,6.08,626228
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,valgrind,0,3,62.63,194260
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,none,0,4,2.46,78904
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,asan,0,4,6.05,626124
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,valgrind,0,4,60.46,194256
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,none,0,5,2.34,78876
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,asan,0,5,5.97,626028
+2026-11-05-sqlite-speedtest1-A3VkNv,sqlite-speedtest1,sqlite-default,valgrind,0,5,61.28,194124

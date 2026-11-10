@@ -1,0 +1,14 @@
+==40378== Memcheck, a memory error detector
+==40378== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==40378== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==40378== Command: /home/cs5439/cs5439/P2/seethrough/build/sqlite-speedtest1/bin/speedtest1-baseline --memdb --size 100 --testset main
+==40378== 
+==40378== 
+==40378== HEAP SUMMARY:
+==40378==     in use at exit: 0 bytes in 0 blocks
+==40378==   total heap usage: 695,290 allocs, 695,290 frees, 1,068,016,024 bytes allocated
+==40378== 
+==40378== All heap blocks were freed -- no leaks are possible
+==40378== 
+==40378== For lists of detected and suppressed errors, rerun with: -s
+==40378== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

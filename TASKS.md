@@ -55,7 +55,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P0 A5.9 arena / freelist CMA 下用 HWASan 检测 7 类（HWASan 没有官方 CMA 标注接口，记录这一点）
 - [ ] P1 A5.10 UBSan（`-fsanitize=bounds,object-size`）在 malloc / CMA 下检测 7 类
 - [ ] P1 A5.11 memsys5 / lookaside 下用 ASan、Valgrind 检测 7 类（依赖 B3）
-- [ ] P1 A5.12 LowFat 在实验室 x86-64 服务器上检测 7 类（依赖 C4；服务器是原生 x86-64，LowFat 可行性比原计划高）
+- [ ] P1 A5.12 使用 C4 已验证的 Ubuntu 18.04 Docker / LowFat clang 4.0.0 环境检测 7 类；记录填充空间内越界、跨分配边界越界及 UAF 的实际结果，并注明容器环境差异（运行步骤见 `docs/lowfat.md`）
 - [ ] P1 A5.13 复查所有 MISSED / FALSE-POSITIVE，确认不是编译配置、优化或 harness 的问题
 - [ ] P1 A5.14 CMA-rewrite 版本（B4）下重跑 ASan / Valgrind，和标注版本对比
 
@@ -93,31 +93,31 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 
 ## C. Tools & Performance（Part C）
 
-### C1 工具环境（实验室 x86-64 Linux 服务器，原生运行，不用 Docker）
-- [ ] P0 C1.1 `tools/setup-server.sh`：在服务器上装或源码构建固定版本的 clang（ASan/UBSan/HWASan）、valgrind；记录版本
-- [ ] P0 C1.2 `tools/env.sh`：打印 CPU 型号、内核版本、clang / gcc / valgrind 版本、flags，写进每个 results bundle 的 `env.txt`
-- [ ] P0 C1.3 `tools/flags.mk`：每个 tool 的 CFLAGS / LDFLAGS / 环境变量（`ASAN_OPTIONS` 等）
-- [ ] P0 C1.4 `docs/environment.md`：填表（服务器 CPU、内核、工具版本）
-- [ ] P0 C1.5 确认三人都能登录服务器、共享同一份 clone、`results/` 目录可写
+### C1 工具环境（实验室 x86-64 Linux VM；ASan / UBSan / Valgrind 原生运行，LowFat 使用 Ubuntu 18.04 Docker）
+- [x] P0 C1.1 `tools/setup-server.sh`：在服务器上装或源码构建固定版本的 clang（ASan/UBSan/HWASan）、valgrind；记录版本
+- [x] P0 C1.2 `tools/env.sh`：打印 CPU 型号、内核版本、clang / gcc / valgrind 版本、flags，写进每个 results bundle 的 `env.txt`
+- [x] P0 C1.3 `tools/flags.mk`：每个 tool 的 CFLAGS / LDFLAGS / 环境变量（`ASAN_OPTIONS` 等）
+- [x] P0 C1.4 `docs/environment.md`：填表（服务器 CPU、内核、工具版本）
+- [~] P0 C1.5 确认三人可登录各自实验 VM、通过 Git 同步同一远程仓库、各自的 `results/` 目录可写（复现步骤已上传，见 [docs/reproducibility.md](docs/reproducibility.md)；C 已确认登录、Git 同步及结果写入；A/B 待按步骤确认）
 
 ### C3 HWASan（Week 1 必须出结论；x86-64 上是真问题）
-- [ ] P0 C3.1 查服务器 CPU 是否支持 LAM（Linear Address Masking，`grep lam /proc/cpuinfo`）、内核是否 ≥ 6.2 并启用 LAM；clang 版本是否支持 `-fsanitize=hwaddress` 在 x86_64
-- [ ] P0 C3.2 直接试：`clang -fsanitize=hwaddress corpus/controls/positive-uaf.c`，运行，看是否 DETECTED；把输出粘进 `docs/hwasan.md`
-- [ ] P0 C3.3 若原生不行，试备选 A：aarch64 交叉编译 + `qemu-aarch64` 用户态运行（HWASan 的 TBI 在 qemu-user 下可用）；备选 B：组员的 Apple Silicon 机器上的 aarch64 Linux VM
-- [ ] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入
+- [x] P0 C3.1 查服务器 CPU 是否支持 LAM（Linear Address Masking，`grep lam /proc/cpuinfo`）、内核是否 ≥ 6.2 并启用 LAM；clang 版本是否支持 `-fsanitize=hwaddress` 在 x86_64
+- [x] P0 C3.2 直接试：`clang -fsanitize=hwaddress corpus/controls/positive-uaf.c`，运行，看是否 DETECTED；把输出粘进 `docs/hwasan.md`
+- [x] P0 C3.3 若原生不行，试备选 A：aarch64 交叉编译 + `qemu-aarch64` 用户态运行（HWASan 的 TBI 在 qemu-user 下可用）；备选 B：组员的 Apple Silicon 机器上的 aarch64 Linux VM
+- [x] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入
 - [ ] P1 C3.5 若可行：HWASan 的 tag 粒度（16 字节）对 1 字节 overflow 的影响，设计 case 时要让越界跨 granule
 
-### C4 LowFat（服务器是 x86-64 Linux，正是 LowFat 的平台，升为 P1）
-- [ ] P1 C4.1 在服务器上构建 LowFat clang（https://github.com/GJDuck/LowFat），记录 commit 和构建命令
-- [ ] P1 C4.2 跑 `corpus/controls/`；不行就记录错误，降回 P2 不再投入
+### C4 LowFat（Ubuntu 18.04 Docker 容器中构建并验证）
+- [x] P1 C4.1 在 Ubuntu 18.04 Docker 容器内构建固定 commit 的 LowFat clang，记录环境、构建和运行指令（clang 4.0.0 构建及自带测试通过，见 `docs/lowfat.md`）
+- [x] P1 C4.2 验证 LowFat 的检测范围：运行 `corpus/controls/` 及安全 / 跨分配边界写入测试，记录输出和退出码（原有 1 字节 overflow 和 UAF 未检测；安全访问正常，跨分配边界写入报警，exit 134，见 `docs/lowfat.md`）
 
 ### C5 Q2 性能
-- [ ] P0 C5.1 SQLite speedtest1：baseline -O2，ASan，Valgrind；5 次取中位数，wall time + peak RSS
-- [ ] P0 C5.2 同上加 SQLite 自带 memsys5 开关，看 CMA 对 overhead 的影响
+- [x] P0 C5.1 SQLite speedtest1：baseline -O2，ASan，Valgrind；5 次取中位数，wall time + peak RSS
+- [x] P0 C5.2 同上加 SQLite 自带 memsys5 开关，看 CMA 对 overhead 的影响
 - [ ] P1 C5.3 annotated vs unannotated 的 overhead（配合 B2）
 - [ ] P1 C5.4 HWASan overhead（若 C3 可行）
-- [ ] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
-- [ ] P1 C5.6 `benchmarks/plot.py`：CSV → 性能图
+- [x] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
+- [x] P1 C5.6 `benchmarks/plot.py`：CSV → 性能图
 - [ ] P1 C5.7 报告章节：Tool Setup、Performance Methodology、Q2 Results
 
 ## D. 报告与提交（Week 2–3，三人）
@@ -125,6 +125,6 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P0 D1 Introduction、Related Work（CMASan、MSET、Jung CGO'25）
 - [ ] P0 D2 回应教授三点：CMA rewrite、测试程序解释、HWASan 结论
 - [ ] P0 D3 Discussion / Limitations / Conclusion
-- [ ] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图
+- [~] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图（C 部分已复现，见 `docs/reproducibility.md`；Detection Matrix 待完成）
 - [ ] P0 D5 15 页报告定稿，11 月 19 日前提交
 - [ ] P1 D6 演示视频（如果课程要求）

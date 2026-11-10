@@ -11,3 +11,6 @@ for t in clang gcc valgrind qemu-aarch64; do
   printf '%s: ' "$t"; command -v "$t" >/dev/null && "$t" --version 2>/dev/null | head -1 || echo missing
 done
 echo "ldd: $(ldd --version 2>/dev/null | head -1)"
+
+echo "flags (tools/flags.mk):"
+cat "$(dirname "$0")/flags.mk"
