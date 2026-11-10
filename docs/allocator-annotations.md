@@ -22,6 +22,17 @@ temporarily opens its in-slot next link while maintaining the list, then closes 
 otherwise allocator-internal reads would be misreported as user defects. Its `st_realloc`
 always moves, preserves the prefix, and ends the old slot's lifetime.
 
+## SQLite memsys5 extension
+
+The optional B3 memsys5 arm uses a generated patch against pinned SQLite
+3.53.3. The patch tracks rounded buddy blocks with ASan poison/unpoison and
+Valgrind mempool requests. It opens each in-band free-list link only while
+SQLite reads or writes it, then closes it. The adapter's side table tracks
+the exact `st_alloc(n)` request and poisons the remaining size-class slack;
+without it, a 24-byte request's `p[24]` lies inside a valid 32-byte buddy
+block. SQLite's own internal allocations retain rounded-block precision.
+Lookaside has no verified annotation arm.
+
 ## Development checks, not report data
 
 On 2026-11-07, the two positive controls were DETECTED under ASan and Valgrind. All 16

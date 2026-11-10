@@ -1,0 +1,53 @@
+--- a/sqlite3.c
++++ b/sqlite3.c
+@@ -29465,0 +29466 @@
++#include "st_annot.h"
+@@ -29562,0 +29564,2 @@
++  ST_UNPOISON(MEM5LINK(i), sizeof(Mem5Link));
++  ST_DEFINED(MEM5LINK(i), sizeof(Mem5Link));
+@@ -29567,0 +29571,2 @@
++    ST_UNPOISON(MEM5LINK(prev), sizeof(Mem5Link));
++    ST_DEFINED(MEM5LINK(prev), sizeof(Mem5Link));
+@@ -29568,0 +29574,2 @@
++    ST_POISON(MEM5LINK(prev), sizeof(Mem5Link));
++    ST_NOACCESS(MEM5LINK(prev), sizeof(Mem5Link));
+@@ -29570,0 +29578,2 @@
++    ST_UNPOISON(MEM5LINK(next), sizeof(Mem5Link));
++    ST_DEFINED(MEM5LINK(next), sizeof(Mem5Link));
+@@ -29571,0 +29581,2 @@
++    ST_POISON(MEM5LINK(next), sizeof(Mem5Link));
++    ST_NOACCESS(MEM5LINK(next), sizeof(Mem5Link));
+@@ -29572,0 +29584,2 @@
++  ST_POISON(MEM5LINK(i), sizeof(Mem5Link));
++  ST_NOACCESS(MEM5LINK(i), sizeof(Mem5Link));
+@@ -29585,0 +29599,2 @@
++  ST_UNPOISON(MEM5LINK(i), sizeof(Mem5Link));
++  ST_DEFINED(MEM5LINK(i), sizeof(Mem5Link));
+@@ -29589,0 +29605,2 @@
++    ST_UNPOISON(MEM5LINK(x), sizeof(Mem5Link));
++    ST_DEFINED(MEM5LINK(x), sizeof(Mem5Link));
+@@ -29590,0 +29608,2 @@
++    ST_POISON(MEM5LINK(x), sizeof(Mem5Link));
++    ST_NOACCESS(MEM5LINK(x), sizeof(Mem5Link));
+@@ -29592,0 +29612,2 @@
++  ST_POISON(MEM5LINK(i), sizeof(Mem5Link));
++  ST_NOACCESS(MEM5LINK(i), sizeof(Mem5Link));
+@@ -29768,0 +29790,4 @@
++    if( p ){
++      ST_POOL_ALLOC(mem5.zPool, p, nBytes);
++      ST_UNPOISON(p, nBytes);
++    }
+@@ -29780,0 +29806 @@
++  int n;
+@@ -29782,0 +29809 @@
++  n = memsys5Size(pPrior);
+@@ -29783,0 +29811,2 @@
++  ST_POOL_FREE(mem5.zPool, pPrior);
++  ST_POISON(pPrior, n);
+@@ -29897,0 +29927,3 @@
++  ST_POOL_CREATE(mem5.zPool, 0, 0);
++  ST_POISON(mem5.zPool, mem5.nBlock*mem5.szAtom);
++  ST_NOACCESS(mem5.zPool, mem5.nBlock*mem5.szAtom);
+@@ -29926,0 +29959,2 @@
++  ST_POOL_DESTROY(mem5.zPool);
++  ST_UNPOISON(mem5.zPool, mem5.nBlock*mem5.szAtom);
