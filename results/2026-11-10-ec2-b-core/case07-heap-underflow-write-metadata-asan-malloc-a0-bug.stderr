@@ -1,0 +1,53 @@
+=================================================================
+==156785==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x73d7745e0068 at pc 0x55648397b9ed bp 0x7ffc34abe470 sp 0x7ffc34abdc40
+WRITE of size 8 at 0x73d7745e0068 thread T0
+    #0 0x55648397b9ec in __asan_memset (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x10b9ec) (BuildId: 12cd37f373e49ac6e246a19699c9bfcc8b55267a)
+    #1 0x5564839c45ed in st_case_7 /home/ubuntu/seethrough-b/corpus/cases/case07-heap-underflow-write-metadata/case.c:29:5
+    #2 0x5564839c44e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #3 0x77a77522a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x77a77522a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x55648389c364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x2c364) (BuildId: 12cd37f373e49ac6e246a19699c9bfcc8b55267a)
+
+0x73d7745e0068 is located 8 bytes before 24-byte region [0x73d7745e0070,0x73d7745e0088)
+allocated by thread T0 here:
+    #0 0x55648397e638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x10e638) (BuildId: 12cd37f373e49ac6e246a19699c9bfcc8b55267a)
+    #1 0x5564839c46a4 in st_alloc /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:6:50
+    #2 0x5564839c456f in st_case_7 /home/ubuntu/seethrough-b/corpus/cases/case07-heap-underflow-write-metadata/case.c:22:24
+    #3 0x5564839c44e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x77a77522a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x77a77522a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55648389c364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x2c364) (BuildId: 12cd37f373e49ac6e246a19699c9bfcc8b55267a)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x10b9ec) (BuildId: 12cd37f373e49ac6e246a19699c9bfcc8b55267a) in __asan_memset
+Shadow bytes around the buggy address:
+  0x73d7745dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x73d7745dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x73d7745dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x73d7745dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x73d7745dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x73d7745e0000: fa fa 00 00 00 fa fa fa 00 00 00 fa fa[fa]00 00
+  0x73d7745e0080: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73d7745e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73d7745e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73d7745e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73d7745e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==156785==ABORTING

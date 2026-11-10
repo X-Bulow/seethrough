@@ -1,0 +1,14 @@
+==161244== Memcheck, a memory error detector
+==161244== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==161244== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==161244== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case14-invalid-free-interior-valgrind-malloc-a1-control
+==161244== 
+==161244== 
+==161244== HEAP SUMMARY:
+==161244==     in use at exit: 0 bytes in 0 blocks
+==161244==   total heap usage: 2 allocs, 2 frees, 4,120 bytes allocated
+==161244== 
+==161244== For a detailed leak analysis, rerun with: --leak-check=full
+==161244== 
+==161244== For lists of detected and suppressed errors, rerun with: -s
+==161244== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

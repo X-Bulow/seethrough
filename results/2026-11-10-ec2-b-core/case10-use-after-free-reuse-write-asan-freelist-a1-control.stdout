@@ -1,0 +1,4 @@
+ST BEGIN case=10 alloc=freelist annot=1 control=1
+ST NOTE reuse=1
+ST READY
+ST DONE

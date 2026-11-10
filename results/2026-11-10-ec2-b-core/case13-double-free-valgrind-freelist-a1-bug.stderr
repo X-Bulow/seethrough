@@ -1,0 +1,23 @@
+==163873== Memcheck, a memory error detector
+==163873== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==163873== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==163873== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case13-double-free-valgrind-freelist-a1-bug
+==163873== 
+==163873== Invalid free() / delete / delete[] / realloc()
+==163873==    at 0x4001FE4: st_free (freelist.c:129)
+==163873==    by 0x400134A: st_case_13 (case.c:31)
+==163873==    by 0x40012A5: main (main.c:26)
+==163873==  Address 0x4a98040 is 0 bytes inside a recently re-allocated block of size 1,048,576 alloc'd
+==163873==    at 0x4850888: malloc (vg_replace_malloc.c:447)
+==163873==    by 0x4001837: st_alloc_init (freelist.c:66)
+==163873==    by 0x4001265: main (main.c:23)
+==163873== 
+==163873== 
+==163873== HEAP SUMMARY:
+==163873==     in use at exit: 0 bytes in 0 blocks
+==163873==   total heap usage: 5 allocs, 3 frees, 1,054,768 bytes allocated
+==163873== 
+==163873== For a detailed leak analysis, rerun with: --leak-check=full
+==163873== 
+==163873== For lists of detected and suppressed errors, rerun with: -s
+==163873== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

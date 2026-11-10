@@ -1,15 +1,17 @@
-# Part B final x86-64 VM experiment
+# Part B x86-64 VM experiment
 
-Use the **same** VirtualBox Ubuntu 26.04 x86-64 VM on which C recorded the
-SQLite benchmarks. Start from a clean clone of the final B branch and record
-its commit. The local macOS and arm64 Docker bundles under `results/scratch-*`
-are development checks only.
+The final Part B run used an AWS EC2 Ubuntu 26.04 x86-64 VM, commit `2763402`,
+clang 21.1.8 and Valgrind 3.26.0. Its result bundles are indexed in
+[results/README.md](../results/README.md). C's SQLite `speedtest1` runs used
+a separate VirtualBox Ubuntu 26.04 VM. Keep the measurements labelled by
+machine; the local macOS and arm64 Docker `results/scratch-*` bundles are
+development checks only.
 
 From the repository root:
 
 ```bash
 bash tools/setup-server.sh
-bash tools/run-part-b-server.sh results/$(date +%F)-server-b
+bash tools/run-part-b-server.sh results/$(date +%F)-ec2-b
 ```
 
 The runner performs four complete 16-case matrices under ASan and Valgrind:
@@ -22,14 +24,16 @@ for annotation and rewrite overhead. Each detection bundle contains
 `benchmark.csv`, five raw runs per configuration and `env.txt`.
 
 The runner refuses to overwrite existing detection bundles. Keep all bundles
-in `results/` and commit them as new results. Use C's `benchmarks/plot.py`
-on the allocator-churn CSV in the VM's plotting venv, with a separate output
-directory, for example:
+in `results/` and commit them as new results. The benchmark CSV has 90 rows
+and can be plotted with C's `benchmarks/plot.py` in a Python environment
+with matplotlib. The report table was computed directly from the CSV's
+five-run medians. Set the plotting caption for EC2 explicitly:
 
 ```bash
 build/plot-venv/bin/python benchmarks/plot.py \
   results/<allocator-churn-bundle>/benchmark.csv \
-  --out-dir build/part-b-figures --summary build/part-b-summary.csv
+  --out-dir build/part-b-figures --summary build/part-b-summary.csv \
+  --environment-label 'AWS EC2 Ubuntu 26.04 x86-64'
 ```
 
 Compare `ANNOT=1` versus `ANNOT=0` within each allocator and tool. The
@@ -38,6 +42,14 @@ separately. memsys5's `ANNOT=1` uses the generated patch; lookaside has no
 verified annotation arm. Check that every negative control is CLEAN and
 that the positive controls are DETECTED. Investigate every TOOL-ERROR or
 FALSE-POSITIVE before using counts in the report.
+
+The EC2 data passed those gates: 352 negative controls CLEAN, zero
+`TOOL-ERROR` and zero `FALSE-POSITIVE`. ASan's signal-only case-4 crashes
+under Arena, Free list, unannotated memsys5 and lookaside are classified
+as `MISSED crashed SEGV`, not DETECTED. Annotated memsys5 missed case 4
+without a signal. `env.txt` records `git: 2763402 dirty=2` because an earlier
+untracked pilot result bundle existed when the formal run started; tracked
+source files were clean.
 
 ## If the available VM is Azure Ubuntu 24.04
 

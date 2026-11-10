@@ -1,0 +1,14 @@
+==169401== Memcheck, a memory error detector
+==169401== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==169401== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==169401== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case01-heap-overflow-read-valgrind-lookaside-a0-control
+==169401== 
+==169401== 
+==169401== HEAP SUMMARY:
+==169401==     in use at exit: 0 bytes in 0 blocks
+==169401==   total heap usage: 27 allocs, 27 frees, 1,110,040 bytes allocated
+==169401== 
+==169401== For a detailed leak analysis, rerun with: --leak-check=full
+==169401== 
+==169401== For lists of detected and suppressed errors, rerun with: -s
+==169401== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

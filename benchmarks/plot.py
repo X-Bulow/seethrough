@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = {"none": "Baseline", "asan": "ASan", "valgrind": "Valgrind"}
-COLORS = ["#276FBF", "#E39C35", "#37866C", "#8A64AD"]
+COLORS = ["#276FBF", "#E39C35", "#37866C", "#8A64AD", "#B95369", "#737C3F"]
 
 
 def summarize(paths):
@@ -63,13 +63,13 @@ def summarize(paths):
     return summaries
 
 
-def plot(summaries, output, normalized):
+def plot(summaries, output, normalized, environment_label):
     series = sorted({key[:4] for key in summaries})
     tools = sorted({key[4] for key in summaries},
                    key=lambda tool: (list(TOOLS).index(tool) if tool in TOOLS else 99, tool))
     metrics = (("time_ratio", "Runtime / baseline", "rss_ratio", "Peak RSS / baseline")
                if normalized else ("seconds", "Wall time (s)", "rss_mib", "Peak RSS (MiB)"))
-    fig, axes = plt.subplots(1, 2, figsize=(10, 4.6), layout="constrained")
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5), layout="constrained")
     width = 0.8 / len(series)
     for ax, metric, ylabel in zip(axes, metrics[::2], metrics[1::2]):
         for index, identity in enumerate(series):
@@ -87,8 +87,9 @@ def plot(summaries, output, normalized):
             bars = ax.bar(positions, values, width=width * 0.9, label=label,
                           color=COLORS[index % len(COLORS)])
             suffix = "x" if normalized else ""
-            ax.bar_label(bars, labels=[f"{value:.2f}{suffix}" for value in values],
-                         padding=3, fontsize=9)
+            if len(series) <= 4:
+                ax.bar_label(bars, labels=[f"{value:.2f}{suffix}" for value in values],
+                             padding=3, fontsize=9)
         ax.set_xticks(range(len(tools)), [TOOLS.get(tool, tool) for tool in tools])
         ax.set_ylabel(ylabel)
         ax.set_ylim(0, ax.get_ylim()[1] * 1.18)
@@ -104,7 +105,7 @@ def plot(summaries, output, normalized):
                   else "annotation settings shown in legend")
     fig.suptitle(f"{benchmark}: {title}\nMedian of 5 runs; {annotation}", fontsize=12)
     fig.supxlabel("Ratios use each configuration's baseline. Valgrind RSS includes tool memory."
-                  if normalized else "VirtualBox Ubuntu x86-64 lab setup. Valgrind RSS includes tool memory.",
+                  if normalized else f"{environment_label}. Valgrind RSS includes tool memory.",
                   fontsize=9)
     stem = output / ("benchmark-overhead" if normalized else "benchmark-performance")
     for extension in ("png", "pdf"):
@@ -120,6 +121,8 @@ def main():
                         help="CSV paths (default: results/*/benchmark.csv)")
     parser.add_argument("--out-dir", type=Path, default=ROOT / "report/figures")
     parser.add_argument("--summary", type=Path, default=ROOT / "report/tables/benchmark-summary.csv")
+    parser.add_argument("--environment-label", default="VirtualBox Ubuntu x86-64 lab setup",
+                        help="Machine caption for the absolute performance figure")
     args = parser.parse_args()
     paths = args.csv or sorted((ROOT / "results").glob("*/benchmark.csv"))
     if not paths:
@@ -138,8 +141,10 @@ def main():
             writer.writerow([*key, 5, *(f"{values[field]:.6f}" for field in
                                        ("seconds", "rss_mib", "time_ratio", "rss_ratio"))])
     print(args.summary)
-    plot(summaries, args.out_dir, normalized=False)
-    plot(summaries, args.out_dir, normalized=True)
+    plot(summaries, args.out_dir, normalized=False,
+         environment_label=args.environment_label)
+    plot(summaries, args.out_dir, normalized=True,
+         environment_label=args.environment_label)
 
 
 if __name__ == "__main__":

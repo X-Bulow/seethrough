@@ -51,4 +51,9 @@ Memcheck report double and interior frees through `MEMPOOL_FREE`.
 Case 4 initially used `pool_bytes + 64`, which landed exactly in an adjacent valid metadata
 allocation under Valgrind and appeared as a miss. The corpus now uses `pool_bytes + 8192`;
 both ASan and Valgrind reported the outer-block over-read in local reruns. This offset still
-needs confirmation on the official server because the surrounding address space can differ.
+depends on the surrounding address space. In the formal x86-64 EC2 run, Valgrind reported
+the outer-block read, but ASan printed only `SEGV on unknown address` without a heap-boundary
+diagnosis. The Arena and Free-list ASan cases are correctly classified as
+`MISSED crashed SEGV`, including for their annotated arms. Annotated memsys5
+also missed case 4 but did not signal. See the raw case-4 stderr in the
+[core matrix](../results/2026-11-10-ec2-b-core/).

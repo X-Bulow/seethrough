@@ -1,0 +1,31 @@
+=================================================================
+==157048==ERROR: AddressSanitizer: attempting double-free on 0x7a7b365e0040 in thread T0:
+    #0 0x5852c4fc039a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x10f39a) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b)
+    #1 0x5852c50066c4 in st_free /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:7:43
+    #2 0x5852c5006606 in st_case_15 /home/ubuntu/seethrough-b/corpus/cases/case15-double-free-after-reuse/case.c:34:5
+    #3 0x5852c50064e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7e4b3722a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7e4b3722a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5852c4ede364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x2d364) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b)
+
+0x7a7b365e0040 is located 0 bytes inside of 24-byte region [0x7a7b365e0040,0x7a7b365e0058)
+freed by thread T0 here:
+    #0 0x5852c4fc039a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x10f39a) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b)
+    #1 0x5852c50066c4 in st_free /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:7:43
+    #2 0x5852c5006581 in st_case_15 /home/ubuntu/seethrough-b/corpus/cases/case15-double-free-after-reuse/case.c:26:5
+    #3 0x5852c50064e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7e4b3722a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7e4b3722a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5852c4ede364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x2d364) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b)
+
+previously allocated by thread T0 here:
+    #0 0x5852c4fc0638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x10f638) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b)
+    #1 0x5852c50066a4 in st_alloc /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:6:50
+    #2 0x5852c5006561 in st_case_15 /home/ubuntu/seethrough-b/corpus/cases/case15-double-free-after-reuse/case.c:24:24
+    #3 0x5852c50064e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7e4b3722a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7e4b3722a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5852c4ede364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x2d364) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b)
+
+SUMMARY: AddressSanitizer: double-free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case15-double-free-after-reuse-asan-malloc-a0-bug+0x10f39a) (BuildId: 5e9e3a127fea9e6928edab70b6315cc3a8d73f0b) in free
+==157048==ABORTING

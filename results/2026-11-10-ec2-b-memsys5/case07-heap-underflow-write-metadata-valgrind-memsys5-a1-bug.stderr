@@ -1,0 +1,27 @@
+==167613== Memcheck, a memory error detector
+==167613== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==167613== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==167613== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case07-heap-underflow-write-metadata-valgrind-memsys5-a1-bug
+==167613== 
+==167613== Invalid write of size 8
+==167613==    at 0x498EE6B: memset (vg_replace_strmem.c:1391)
+==167613==    by 0x400A78C: st_case_7 (case.c:29)
+==167613==    by 0x400A6E5: main (main.c:26)
+==167613==  Address 0x4cb8e58 is 24 bytes inside a block of size 32 client-defined
+==167613==    at 0x40122A9: memsys5Malloc (sqlite3.c:29791)
+==167613==    by 0x4013179: mallocWithAlarm (sqlite3.c:31788)
+==167613==    by 0x4013225: sqlite3Malloc (sqlite3.c:31813)
+==167613==    by 0x40132CA: sqlite3_malloc64 (sqlite3.c:31837)
+==167613==    by 0x400AC81: st_alloc (memsys5.c:57)
+==167613==    by 0x400A716: st_case_7 (case.c:21)
+==167613==    by 0x400A6E5: main (main.c:26)
+==167613== 
+==167613== 
+==167613== HEAP SUMMARY:
+==167613==     in use at exit: 0 bytes in 0 blocks
+==167613==   total heap usage: 7 allocs, 3 frees, 1,054,864 bytes allocated
+==167613== 
+==167613== For a detailed leak analysis, rerun with: --leak-check=full
+==167613== 
+==167613== For lists of detected and suppressed errors, rerun with: -s
+==167613== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

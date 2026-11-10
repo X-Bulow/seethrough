@@ -1,0 +1,4 @@
+ST BEGIN case=10 alloc=malloc annot=0 control=1
+ST NOTE reuse=0
+ST READY
+ST DONE

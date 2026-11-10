@@ -1,0 +1,23 @@
+==160037== Memcheck, a memory error detector
+==160037== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==160037== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==160037== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case02-heap-overflow-write-slack-valgrind-malloc-a0-bug
+==160037== 
+==160037== Invalid write of size 1
+==160037==    at 0x40012FB: st_case_2 (case.c:27)
+==160037==    by 0x4001265: main (main.c:26)
+==160037==  Address 0x4a9809c is 4 bytes after a block of size 24 alloc'd
+==160037==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==160037==    by 0x4001354: st_alloc (malloc.c:6)
+==160037==    by 0x4001296: st_case_2 (case.c:19)
+==160037==    by 0x4001265: main (main.c:26)
+==160037== 
+==160037== 
+==160037== HEAP SUMMARY:
+==160037==     in use at exit: 0 bytes in 0 blocks
+==160037==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==160037== 
+==160037== For a detailed leak analysis, rerun with: --leak-check=full
+==160037== 
+==160037== For lists of detected and suppressed errors, rerun with: -s
+==160037== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

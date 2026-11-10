@@ -1,0 +1,3 @@
+ST BEGIN case=10 alloc=freelist-rewrite annot=0 control=0
+ST NOTE reuse=0
+ST READY

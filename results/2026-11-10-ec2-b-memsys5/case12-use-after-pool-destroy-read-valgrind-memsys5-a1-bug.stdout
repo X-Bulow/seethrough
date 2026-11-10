@@ -1,0 +1,4 @@
+ST BEGIN case=12 alloc=memsys5 annot=1 control=0
+ST NOTE pool=1
+ST READY
+ST DONE

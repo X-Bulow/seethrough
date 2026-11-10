@@ -1,0 +1,19 @@
+==169575== Memcheck, a memory error detector
+==169575== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==169575== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==169575== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case04-heap-overflow-read-past-pool-valgrind-lookaside-a0-bug
+==169575== 
+==169575== Invalid read of size 1
+==169575==    at 0x400A7A1: st_case_4 (case.c:32)
+==169575==    by 0x400A6E5: main (main.c:26)
+==169575==  Address 0x4dc7fc0 is 993,376 bytes inside an unallocated block of size 3,082,368 in arena "client"
+==169575== 
+==169575== 
+==169575== HEAP SUMMARY:
+==169575==     in use at exit: 0 bytes in 0 blocks
+==169575==   total heap usage: 27 allocs, 27 frees, 1,110,040 bytes allocated
+==169575== 
+==169575== For a detailed leak analysis, rerun with: --leak-check=full
+==169575== 
+==169575== For lists of detected and suppressed errors, rerun with: -s
+==169575== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

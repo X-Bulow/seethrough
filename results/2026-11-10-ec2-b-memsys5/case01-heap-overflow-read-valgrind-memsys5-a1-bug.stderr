@@ -1,0 +1,26 @@
+==167289== Memcheck, a memory error detector
+==167289== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==167289== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==167289== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case01-heap-overflow-read-valgrind-memsys5-a1-bug
+==167289== 
+==167289== Invalid read of size 1
+==167289==    at 0x400A77B: st_case_1 (case.c:23)
+==167289==    by 0x400A6E5: main (main.c:26)
+==167289==  Address 0x4cb8e58 is 24 bytes inside a block of size 32 client-defined
+==167289==    at 0x4012293: memsys5Malloc (sqlite3.c:29791)
+==167289==    by 0x4013163: mallocWithAlarm (sqlite3.c:31788)
+==167289==    by 0x401320F: sqlite3Malloc (sqlite3.c:31813)
+==167289==    by 0x40132B4: sqlite3_malloc64 (sqlite3.c:31837)
+==167289==    by 0x400AC6B: st_alloc (memsys5.c:57)
+==167289==    by 0x400A716: st_case_1 (case.c:15)
+==167289==    by 0x400A6E5: main (main.c:26)
+==167289== 
+==167289== 
+==167289== HEAP SUMMARY:
+==167289==     in use at exit: 0 bytes in 0 blocks
+==167289==   total heap usage: 7 allocs, 3 frees, 1,054,864 bytes allocated
+==167289== 
+==167289== For a detailed leak analysis, rerun with: --leak-check=full
+==167289== 
+==167289== For lists of detected and suppressed errors, rerun with: -s
+==167289== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

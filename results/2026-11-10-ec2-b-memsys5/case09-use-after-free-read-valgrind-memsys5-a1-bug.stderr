@@ -1,0 +1,22 @@
+==167721== Memcheck, a memory error detector
+==167721== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==167721== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==167721== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case09-use-after-free-read-valgrind-memsys5-a1-bug
+==167721== 
+==167721== Invalid read of size 1
+==167721==    at 0x400A75F: st_case_9 (case.c:21)
+==167721==    by 0x400A6E5: main (main.c:26)
+==167721==  Address 0x4cb8e40 is 986,624 bytes inside a recently re-allocated block of size 1,048,576 alloc'd
+==167721==    at 0x4980888: malloc (vg_replace_malloc.c:447)
+==167721==    by 0x400AB62: st_alloc_init (memsys5.c:42)
+==167721==    by 0x400A6A5: main (main.c:23)
+==167721== 
+==167721== 
+==167721== HEAP SUMMARY:
+==167721==     in use at exit: 0 bytes in 0 blocks
+==167721==   total heap usage: 6 allocs, 3 frees, 1,054,832 bytes allocated
+==167721== 
+==167721== For a detailed leak analysis, rerun with: --leak-check=full
+==167721== 
+==167721== For lists of detected and suppressed errors, rerun with: -s
+==167721== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

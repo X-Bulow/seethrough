@@ -1,0 +1,23 @@
+==172535== Memcheck, a memory error detector
+==172535== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==172535== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==172535== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case05-heap-underflow-write-valgrind-freelist-rewrite-a0-bug
+==172535== 
+==172535== Invalid write of size 1
+==172535==    at 0x40012FB: st_case_5 (case.c:27)
+==172535==    by 0x4001265: main (main.c:26)
+==172535==  Address 0x4a980df is 1 bytes before a block of size 24 alloc'd
+==172535==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==172535==    by 0x400135B: st_alloc (freelist-rewrite.c:6)
+==172535==    by 0x40012A4: st_case_5 (case.c:20)
+==172535==    by 0x4001265: main (main.c:26)
+==172535== 
+==172535== 
+==172535== HEAP SUMMARY:
+==172535==     in use at exit: 0 bytes in 0 blocks
+==172535==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==172535== 
+==172535== For a detailed leak analysis, rerun with: --leak-check=full
+==172535== 
+==172535== For lists of detected and suppressed errors, rerun with: -s
+==172535== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

@@ -1,0 +1,31 @@
+=================================================================
+==171519==ERROR: AddressSanitizer: attempting double-free on 0x76fde1be0040 in thread T0:
+    #0 0x615f9bef439a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x10f39a) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9)
+    #1 0x615f9bf3a6e4 in st_free /home/ubuntu/seethrough-b/allocators/freelist/rewrite/freelist-rewrite.c:7:25
+    #2 0x615f9bf3a606 in st_case_15 /home/ubuntu/seethrough-b/corpus/cases/case15-double-free-after-reuse/case.c:34:5
+    #3 0x615f9bf3a4e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7acde2a2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7acde2a2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x615f9be12364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x2d364) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9)
+
+0x76fde1be0040 is located 0 bytes inside of 24-byte region [0x76fde1be0040,0x76fde1be0058)
+freed by thread T0 here:
+    #0 0x615f9bef439a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x10f39a) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9)
+    #1 0x615f9bf3a6e4 in st_free /home/ubuntu/seethrough-b/allocators/freelist/rewrite/freelist-rewrite.c:7:25
+    #2 0x615f9bf3a581 in st_case_15 /home/ubuntu/seethrough-b/corpus/cases/case15-double-free-after-reuse/case.c:26:5
+    #3 0x615f9bf3a4e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7acde2a2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7acde2a2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x615f9be12364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x2d364) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9)
+
+previously allocated by thread T0 here:
+    #0 0x615f9bef4638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x10f638) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9)
+    #1 0x615f9bf3a6ab in st_alloc /home/ubuntu/seethrough-b/allocators/freelist/rewrite/freelist-rewrite.c:6:39
+    #2 0x615f9bf3a561 in st_case_15 /home/ubuntu/seethrough-b/corpus/cases/case15-double-free-after-reuse/case.c:24:24
+    #3 0x615f9bf3a4e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7acde2a2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7acde2a2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x615f9be12364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x2d364) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9)
+
+SUMMARY: AddressSanitizer: double-free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x10f39a) (BuildId: 263eb46decaf17ed28284e598bcb39591460a1b9) in free
+==171519==ABORTING

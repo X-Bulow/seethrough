@@ -1,0 +1,55 @@
+=================================================================
+==159627==ERROR: AddressSanitizer: use-after-poison on address 0x73100c371818 at pc 0x61621a1a69ed bp 0x7ffc241060b0 sp 0x7ffc24105880
+WRITE of size 8 at 0x73100c371818 thread T0
+    #0 0x61621a1a69ec in __asan_memset (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x10c9ec) (BuildId: 1107f254cce2bc04b08318d792a3a4b4fe189b65)
+    #1 0x61621a1ef5ed in st_case_7 /home/ubuntu/seethrough-b/corpus/cases/case07-heap-underflow-write-metadata/case.c:29:5
+    #2 0x61621a1ef4e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #3 0x73100c82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x73100c82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x61621a0c7364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x2d364) (BuildId: 1107f254cce2bc04b08318d792a3a4b4fe189b65)
+
+0x73100c371818 is located 24 bytes inside of 1048576-byte region [0x73100c371800,0x73100c471800)
+allocated by thread T0 here:
+    #0 0x61621a1a9638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x10f638) (BuildId: 1107f254cce2bc04b08318d792a3a4b4fe189b65)
+    #1 0x61621a1ef6b2 in st_alloc_init /home/ubuntu/seethrough-b/allocators/freelist/freelist.c:66:12
+    #2 0x61621a1ef48e in main /home/ubuntu/seethrough-b/harness/main.c:23:5
+    #3 0x73100c82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x73100c82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x61621a0c7364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x2d364) (BuildId: 1107f254cce2bc04b08318d792a3a4b4fe189b65)
+
+SUMMARY: AddressSanitizer: use-after-poison (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x10c9ec) (BuildId: 1107f254cce2bc04b08318d792a3a4b4fe189b65) in __asan_memset
+Shadow bytes around the buggy address:
+  0x73100c371580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73100c371600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73100c371680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73100c371700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x73100c371780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x73100c371800: 00 00 00[f7]00 00 00 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x73100c371880: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x73100c371900: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x73100c371980: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x73100c371a00: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x73100c371a80: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+
+NOTE: the stack trace above identifies the code that *accessed* the poisoned memory.
+To identify the code that *poisoned* the memory, try the experimental setting ASAN_OPTIONS=poison_history_size=<size>.
+==159627==ABORTING

@@ -1,0 +1,4 @@
+ST BEGIN case=12 alloc=arena-rewrite annot=0 control=0
+ST NOTE pool=0
+ST READY
+ST DONE

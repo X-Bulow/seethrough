@@ -1,0 +1,60 @@
+=================================================================
+==165842==ERROR: AddressSanitizer: heap-use-after-free on address 0x74f0499ce600 at pc 0x621e5d8426fd bp 0x7fffa6d89ff0 sp 0x7fffa6d89fe8
+READ of size 1 at 0x74f0499ce600 thread T0
+    #0 0x621e5d8426fc in st_case_12 /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5
+    #1 0x621e5d8425d5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x78f04a82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x78f04a82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x621e5d71a454 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a1-bug+0x52454) (BuildId: 6043d410aebac848630fb1a310586afabcedbdf1)
+
+0x74f0499ce600 is located 986624 bytes inside of 1048576-byte region [0x74f0498dd800,0x74f0499dd800)
+freed by thread T0 here:
+    #0 0x621e5d7fc48a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a1-bug+0x13448a) (BuildId: 6043d410aebac848630fb1a310586afabcedbdf1)
+    #1 0x621e5d842820 in st_alloc_fini /home/ubuntu/seethrough-b/allocators/sqlite/memsys5.c:117:5
+    #2 0x621e5d84268c in st_case_12 /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:37:5
+    #3 0x621e5d8425d5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x78f04a82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x78f04a82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x621e5d71a454 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a1-bug+0x52454) (BuildId: 6043d410aebac848630fb1a310586afabcedbdf1)
+
+previously allocated by thread T0 here:
+    #0 0x621e5d7fc728 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a1-bug+0x134728) (BuildId: 6043d410aebac848630fb1a310586afabcedbdf1)
+    #1 0x621e5d84277e in st_alloc_init /home/ubuntu/seethrough-b/allocators/sqlite/memsys5.c:42:12
+    #2 0x621e5d84257e in main /home/ubuntu/seethrough-b/harness/main.c:23:5
+    #3 0x78f04a82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x78f04a82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x621e5d71a454 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a1-bug+0x52454) (BuildId: 6043d410aebac848630fb1a310586afabcedbdf1)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5 in st_case_12
+Shadow bytes around the buggy address:
+  0x74f0499ce380: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce400: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce480: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce500: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce580: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+=>0x74f0499ce600:[fd]fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce680: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce700: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce780: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce800: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x74f0499ce880: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==165842==ABORTING

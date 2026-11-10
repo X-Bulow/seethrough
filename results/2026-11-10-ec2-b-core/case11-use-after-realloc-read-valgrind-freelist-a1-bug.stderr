@@ -1,0 +1,22 @@
+==163793== Memcheck, a memory error detector
+==163793== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==163793== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==163793== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-valgrind-freelist-a1-bug
+==163793== 
+==163793== Invalid read of size 1
+==163793==    at 0x4001383: st_case_11 (case.c:32)
+==163793==    by 0x40012A5: main (main.c:26)
+==163793==  Address 0x4a98040 is 0 bytes inside a recently re-allocated block of size 1,048,576 alloc'd
+==163793==    at 0x4850888: malloc (vg_replace_malloc.c:447)
+==163793==    by 0x400188A: st_alloc_init (freelist.c:66)
+==163793==    by 0x4001265: main (main.c:23)
+==163793== 
+==163793== 
+==163793== HEAP SUMMARY:
+==163793==     in use at exit: 0 bytes in 0 blocks
+==163793==   total heap usage: 5 allocs, 3 frees, 1,058,840 bytes allocated
+==163793== 
+==163793== For a detailed leak analysis, rerun with: --leak-check=full
+==163793== 
+==163793== For lists of detected and suppressed errors, rerun with: -s
+==163793== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

@@ -26,6 +26,29 @@ success. The harness gates those cases with `ST NOTE reuse=1` and `pool=1`.
 
 ## Detection comparison
 
+The final x86-64 EC2 detection bundles are listed in
+[results/README.md](../results/README.md). Every negative control was
+CLEAN. Formal bug verdicts for the key comparison are:
+
+| Tool | Arm | DETECTED | MISSED | UNSUPPORTED |
+|---|---|---:|---:|---:|
+| ASan | Arena, unannotated | 1 | 13 | 2 |
+| ASan | Arena, annotated | 10 | 4 | 2 |
+| ASan | Free list, unannotated | 1 | 15 | 0 |
+| ASan | Free list, annotated | 11 | 5 | 0 |
+| ASan | either rewrite | 12 | 1 | 3 |
+| Valgrind | Arena, unannotated | 2 | 12 | 2 |
+| Valgrind | Arena, annotated | 13 | 1 | 2 |
+| Valgrind | Free list, unannotated | 2 | 14 | 0 |
+| Valgrind | Free list, annotated | 14 | 2 | 0 |
+| Valgrind | either rewrite | 13 | 0 | 3 |
+
+On EC2 ASan case 4 produced a signal-handler SEGV without a boundary
+diagnosis for Arena and Free list, both with and without annotation. The
+annotated memsys5 arm also missed it but did not signal. The development
+ASan host had detected this outer-pool read. This explains the one-count
+difference below; the formal EC2 table takes precedence.
+
 In the 2026-11-10 macOS arm64 ASan development run, both SQLite CMA layers
 missed the 24-byte overflow and a UAF before pool destruction; the two
 rewrite arms detected them. The full 16-case bundle is
@@ -91,9 +114,23 @@ Arena, Free list, their annotated builds, and both rewrite arms. It writes
 the same CSV schema as C's benchmarks, with five repetitions, wall time and
 peak RSS. Compare annotation on/off within the same allocator and tool;
 compare rewrite separately because it changes the allocation algorithm.
-The final numbers must come from the same x86-64 VM as C's `speedtest1` run.
-C's existing 3.50.4 memsys5 performance data have no custom annotations;
-they do not answer annotation overhead by themselves.
+The final Part B numbers come from one x86-64 EC2 VM, but C's earlier
+`speedtest1` numbers came from a different VirtualBox VM and must be
+reported separately. C's existing 3.50.4 memsys5 performance data have no
+custom annotations; they do not answer annotation overhead by themselves.
+
+The final EC2 [benchmark bundle](../results/2026-11-10-allocator-churn-IkUTIU/benchmark.csv)
+has 90 successful runs. Five-run median workload seconds and annotation
+on/off ratios are:
+
+| Allocator | ASan off → on | Valgrind off → on | Rewrite ASan / Valgrind |
+|---|---:|---:|---:|
+| Arena | 1.510 → 1.582 (1.05×) | 2.273 → 4.038 (1.78×) | 0.547 / 2.672 |
+| Free list | 1.478 → 1.625 (1.10×) | 2.413 → 5.209 (2.16×) | 0.535 / 2.686 |
+
+The rewrite changes allocation and lifetime semantics. Its performance
+numbers are therefore a separate tradeoff, not an annotation overhead
+estimate. The formal report table also gives peak RSS.
 
 An arm64 Linux Docker development run of five repetitions at 10000 cycles
 produced the following **provisional** medians (seconds; high-resolution
@@ -106,4 +143,4 @@ workload wall time):
 
 The raw bundle is `results/scratch-2026-11-10-allocator-churn-BSCa5b/`.
 Some runs overlapped with compilation in other containers, so these figures
-are for workflow validation only; run the final benchmark alone on C's VM.
+are for workflow validation only. The EC2 run above is the final B dataset.

@@ -1,0 +1,61 @@
+=================================================================
+==170829==ERROR: AddressSanitizer: heap-use-after-free on address 0x7191747e0040 at pc 0x55670d9d462f bp 0x7ffc193eb0c0 sp 0x7ffc193eb0b8
+WRITE of size 1 at 0x7191747e0040 thread T0
+    #0 0x55670d9d462e in st_case_10 /home/ubuntu/seethrough-b/corpus/cases/case10-use-after-free-reuse-write/case.c:35:10
+    #1 0x55670d9d44e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x75617562a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x75617562a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x55670d8ac364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: 3faced1cdaa7d8fb6e08d8a0f219e411f85b7c56)
+
+0x7191747e0040 is located 0 bytes inside of 24-byte region [0x7191747e0040,0x7191747e0058)
+freed by thread T0 here:
+    #0 0x55670d98e39a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x10f39a) (BuildId: 3faced1cdaa7d8fb6e08d8a0f219e411f85b7c56)
+    #1 0x55670d9d4724 in st_free /home/ubuntu/seethrough-b/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x55670d9d4581 in st_case_10 /home/ubuntu/seethrough-b/corpus/cases/case10-use-after-free-reuse-write/case.c:27:5
+    #3 0x55670d9d44e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x75617562a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x75617562a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55670d8ac364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: 3faced1cdaa7d8fb6e08d8a0f219e411f85b7c56)
+
+previously allocated by thread T0 here:
+    #0 0x55670d98e638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x10f638) (BuildId: 3faced1cdaa7d8fb6e08d8a0f219e411f85b7c56)
+    #1 0x55670d9d46eb in st_alloc /home/ubuntu/seethrough-b/allocators/arena/rewrite/arena-rewrite.c:6:39
+    #2 0x55670d9d4561 in st_case_10 /home/ubuntu/seethrough-b/corpus/cases/case10-use-after-free-reuse-write/case.c:25:24
+    #3 0x55670d9d44e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x75617562a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x75617562a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55670d8ac364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: 3faced1cdaa7d8fb6e08d8a0f219e411f85b7c56)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/ubuntu/seethrough-b/corpus/cases/case10-use-after-free-reuse-write/case.c:35:10 in st_case_10
+Shadow bytes around the buggy address:
+  0x7191747dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7191747dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7191747dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7191747dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7191747dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7191747e0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa 00 00
+  0x7191747e0080: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7191747e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7191747e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7191747e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7191747e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==170829==ABORTING

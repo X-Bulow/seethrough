@@ -6,7 +6,19 @@ CSV) and the raw `.stdout` / `.stderr` of every run. Written by `harness/run-mat
 
 | bundle | what | status |
 |---|---|---|
-| (none yet) | | |
+| [2026-11-10-ec2-b-pilot/](2026-11-10-ec2-b-pilot/) | EC2 positive-control pilot, case 0 malloc under ASan and Valgrind | complete; 4 rows, 2 CLEAN controls |
+| [2026-11-10-ec2-b-core/](2026-11-10-ec2-b-core/) | EC2 malloc, Arena and Free list; annotation off/on; ASan and Valgrind | complete; 384 rows, 192 CLEAN controls |
+| [2026-11-10-ec2-b-memsys5/](2026-11-10-ec2-b-memsys5/) | EC2 SQLite 3.53.3 memsys5; annotation off/on | complete; 128 rows, 64 CLEAN controls |
+| [2026-11-10-ec2-b-lookaside/](2026-11-10-ec2-b-lookaside/) | EC2 SQLite 3.53.3 lookaside, unannotated | complete; 64 rows, 32 CLEAN controls |
+| [2026-11-10-ec2-b-rewrite/](2026-11-10-ec2-b-rewrite/) | EC2 Arena and Free-list libc rewrites | complete; 128 rows, 64 CLEAN controls |
+| [2026-11-10-allocator-churn-IkUTIU/](2026-11-10-allocator-churn-IkUTIU/) | EC2 annotation overhead and rewrite performance | complete; 90 successful runs, five per setting |
+
+The five EC2 B bundles above use commit `2763402`, Ubuntu 26.04 x86-64,
+clang/ASan 21.1.8 and Valgrind 3.26.0. The four full detection bundles
+have 352 bug rows and 352 paired controls. All controls are CLEAN; there
+are no `TOOL-ERROR` or `FALSE-POSITIVE` verdicts. See
+[Part B report](../report/part-b.md) for counts and interpretation. The EC2
+performance bundle is separate from C's VirtualBox benchmark bundles below.
 
 `scratch-*/` bundles are gitignored: laptop smoke runs go there and never into the table.
 

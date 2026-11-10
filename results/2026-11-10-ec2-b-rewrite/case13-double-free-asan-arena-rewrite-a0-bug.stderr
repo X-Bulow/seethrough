@@ -1,0 +1,31 @@
+=================================================================
+==170927==ERROR: AddressSanitizer: attempting double-free on 0x6f1707fe0040 in thread T0:
+    #0 0x57470d81039a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x10e39a) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039)
+    #1 0x57470d856654 in st_free /home/ubuntu/seethrough-b/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x57470d8565e8 in st_case_13 /home/ubuntu/seethrough-b/corpus/cases/case13-double-free/case.c:31:5
+    #3 0x57470d8564e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x72e708e2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x72e708e2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x57470d72e364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039)
+
+0x6f1707fe0040 is located 0 bytes inside of 24-byte region [0x6f1707fe0040,0x6f1707fe0058)
+freed by thread T0 here:
+    #0 0x57470d81039a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x10e39a) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039)
+    #1 0x57470d856654 in st_free /home/ubuntu/seethrough-b/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x57470d8565a2 in st_case_13 /home/ubuntu/seethrough-b/corpus/cases/case13-double-free/case.c:26:5
+    #3 0x57470d8564e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x72e708e2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x72e708e2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x57470d72e364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039)
+
+previously allocated by thread T0 here:
+    #0 0x57470d810638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x10e638) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039)
+    #1 0x57470d85661b in st_alloc /home/ubuntu/seethrough-b/allocators/arena/rewrite/arena-rewrite.c:6:39
+    #2 0x57470d856561 in st_case_13 /home/ubuntu/seethrough-b/corpus/cases/case13-double-free/case.c:22:24
+    #3 0x57470d8564e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x72e708e2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x72e708e2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x57470d72e364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039)
+
+SUMMARY: AddressSanitizer: double-free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x10e39a) (BuildId: f0e478b65bb419f092a2aa65766463860ec0f039) in free
+==170927==ABORTING

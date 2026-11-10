@@ -1,0 +1,4 @@
+ST BEGIN case=4 alloc=freelist-rewrite annot=0 control=0
+ST NOTE pool_bytes=0 offset=24
+ST READY
+ST DONE

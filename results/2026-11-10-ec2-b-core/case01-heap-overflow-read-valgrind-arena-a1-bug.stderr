@@ -1,0 +1,22 @@
+==162043== Memcheck, a memory error detector
+==162043== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==162043== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==162043== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case01-heap-overflow-read-valgrind-arena-a1-bug
+==162043== 
+==162043== Invalid read of size 1
+==162043==    at 0x400133B: st_case_1 (case.c:23)
+==162043==    by 0x40012A5: main (main.c:26)
+==162043==  Address 0x4a97058 is 24 bytes inside a block of size 1,048,576 alloc'd
+==162043==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==162043==    by 0x4001781: st_alloc_init (arena.c:44)
+==162043==    by 0x4001265: main (main.c:23)
+==162043== 
+==162043== 
+==162043== HEAP SUMMARY:
+==162043==     in use at exit: 0 bytes in 0 blocks
+==162043==   total heap usage: 5 allocs, 3 frees, 1,054,256 bytes allocated
+==162043== 
+==162043== For a detailed leak analysis, rerun with: --leak-check=full
+==162043== 
+==162043== For lists of detected and suppressed errors, rerun with: -s
+==162043== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

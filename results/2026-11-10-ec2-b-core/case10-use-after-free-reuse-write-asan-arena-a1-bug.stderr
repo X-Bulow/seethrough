@@ -1,0 +1,54 @@
+=================================================================
+==158631==ERROR: AddressSanitizer: use-after-poison on address 0x78645ef71800 at pc 0x5e8121f5862f bp 0x7fff297bb680 sp 0x7fff297bb678
+WRITE of size 1 at 0x78645ef71800 thread T0
+    #0 0x5e8121f5862e in st_case_10 /home/ubuntu/seethrough-b/corpus/cases/case10-use-after-free-reuse-write/case.c:35:10
+    #1 0x5e8121f584e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x78645f42a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x78645f42a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x5e8121e30364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case10-use-after-free-reuse-write-asan-arena-a1-bug+0x2d364) (BuildId: 115b9654e7a2f7da740135b3446b8e1ab59b2cf4)
+
+0x78645ef71800 is located 0 bytes inside of 1048576-byte region [0x78645ef71800,0x78645f071800)
+allocated by thread T0 here:
+    #0 0x5e8121f12638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case10-use-after-free-reuse-write-asan-arena-a1-bug+0x10f638) (BuildId: 115b9654e7a2f7da740135b3446b8e1ab59b2cf4)
+    #1 0x5e8121f586f2 in st_alloc_init /home/ubuntu/seethrough-b/allocators/arena/arena.c:44:12
+    #2 0x5e8121f5848e in main /home/ubuntu/seethrough-b/harness/main.c:23:5
+    #3 0x78645f42a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x78645f42a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x5e8121e30364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case10-use-after-free-reuse-write-asan-arena-a1-bug+0x2d364) (BuildId: 115b9654e7a2f7da740135b3446b8e1ab59b2cf4)
+
+SUMMARY: AddressSanitizer: use-after-poison /home/ubuntu/seethrough-b/corpus/cases/case10-use-after-free-reuse-write/case.c:35:10 in st_case_10
+Shadow bytes around the buggy address:
+  0x78645ef71580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x78645ef71600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x78645ef71680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x78645ef71700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x78645ef71780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x78645ef71800:[f7]f7 f7 f7 00 00 00 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x78645ef71880: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x78645ef71900: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x78645ef71980: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x78645ef71a00: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x78645ef71a80: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+
+NOTE: the stack trace above identifies the code that *accessed* the poisoned memory.
+To identify the code that *poisoned* the memory, try the experimental setting ASAN_OPTIONS=poison_history_size=<size>.
+==158631==ABORTING
