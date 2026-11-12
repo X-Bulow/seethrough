@@ -30,10 +30,10 @@
     "hwasan": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "malloc retags the old block. Inside a pool the stale pointer keeps the pool's tag, so the unannotated columns are MISSED; HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "freelist+annot": "DETECTED",
+      "why": "malloc retags the old block. In a pool the stale pointer keeps the pool's tag unless st_free retags the old object, which the annotated arms do."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -83,6 +83,16 @@
         "arena+annot": "MISSED",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },

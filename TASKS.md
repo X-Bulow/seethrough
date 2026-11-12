@@ -51,8 +51,8 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P0 A5.5 malloc 下用 Valgrind Memcheck 检测 7 类
 - [ ] P0 A5.6 arena / freelist CMA 下用 Valgrind 检测 7 类（未标注）
 - [ ] P0 A5.7 arena / freelist CMA + Valgrind mempool 标注下检测 7 类
-- [ ] P0 A5.8 malloc 下用 HWASan 检测 7 类（前提 C3.1 可行）
-- [ ] P0 A5.9 arena / freelist CMA 下用 HWASan 检测 7 类（HWASan 没有官方 CMA 标注接口，记录这一点）
+- [ ] P0 A5.8 malloc 下用 HWASan 检测 7 类（在 Mac 上的 aarch64 VM 中运行，见 `docs/hwasan.md`；2026-11-11 开发运行已写入 `measured`，正式 bundle 待跑）
+- [ ] P0 A5.9 arena / freelist CMA 下用 HWASan 检测 7 类（标注用 `hwasan_interface.h` 的打标签接口，即 `st_annot.h` 的 `ST_TAG_*`；2026-11-11 开发运行已写入 `measured`，正式 bundle 待跑）
 - [ ] P1 A5.10 UBSan（`-fsanitize=bounds,object-size`）在 malloc / CMA 下检测 7 类
 - [ ] P1 A5.11 memsys5 / lookaside 下用 ASan、Valgrind 检测 7 类（依赖 B3）
 - [ ] P1 A5.12 使用 C4 已验证的 Ubuntu 18.04 Docker / LowFat clang 4.0.0 环境检测 7 类；记录填充空间内越界、跨分配边界越界及 UAF 的实际结果，并注明容器环境差异（运行步骤见 `docs/lowfat.md`）
@@ -103,9 +103,9 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 ### C3 HWASan（Week 1 必须出结论；x86-64 上是真问题）
 - [x] P0 C3.1 查服务器 CPU 是否支持 LAM（Linear Address Masking，`grep lam /proc/cpuinfo`）、内核是否 ≥ 6.2 并启用 LAM；clang 版本是否支持 `-fsanitize=hwaddress` 在 x86_64
 - [x] P0 C3.2 直接试：`clang -fsanitize=hwaddress corpus/controls/positive-uaf.c`，运行，看是否 DETECTED；把输出粘进 `docs/hwasan.md`
-- [x] P0 C3.3 若原生不行，试备选 A：aarch64 交叉编译 + `qemu-aarch64` 用户态运行（HWASan 的 TBI 在 qemu-user 下可用）；备选 B：组员的 Apple Silicon 机器上的 aarch64 Linux VM
-- [x] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入
-- [ ] P1 C3.5 若可行：HWASan 的 tag 粒度（16 字节）对 1 字节 overflow 的影响，设计 case 时要让越界跨 granule
+- [x] P0 C3.3 若原生不行，试备选 A：aarch64 交叉编译 + `qemu-aarch64` 用户态运行（HWASan 的 TBI 在 qemu-user 下可用）；备选 B：组员的 Apple Silicon 机器上的 aarch64 Linux VM（2026-11-11 备选 B 在 Apple M5 的 Lima VM 中跑通，需用 lld 链接）
+- [x] P0 C3.4 结论写进 `docs/hwasan.md`：可行（哪种方式）→ 纳入矩阵，并说明该方式和其他 tool 的环境差异；不可行 → 写明错误和原因，不再投入（2026-11-11 更新：可行，方式为备选 B）
+- [x] P1 C3.5 若可行：HWASan 的 tag 粒度（16 字节）对 1 字节 overflow 的影响，设计 case 时要让越界跨 granule（malloc 靠 short granule 抓到；分配器标注只能按整 granule 打标签，case 0-2 标注后仍 MISSED）
 
 ### C4 LowFat（Ubuntu 18.04 Docker 容器中构建并验证）
 - [x] P1 C4.1 在 Ubuntu 18.04 Docker 容器内构建固定 commit 的 LowFat clang，记录环境、构建和运行指令（clang 4.0.0 构建及自带测试通过，见 `docs/lowfat.md`）

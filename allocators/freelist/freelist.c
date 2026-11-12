@@ -84,9 +84,11 @@ void *st_alloc(size_t n) {
     st_slot *slot;
     if (klass >= 0 && heads[klass]) {
         p = heads[klass];
-        /* The next link is stored inside the freed slot. Open only that word. */
+        /* The next link is stored inside the freed slot. Open only that word. A slot freed
+         * twice can be on the list while reissued, so HWASan takes the whole slot back. */
         ST_UNPOISON(p, sizeof(void *));
         ST_DEFINED(p, sizeof(void *));
+        ST_TAG_POOL(base, p, slot_size);
         heads[klass] = *(void **)p;
         ST_POISON(p, slot_size);
         ST_NOACCESS(p, slot_size);
@@ -107,11 +109,12 @@ void *st_alloc(size_t n) {
     slot->live = 1;
     ST_POOL_ALLOC(base, p, n);
     ST_UNPOISON(p, n);
-    return p;
+    return ST_TAG_NEW(base, p, n);
 }
 
 void st_free(void *p) {
     if (!p || !base) return;
+    p = ST_POOL_PTR(base, p);
     st_slot *slot = find_exact(p);
     if (!slot) slot = find_containing(p); /* an interior free corrupts the list */
     if (!slot) {
@@ -122,13 +125,18 @@ void st_free(void *p) {
         /* A short request may leave the link word inside poisoned slack. */
         ST_UNPOISON(p, sizeof(void *));
         ST_DEFINED(p, sizeof(void *));
+        ST_TAG_POOL(base, p, sizeof(void *));
         *(void **)p = heads[slot->class_index];
         heads[slot->class_index] = p;
     }
     if (slot->ptr == p) slot->live = 0;
     ST_POOL_FREE(base, p);
-    if (slot->ptr == p) ST_POISON(p, slot->slot_size);
-    else ST_NOACCESS(p, sizeof(void *));
+    if (slot->ptr == p) {
+        ST_POISON(p, slot->slot_size);
+        ST_TAG_POOL(base, p, slot->slot_size);
+    } else {
+        ST_NOACCESS(p, sizeof(void *));
+    }
 }
 
 void *st_realloc(void *p, size_t n) {
@@ -137,7 +145,7 @@ void *st_realloc(void *p, size_t n) {
         st_free(p);
         return NULL;
     }
-    st_slot *old = find_exact(p);
+    st_slot *old = find_exact(ST_POOL_PTR(base, p));
     if (!old || !old->live) return NULL;
     size_t old_size = old->requested;
     void *next = st_alloc(n);
@@ -151,6 +159,7 @@ void st_alloc_fini(void) {
     if (!base) return;
     ST_POOL_DESTROY(base);
     ST_UNPOISON(base, pool_bytes);
+    ST_TAG_POOL(base, base, pool_bytes);   /* HWASan's free checks the first granule's tag */
     free(base);
     free(slots);
     base = cur = end = NULL;

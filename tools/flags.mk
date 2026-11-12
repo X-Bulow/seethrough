@@ -4,9 +4,11 @@ CC_asan      := clang
 CFLAGS_asan  := -fsanitize=address -fno-omit-frame-pointer -DST_TOOL_ASAN
 LD_asan      := -fsanitize=address
 
+# HWASan runs only on aarch64 Linux here (docs/hwasan.md). lld, because GNU ld 2.46 rewrites
+# the MOVK that puts a global's tag in its address into an undefined instruction (SIGILL).
 CC_hwasan     := clang
 CFLAGS_hwasan := -fsanitize=hwaddress -fno-omit-frame-pointer -DST_TOOL_HWASAN
-LD_hwasan     := -fsanitize=hwaddress
+LD_hwasan     := -fsanitize=hwaddress -fuse-ld=lld
 
 CC_ubsan      := clang
 CFLAGS_ubsan  := -fsanitize=bounds,object-size -fno-sanitize-recover=all -DST_TOOL_UBSAN

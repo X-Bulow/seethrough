@@ -26,7 +26,7 @@ report's Test Corpus section is compiled from these files.
 |---|---|---|---|---|
 | ASan | DETECTED | MISSED | DETECTED | the 1-byte overflow lands in ... |
 | Valgrind | ... | ... | ... | |
-| HWASan | ... | ... | n/a | no CMA annotation interface |
+| HWASan | ... | ... | ... | the annotation tags whole 16-byte granules |
 
 ## Negative control
 - which line `-DST_NEGATIVE_CONTROL` changes, and why the allocation traffic is identical to the bug version

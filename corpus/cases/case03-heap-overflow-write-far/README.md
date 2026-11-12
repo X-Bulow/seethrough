@@ -42,3 +42,10 @@ The ASan miss on malloc has been reproduced locally (the prediction was marked t
 | none | MISSED | MISSED | MISSED | MISSED | MISSED |
 
 The two free-list columns agree with the two arena columns.
+
+## Local smoke run (2026-11-11, HWASan, Apple M5 Lima VM, Ubuntu 26.04.1 aarch64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| hwasan | DETECTED tag-mismatch | MISSED | DETECTED tag-mismatch | MISSED | DETECTED tag-mismatch |
+
+HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. Annotated, the overflow lands in a live object with a different tag and is DETECTED, where annotated ASan is MISSED.

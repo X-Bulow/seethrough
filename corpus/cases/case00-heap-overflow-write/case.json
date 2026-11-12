@@ -27,10 +27,10 @@
     "hwasan": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
+      "arena+annot": "MISSED",
       "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "A 24-byte malloc block ends mid-granule and HWASan's short-granule tagging stores the size in the last byte of the granule, so offset 24 is caught. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "freelist+annot": "MISSED",
+      "why": "malloc: a 24-byte block ends mid-granule and HWASan's short-granule encoding keeps the size in the granule's last byte, so offset 24 is caught. In a pool every object carries the pool's tag, the one HWASan's malloc gave the backing block, so the unannotated columns are MISSED. The annotated columns tag whole 16-byte granules -- the public interface has no short-granule form -- and offset 24 lies in a's own second granule, so they stay MISSED: the one row where annotated HWASan is weaker than annotated ASan, which unpoisons exactly n bytes."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -76,6 +76,16 @@
       "none": {
         "malloc": "MISSED",
         "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
         "arena": "MISSED",
         "arena+annot": "MISSED",
         "freelist": "MISSED",

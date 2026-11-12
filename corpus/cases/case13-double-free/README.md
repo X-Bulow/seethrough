@@ -48,3 +48,10 @@ The annotated arena is still MISSED, consistent with the prediction that poisoni
 | none | MISSED | MISSED | MISSED | MISSED | MISSED |
 
 Under ASan the annotated arena and free list are both MISSED, consistent with "poisoning cannot express ownership". The Valgrind columns have to be measured on the server (not installed locally).
+
+## Local smoke run (2026-11-11, HWASan, Apple M5 Lima VM, Ubuntu 26.04.1 aarch64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| hwasan | DETECTED invalid-free | MISSED | MISSED | MISSED | MISSED |
+
+HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. The pool columns are MISSED: `st_free` makes no tagged access, and a tag cannot report a free call.

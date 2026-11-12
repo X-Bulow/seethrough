@@ -26,7 +26,7 @@ ST_CASE(15) {
     st_free(a);
     unsigned char *b = st_alloc(24);
     memset(b, 0x11, 24);
-    printf("ST NOTE reuse=%d\n", (int)(b == a));
+    printf("ST NOTE reuse=%d\n", (int)st_same_address(b, a));
     ST_READY();
 #ifdef ST_NEGATIVE_CONTROL
     st_free(b);                /* the live object's own pointer */

@@ -11,9 +11,10 @@
  * memory is legitimately live and must be unpoisoned, or b's own accesses would
  * be false positives. Only a tool that distinguishes the two POINTERS rather
  * than the memory -- a tag or a capability per allocation, so the stale pointer
- * carries the old identity -- can see it. That makes this the one row where we
- * expect ASan with annotations to stay MISSED while HWASan's tag mismatch, if
- * we can run it, would report.
+ * carries the old identity -- can see it. That makes this the one row where
+ * ASan with annotations stays MISSED while HWASan reports, but only where the
+ * allocator gives b a new tag: HWASan's own malloc does, and so does the free
+ * list's annotated arm; unannotated, a and b share the pool's tag.
  *
  * The case states its own precondition: "ST NOTE reuse=1" means the allocator
  * really did hand a's storage back. An arena that never reuses prints reuse=0,
@@ -27,7 +28,7 @@ ST_CASE(10) {
     st_free(a);
     unsigned char *b = st_alloc(24);
     memset(b, 0x11, 24);
-    printf("ST NOTE reuse=%d\n", (int)(b == a));
+    printf("ST NOTE reuse=%d\n", (int)st_same_address(b, a));
     ST_READY();
 #ifdef ST_NEGATIVE_CONTROL
     b[0] = 0x22;               /* through the live pointer */

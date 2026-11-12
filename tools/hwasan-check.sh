@@ -13,7 +13,8 @@ else
 fi
 echo "== fallback A: aarch64 cross + qemu-user (needs clang target support, an aarch64 sysroot, qemu-aarch64)"
 if command -v qemu-aarch64 >/dev/null; then
-  clang --target=aarch64-linux-gnu -fsanitize=hwaddress -O0 -g "$SRC" -o "$OUT-a64" 2>&1 && qemu-aarch64 "$OUT-a64"; echo "exit=$?"
+  # lld: GNU ld turns the MOVK that tags a global's address into an undefined instruction (SIGILL)
+  clang --target=aarch64-linux-gnu -fuse-ld=lld -fsanitize=hwaddress -O0 -g "$SRC" -o "$OUT-a64" 2>&1 && qemu-aarch64 "$OUT-a64"; echo "exit=$?"
 else
   echo "qemu-aarch64 not installed"
 fi

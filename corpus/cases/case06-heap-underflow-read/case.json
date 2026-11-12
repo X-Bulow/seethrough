@@ -27,10 +27,10 @@
     "hwasan": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "As case 5. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "freelist+annot": "DETECTED",
+      "why": "As case 5, as a read."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -80,6 +80,16 @@
         "arena+annot": "MISSED",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },

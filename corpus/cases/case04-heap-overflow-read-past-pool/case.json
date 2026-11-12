@@ -26,11 +26,11 @@
     },
     "hwasan": {
       "malloc": "DETECTED",
-      "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
-      "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "The byte past the pool carries a different tag. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "The access lands 8192 bytes past the backing block (past a itself on malloc), in memory with another tag, so every column is DETECTED whatever the allocator tags inside its pool."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -80,6 +80,16 @@
         "arena+annot": "MISSED",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "DETECTED tag-mismatch",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "DETECTED tag-mismatch",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },

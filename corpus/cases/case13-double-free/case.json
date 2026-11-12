@@ -25,10 +25,10 @@
     "hwasan": {
       "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
+      "arena+annot": "MISSED",
       "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "malloc's own metadata check. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "freelist+annot": "MISSED",
+      "why": "HWASan's free compares the pointer's tag with the memory's and reports invalid-free. A custom st_free makes no tagged access and the tag interface cannot report a free call, so all four pool columns are MISSED: tags give accesses an identity, not frees (as with ASan's poisoning; only Valgrind's mempool reports it)."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -74,6 +74,16 @@
       "none": {
         "malloc": "MISSED crashed exit=-5",
         "malloc+annot": "MISSED crashed exit=-5",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED invalid-free",
+        "malloc+annot": "DETECTED invalid-free",
         "arena": "MISSED",
         "arena+annot": "MISSED",
         "freelist": "MISSED",

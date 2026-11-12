@@ -2,8 +2,9 @@
 
 Both allocators use the same `st_alloc` interface and the same source for annotated and
 unannotated builds. `ST_ANNOT=0` makes every macro in `st_annot.h` a no-op. `ST_ANNOT=1`
-activates ASan's manual poison/unpoison calls for ASan builds, or Valgrind's mempool and
-addressability requests for Memcheck builds. Allocator bookkeeping is kept outside live
+activates ASan's manual poison/unpoison calls for ASan builds, Valgrind's mempool and
+addressability requests for Memcheck builds, or HWASan's memory and pointer tagging for HWASan
+builds. Allocator bookkeeping is kept outside live
 objects, except for the free-list next link stored inside a freed slot.
 
 | Boundary or mistake | Arena with annotations | Free list with annotations | Limit |
@@ -13,6 +14,16 @@ objects, except for the free-list next link stored inside a freed slot.
 | Reuse | Arena never reuses before pool destruction | LIFO reuse opens the same address for the new owner | Address-based annotations cannot tell a stale pointer from the new pointer once storage is reissued (case 10). |
 | Ownership errors at `st_free` | Memcheck can report an invalid or repeated `MEMPOOL_FREE` | Same | ASan poison/unpoison alone cannot report a free call with no invalid memory access (cases 13 and 14). |
 | Whole-pool destruction | Underlying `free` ends the backing block | Same | A tool report here is about the outer block, not per-object tracking (case 12). |
+
+HWASan builds tag instead of poisoning. `st_alloc` gives each object's granules a fresh tag and
+returns a pointer that carries it; `st_free` hands the granules back to the pool's tag, the one
+HWASan's malloc gave the backing block. The allocator converts a pointer the caller hands back to
+the pool's tag (`ST_POOL_PTR`) before its side-table lookups and its own link-word writes, and where
+the ASan arm opens a link word, the HWASan arm retags that granule. A tag separates a stale pointer
+from the new owner of reissued storage (case 10) and an overflow from the live object it lands in
+(case 3), which no poisoning can. It is 16-byte precise, though: `__hwasan_tag_memory` cannot
+describe a short last granule, so an overflow into the rounding slack stays MISSED (cases 0-2), and
+like poisoning it cannot report a free call that touches nothing (cases 13 and 14).
 
 The Arena needs an external size/liveness table to re-poison a freed object without adding a
 header between objects. This is a design cost of annotation: the original no-op `st_free`

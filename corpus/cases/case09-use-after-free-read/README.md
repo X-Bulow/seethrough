@@ -29,3 +29,10 @@ As case 8 (see `case.json`): since B1.2 the arena records object sizes in a side
 | none | MISSED | MISSED | MISSED | MISSED | MISSED |
 
 The bold cell differs from the 2026-11-05 run, for the same reason as case 8.
+
+## Local smoke run (2026-11-11, HWASan, Apple M5 Lima VM, Ubuntu 26.04.1 aarch64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| hwasan | DETECTED tag-mismatch | MISSED | DETECTED tag-mismatch | MISSED | DETECTED tag-mismatch |
+
+HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. Annotated, `st_free` hands the object back to the pool's tag, so the stale pointer mismatches.

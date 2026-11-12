@@ -25,11 +25,11 @@
     },
     "hwasan": {
       "malloc": "UNSUPPORTED",
-      "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
-      "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "The pool's granules are retagged when the block is freed. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "arena": "DETECTED",
+      "arena+annot": "DETECTED",
+      "freelist": "DETECTED",
+      "freelist+annot": "DETECTED",
+      "why": "Every column with a pool is DETECTED, annotated or not: st_alloc_fini frees the backing block, HWASan's malloc retags all of it, and the old object's pointer (pool tag, or its own tag when annotated) no longer matches. malloc has no pool."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -79,6 +79,16 @@
         "arena+annot": "MISSED",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "DETECTED tag-mismatch",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "DETECTED tag-mismatch",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },

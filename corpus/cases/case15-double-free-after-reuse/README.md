@@ -43,3 +43,10 @@ At the time no allocator reused storage; the real measurement had to wait for th
 | none | MISSED (reused, no tool to report it) | UNSUPPORTED (arena never reuses) | UNSUPPORTED | MISSED | MISSED |
 
 The free-list precondition holds. Unannotated it is MISSED; annotated, the stale free poisons `b`'s storage and the following read is reported as use-after-poison, so DETECTED. This matches the prediction: the detection comes from the read, not from the free.
+
+## Local smoke run (2026-11-11, HWASan, Apple M5 Lima VM, Ubuntu 26.04.1 aarch64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| hwasan | DETECTED invalid-free | UNSUPPORTED (arena never reuses) | UNSUPPORTED (arena never reuses) | MISSED | DETECTED tag-mismatch |
+
+HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. malloc reports invalid-free at the stale `st_free`; the annotated free list reports `b`'s read after its slot went back to the pool's tag.

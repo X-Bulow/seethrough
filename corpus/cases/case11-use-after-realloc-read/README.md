@@ -41,3 +41,10 @@ See `case.json`. LowFat's whole row is UNSUPPORTED (bounds only).
 | none | MISSED | **MISSED** | **MISSED** | MISSED | MISSED |
 
 The bold cells differ from the 2026-11-05 run: before B1.2 the arena's `st_realloc` returned NULL and the whole column was UNSUPPORTED; now it always moves, so the unannotated arena is MISSED and the annotated arena DETECTED.
+
+## Local smoke run (2026-11-11, HWASan, Apple M5 Lima VM, Ubuntu 26.04.1 aarch64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| hwasan | DETECTED tag-mismatch | MISSED | DETECTED tag-mismatch | MISSED | DETECTED tag-mismatch |
+
+HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. Annotated, `st_free` retags the old block that `st_realloc` left behind.

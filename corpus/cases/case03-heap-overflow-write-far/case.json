@@ -25,12 +25,12 @@
       "why": "Same reasoning: the destination byte is addressable and owned."
     },
     "hwasan": {
-      "malloc": "DETECTED (to verify)",
+      "malloc": "DETECTED",
       "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
+      "arena+annot": "DETECTED",
       "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "On malloc a[64] should land in a differently tagged allocation, so the tag check fires wherever it lands -- the one mechanism here that does not depend on redzone placement. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "freelist+annot": "DETECTED",
+      "why": "a[64] lands in the third object. On malloc, and in the pool once the allocator tags objects, that object carries a different tag, so the check fires wherever the overflow lands -- which poisoning cannot do once it lands in a LIVE object (ASan's annotated columns are MISSED). Unannotated, all three objects share the pool's tag."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -80,6 +80,16 @@
         "arena+annot": "MISSED",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },

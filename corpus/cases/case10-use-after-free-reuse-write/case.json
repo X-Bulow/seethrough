@@ -27,12 +27,12 @@
       "why": "Same: the mempool interface describes memory, not pointer identity."
     },
     "hwasan": {
-      "malloc": "UNSUPPORTED",
+      "malloc": "DETECTED",
       "arena": "UNSUPPORTED",
       "arena+annot": "UNSUPPORTED",
-      "freelist": "DETECTED (to verify)",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "The row where HWASan should win on its own, with no annotation: the stale pointer still carries a's tag while the granule now carries b's. If C3 shows HWASan can run, this is the cell to report."
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "WHERE TAGGING BEATS POISONING, on one condition. HWASan's malloc reissues a's block at once and retags it for b, so the stale write mismatches (ASan's quarantine prevents the reuse, so its malloc column is UNSUPPORTED). On the free list the stale pointer and b carry the same pool tag unless the allocator tags each object itself: unannotated MISSED, annotated DETECTED, where ASan's and Valgrind's annotated columns must stay MISSED. A bump arena never reuses: UNSUPPORTED."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -82,6 +82,16 @@
         "arena+annot": "UNSUPPORTED precondition not met",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },

@@ -35,3 +35,10 @@ As case 0 (see `case.json`). LowFat does not report even on malloc, because 24 i
 | none | MISSED | MISSED | MISSED | MISSED | MISSED |
 
 The two free-list columns agree with the two arena columns.
+
+## Local smoke run (2026-11-11, HWASan, Apple M5 Lima VM, Ubuntu 26.04.1 aarch64, development only, not citable)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 |
+|---|---|---|---|---|---|
+| hwasan | DETECTED tag-mismatch | MISSED | MISSED | MISSED | MISSED |
+
+HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. The annotated columns stay MISSED: the tag covers a's whole second granule, so offset 24 is 16-byte-precise slack that annotated ASan, unpoisoning exactly 24 bytes, does not have.

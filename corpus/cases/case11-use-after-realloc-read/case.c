@@ -22,7 +22,7 @@ ST_CASE(11) {
     unsigned char *a = st_alloc(24);
     memset(a, ST_FILL, 24);
     unsigned char *big = st_realloc(a, 4096);
-    printf("ST NOTE realloc=%d moved=%d\n", (int)(big != NULL), (int)(big != NULL && big != a));
+    printf("ST NOTE realloc=%d moved=%d\n", (int)(big != NULL), (int)(big != NULL && !st_same_address(big, a)));
     if (!big) return;          /* the allocator has no realloc; requires makes this UNSUPPORTED */
     memset(big, ST_FILL, 4096);
     ST_READY();

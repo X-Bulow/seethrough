@@ -59,13 +59,15 @@ void *st_alloc(size_t n) {
     objects[object_count++] = (st_object){p, n, 1};
     ST_UNPOISON(p, n);
     ST_POOL_ALLOC(base, p, n);
-    return p;
+    return ST_TAG_NEW(base, p, n);
 }
 void st_free(void *p) {
     if (!p || !base) return;
+    p = ST_POOL_PTR(base, p);
     st_object *obj = find_object(p);
     if (obj && obj->live) {
         ST_POISON(p, obj->size);
+        ST_TAG_POOL(base, p, obj->size);
         obj->live = 0;
     }
     /* Also pass invalid and repeated frees to Memcheck's ownership model. */
@@ -77,7 +79,7 @@ void *st_realloc(void *p, size_t n) {
         st_free(p);
         return NULL;
     }
-    st_object *old = find_object(p);
+    st_object *old = find_object(ST_POOL_PTR(base, p));
     if (!old || !old->live) return NULL;
     size_t old_size = old->size;
     void *next = st_alloc(n);
@@ -90,6 +92,7 @@ void st_alloc_fini(void) {
     if (!base) return;
     ST_POOL_DESTROY(base);
     ST_UNPOISON(base, pool_bytes);
+    ST_TAG_POOL(base, base, pool_bytes);   /* HWASan's free checks the first granule's tag */
     free(base);
     free(objects);
     base = cur = end = NULL;

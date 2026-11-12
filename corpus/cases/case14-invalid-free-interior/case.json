@@ -23,12 +23,12 @@
       "why": "MEMPOOL_FREE of an address that is not a pool allocation is reported as an invalid free; both annotated pools pass a+8 to it (the arena since B1.2)."
     },
     "hwasan": {
-      "malloc": "DETECTED",
+      "malloc": "MISSED",
       "arena": "MISSED",
-      "arena+annot": "UNSUPPORTED",
+      "arena+annot": "MISSED",
       "freelist": "MISSED",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "malloc's own check. HWASan has no public custom-allocator interface, so the annotated columns are UNSUPPORTED, not MISSED (C3.4)."
+      "freelist+annot": "MISSED",
+      "why": "MISSED on malloc too: HWASan's free accepted a + 8 without a report (clang 21.1.8 runtime, 2026-11-11), where glibc and ASan reject it. The pool columns are MISSED as in case 13."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -74,6 +74,16 @@
       "none": {
         "malloc": "MISSED crashed exit=-5",
         "malloc+annot": "MISSED crashed exit=-5",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
         "arena": "MISSED",
         "arena+annot": "MISSED",
         "freelist": "MISSED",

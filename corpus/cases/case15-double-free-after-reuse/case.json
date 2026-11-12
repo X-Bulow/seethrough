@@ -27,12 +27,12 @@
       "why": "Same path: MEMPOOL_FREE(a) is accepted because a is a live pool address, then the read of b hits NOACCESS."
     },
     "hwasan": {
-      "malloc": "UNSUPPORTED",
+      "malloc": "DETECTED",
       "arena": "UNSUPPORTED",
       "arena+annot": "UNSUPPORTED",
-      "freelist": "MISSED (to verify)",
-      "freelist+annot": "UNSUPPORTED",
-      "why": "A free list that reissues without retagging gives b the same tag, so the stale free and the read both look legitimate; to verify."
+      "freelist": "MISSED",
+      "freelist+annot": "DETECTED",
+      "why": "HWASan's malloc reissues a's block at once; the second st_free(a) carries a's old tag while the block carries b's, so the free reports invalid-free. On the free list without annotation a and b share the pool's tag and nothing mismatches. Annotated, the stale free hands b's slot back to the pool's tag and b's next read mismatches: the detection comes from b's read, as the case predicts. A bump arena never reuses: UNSUPPORTED."
     },
     "ubsan": {
       "malloc": "MISSED",
@@ -82,6 +82,16 @@
         "arena+annot": "UNSUPPORTED precondition not met",
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
+      }
+    },
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+      "hwasan": {
+        "malloc": "DETECTED invalid-free",
+        "malloc+annot": "DETECTED invalid-free",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
       }
     }
   },
