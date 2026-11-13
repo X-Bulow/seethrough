@@ -44,7 +44,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P1 A4.5 `harness/render-matrix.py`：CSV → 报告用 Detection Matrix（markdown / LaTeX 表）；`--check` 对照 `case.json` 的预期
 
 ### A5 检测实验（每一行就是矩阵里的一个 cell 组，A 跑，B/C 提供 allocator / tool）
-A5.1–A5.7、A5.11、A5.14 已有 B 在 AWS EC2 x86-64 上跑的 bundle（commit `2763402`，`env.txt` 记 `dirty=2`，见 `results/README.md`）。是否作为正式结果，还是在实验室 VM 上从干净提交重跑，待三人确认，所以先标 `[~]`。
+A5.1–A5.7、A5.11、A5.14 已有 B 在 AWS EC2 x86-64 上跑的 bundle（commit `2763402`，见 `results/README.md`；`env.txt` 里的 `dirty=1..5` 是旧版 `tools/env.sh` 把本轮尚未提交的结果目录也算进去了，按运行顺序逐个加一，工作区本身是干净的）。是否作为正式结果，还是在实验室 VM 上重跑，待三人确认，所以先标 `[~]`。
 - [~] P0 A5.1 malloc 下用 ASan 检测 7 类（`results/2026-11-10-ec2-b-core/`）
 - [~] P0 A5.2 arena CMA 下用 ASan 检测 7 类（未标注）（同上）
 - [~] P0 A5.3 arena CMA + ASan manual poisoning 下检测 7 类（同上）
