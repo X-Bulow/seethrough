@@ -1,0 +1,48 @@
+==5370==ERROR: HWAddressSanitizer: tag-mismatch on address 0xe446ce00e000 at pc 0xc77f5a4dea00
+WRITE of size 1 at 0xe446ce00e000 tags: 10/19 (ptr/mem) in thread T0
+==5370==WARNING: invalid path to external symbolizer!
+==5370==WARNING: Failed to use and restart external symbolizer!
+    #0 0xc77f5a4dea00  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-freelist-a1-bug+0x8ea00) (BuildId: 4d8657b33342106247f733dccc17cacef4d03c64)
+    #1 0xc77f5a4de758  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-freelist-a1-bug+0x8e758) (BuildId: 4d8657b33342106247f733dccc17cacef4d03c64)
+    #2 0xe446ce4e2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xe446ce4e3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xc77f5a49366c  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-freelist-a1-bug+0x4366c) (BuildId: 4d8657b33342106247f733dccc17cacef4d03c64)
+
+[0xe446ce00e000,0xe446ce10e000) is a large allocated heap chunk; size: 1048576 offset: 0
+
+Thread: T0 0xd44500002000 stack: [0xfffffb869000,0xfffffc069000) sz: 8388608 tls: [0xe446ce7fb7a0,0xe446ce7fc640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xe446ce00d800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00d900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00da00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00db00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00dc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00dd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00de00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe446ce00df00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xe446ce00e000:[19] 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e100: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e200: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e300: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e400: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e500: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e600: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e700: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+  0xe446ce00e800: 19  19  19  19  19  19  19  19  19  19  19  19  19  19  19  19 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xe446ce00df00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xe446ce00e000:[..] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xe446ce00e100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xc77f5a4dea00):
+    x0  0000000000000000  x1  0000e446ce682480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1000e446ce00e000  x9  0000000000000019  x10 00000e446ce00e00  x11 0000e446ce804798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000e446ce80e340
+    x16 0000c77f5a4acb5c  x17 0000e446ce534220  x18 000000000000000f  x19 0000fffffc068628
+    x20 0200d44600000000  x21 0000000000000001  x22 0000fffffc068638  x23 0000e446ce80cc98
+    x24 0000c77f5a4de644  x25 0000000000000000  x26 0000e446ce80d000  x27 0000c77f5a4f4608
+    x28 0000000000000000  x29 0000fffffc068440  x30 0000c77f5a4dea04   sp 0000fffffc068410
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-freelist-a1-bug+0x8ea00) (BuildId: 4d8657b33342106247f733dccc17cacef4d03c64) 

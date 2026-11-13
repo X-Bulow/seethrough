@@ -1,0 +1,64 @@
+==3090==ERROR: HWAddressSanitizer: invalid-free on address 0xe2b8fffe0000 at pc 0xacfb896bb8c0 on thread T0
+tags: 19/7a (ptr/mem)
+==3090==WARNING: invalid path to external symbolizer!
+==3090==WARNING: Failed to use and restart external symbolizer!
+    #0 0xacfb896bb8c0  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x4b8c0) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #1 0xacfb896fece0  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8ece0) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #2 0xacfb896fe970  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8e970) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #3 0xacfb896fe5d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8e5d8) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #4 0xf69a3c6d2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xf69a3c6d3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #6 0xacfb896b34ec  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x434ec) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+
+[0xe2b8fffe0000,0xe2b8fffe0020) is a small allocated heap chunk; size: 32 offset: 0
+
+Cause: use-after-free
+0xe2b8fffe0000 is located 0 bytes inside a 24-byte region [0xe2b8fffe0000,0xe2b8fffe0018)
+freed by thread T0 here:
+    #0 0xacfb896bb8c0  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x4b8c0) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #1 0xacfb896fece0  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8ece0) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #2 0xacfb896fe7b8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8e7b8) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #3 0xacfb896fe5d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8e5d8) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #4 0xf69a3c6d2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xf69a3c6d3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #6 0xacfb896b34ec  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x434ec) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+
+previously allocated by thread T0 here:
+    #0 0xacfb896bbf38  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x4bf38) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #1 0xacfb896fec30  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8ec30) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #2 0xacfb896fe700  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8e700) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #3 0xacfb896fe5d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x8e5d8) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+    #4 0xf69a3c6d2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xf69a3c6d3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #6 0xacfb896b34ec  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x434ec) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0)
+
+hwasan_dev_note_heap_rb_distance: 1 1023
+hwasan_dev_note_num_matching_addrs: 0
+hwasan_dev_note_num_matching_addrs_4b: 0
+Thread: T0 0xe69900002000 stack: [0xffffc0bd1000,0xffffc13d1000) sz: 8388608 tls: [0xf69a3c9e67a0,0xf69a3c9e7640)
+
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xe2b8fffdf800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdf900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdfa00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdfb00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdfc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdfd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdfe00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffdff00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xe2b8fffe0000:[7a] 08  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0100: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0200: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0300: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0400: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0500: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0600: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0700: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2b8fffe0800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xe2b8fffdff00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xe2b8fffe0000:[..] 7a  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xe2b8fffe0100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+SUMMARY: HWAddressSanitizer: invalid-free (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case15-double-free-after-reuse-hwasan-malloc-a1-bug+0x4b8c0) (BuildId: 10c55636d34bfdf16f60d7a606c39b81e6f20ed0) 

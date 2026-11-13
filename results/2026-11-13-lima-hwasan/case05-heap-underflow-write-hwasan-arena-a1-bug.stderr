@@ -1,0 +1,59 @@
+==3970==ERROR: HWAddressSanitizer: tag-mismatch on address 0xe2ff216ce01f at pc 0xc14e5879ea18
+WRITE of size 1 at 0xe2ff216ce01f tags: 11/10 (ptr/mem) in thread T0
+==3970==WARNING: invalid path to external symbolizer!
+==3970==WARNING: Failed to use and restart external symbolizer!
+    #0 0xc14e5879ea18  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x8ea18) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+    #1 0xc14e5879e718  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x8e718) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+    #2 0xe2ff21ba2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xe2ff21ba3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xc14e5875362c  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x4362c) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+
+[0xe2ff216ce000,0xe2ff217ce000) is a large allocated heap chunk; size: 1048576 offset: 31
+
+Cause: heap-buffer-overflow
+0xe2ff216ce01f is located 31 bytes inside a 1048576-byte region [0xe2ff216ce000,0xe2ff217ce000)
+allocated by thread T0 here:
+    #0 0xc14e5875c078  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x4c078) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+    #1 0xc14e5879ede8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x8ede8) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+    #2 0xc14e5879e6a8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x8e6a8) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+    #3 0xe2ff21ba2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xe2ff21ba3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xc14e5875362c  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x4362c) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb)
+
+
+Thread: T0 0xd2fe00002000 stack: [0xffffc99b1000,0xffffca1b1000) sz: 8388608 tls: [0xe2ff21ebc7a0,0xe2ff21ebd640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xe2ff216cd800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cd900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cda00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cdb00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cdc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cdd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cde00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe2ff216cdf00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xe2ff216ce000: 10 [10] 11  11  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce100: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce200: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce300: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce400: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce500: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce600: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce700: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+  0xe2ff216ce800: ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec  ec 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xe2ff216cdf00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xe2ff216ce000: 5a [00] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xe2ff216ce100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xc14e5879ea18):
+    x0  0000000000000000  x1  0000e2ff21d42480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1100e2ff216ce01f  x9  0000000000000010  x10 00000e2ff216ce01  x11 0000e2ff21ec5798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000e2ff21ecf340
+    x16 0000c14e5876cb1c  x17 0000e2ff21bf4220  x18 000000000000000f  x19 0000ffffca1af9b8
+    x20 0200d2ff00000000  x21 0000000000000001  x22 0000ffffca1af9c8  x23 0000e2ff21ecdc98
+    x24 0000c14e5879e604  x25 0000000000000000  x26 0000e2ff21ece000  x27 0000c14e587b2968
+    x28 0000000000000000  x29 0000ffffca1af7d0  x30 0000c14e5879ea1c   sp 0000ffffca1af780
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-arena-a1-bug+0x8ea18) (BuildId: d41754c7622a7d70615c295bc1fc766025727eeb) 

@@ -1,0 +1,59 @@
+==5170==ERROR: HWAddressSanitizer: tag-mismatch on address 0xffc07403e040 at pc 0xbea09c9deb24
+WRITE of size 1 at 0xffc07403e040 tags: 10/12 (ptr/mem) in thread T0
+==5170==WARNING: invalid path to external symbolizer!
+==5170==WARNING: Failed to use and restart external symbolizer!
+    #0 0xbea09c9deb24  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x8eb24) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+    #1 0xbea09c9de798  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x8e798) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+    #2 0xffc074512f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xffc074513058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xbea09c9936ac  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x436ac) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+
+[0xffc07403e000,0xffc07413e000) is a large allocated heap chunk; size: 1048576 offset: 64
+
+Cause: heap-buffer-overflow
+0xffc07403e040 is located 64 bytes inside a 1048576-byte region [0xffc07403e000,0xffc07413e000)
+allocated by thread T0 here:
+    #0 0xbea09c99c0f8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x4c0f8) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+    #1 0xbea09c9deff4  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x8eff4) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+    #2 0xbea09c9de728  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x8e728) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+    #3 0xffc074512f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xffc074513058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xbea09c9936ac  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x436ac) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a)
+
+
+Thread: T0 0xefbf00002000 stack: [0xffffcb938000,0xffffcc138000) sz: 8388608 tls: [0xffc0748227a0,0xffc074823640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xffc07403d800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403d900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403da00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403db00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403dc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403dd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403de00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xffc07403df00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xffc07403e000: 10  10  11  11 [12] 12  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e100: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e200: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e300: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e400: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e500: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e600: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e700: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+  0xffc07403e800: 48  48  48  48  48  48  48  48  48  48  48  48  48  48  48  48 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xffc07403df00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xffc07403e000: 5a  00  ..  .. [..] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xffc07403e100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xbea09c9deb24):
+    x0  0000000000000000  x1  0000ffc0746b2480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1000ffc07403e040  x9  0000000000000012  x10 00000ffc07403e04  x11 0000ffc07482b798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000ffc074835340
+    x16 0000bea09c9acb9c  x17 0000ffc074564220  x18 000000000000000f  x19 0000ffffcc137638
+    x20 0200efc000000000  x21 0000000000000001  x22 0000ffffcc137648  x23 0000ffc074833c98
+    x24 0000bea09c9de684  x25 0000000000000000  x26 0000ffc074834000  x27 0000bea09c9f4948
+    x28 0000000000000000  x29 0000ffffcc137450  x30 0000bea09c9deb28   sp 0000ffffcc1373e0
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case03-heap-overflow-write-far-hwasan-freelist-a1-bug+0x8eb24) (BuildId: 350ccdb5a3a8e35eceabd950184f3d88351ca37a) 

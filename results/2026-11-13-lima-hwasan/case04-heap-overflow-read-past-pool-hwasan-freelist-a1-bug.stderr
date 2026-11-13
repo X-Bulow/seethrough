@@ -1,0 +1,47 @@
+==5210==ERROR: HWAddressSanitizer: tag-mismatch on address 0xf7d467cb0000 at pc 0xb9afe511ec14
+READ of size 1 at 0xf7d467cb0000 tags: 10/00 (ptr/mem) in thread T0
+==5210==WARNING: invalid path to external symbolizer!
+==5210==WARNING: Failed to use and restart external symbolizer!
+    #0 0xb9afe511ec14  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case04-heap-overflow-read-past-pool-hwasan-freelist-a1-bug+0x8ec14) (BuildId: 264538e2b1bf3b8cd306e8ded7fbf1c375ef9206)
+    #1 0xb9afe511e7d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case04-heap-overflow-read-past-pool-hwasan-freelist-a1-bug+0x8e7d8) (BuildId: 264538e2b1bf3b8cd306e8ded7fbf1c375ef9206)
+    #2 0xf7d468082f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xf7d468083058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xb9afe50d36ec  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case04-heap-overflow-read-past-pool-hwasan-freelist-a1-bug+0x436ec) (BuildId: 264538e2b1bf3b8cd306e8ded7fbf1c375ef9206)
+
+
+Thread: T0 0xe7d300002000 stack: [0xffffeccf5000,0xffffed4f5000) sz: 8388608 tls: [0xf7d46839c7a0,0xf7d46839d640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xf7d467caf800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467caf900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cafa00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cafb00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cafc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cafd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cafe00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467caff00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xf7d467cb0000:[00] 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0100: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0200: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0300: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0400: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0500: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0600: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0700: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xf7d467cb0800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xf7d467caff00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xf7d467cb0000:[..] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xf7d467cb0100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xb9afe511ec14):
+    x0  0000000000000000  x1  0000f7d468222480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1000f7d467cb0000  x9  0000000000000000  x10 00000f7d467cb000  x11 0000f7d4683a5798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000f7d4683af340
+    x16 0000b9afe50ecbdc  x17 0000000000000000  x18 000000000000000f  x19 0000ffffed4f3ac8
+    x20 0200e7d400000000  x21 0000000000000001  x22 0000ffffed4f3ad8  x23 0000f7d4683adc98
+    x24 0000b9afe511e6c4  x25 0000000000000000  x26 0000f7d4683ae000  x27 0000b9afe5134888
+    x28 0000000000000000  x29 0000ffffed4f38e0  x30 0000b9afe511ec18   sp 0000ffffed4f3870
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case04-heap-overflow-read-past-pool-hwasan-freelist-a1-bug+0x8ec14) (BuildId: 264538e2b1bf3b8cd306e8ded7fbf1c375ef9206) 

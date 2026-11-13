@@ -1,0 +1,47 @@
+==5530==ERROR: HWAddressSanitizer: tag-mismatch on address 0xef8c6f500000 at pc 0xc5b5d34dea2c
+READ of size 1 at 0xef8c6f500000 tags: 10/00 (ptr/mem) in thread T0
+==5530==WARNING: invalid path to external symbolizer!
+==5530==WARNING: Failed to use and restart external symbolizer!
+    #0 0xc5b5d34dea2c  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case12-use-after-pool-destroy-read-hwasan-freelist-a1-bug+0x8ea2c) (BuildId: 7ee498c2018d59cfb7d23f65dbb5b609097ee72f)
+    #1 0xc5b5d34de798  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case12-use-after-pool-destroy-read-hwasan-freelist-a1-bug+0x8e798) (BuildId: 7ee498c2018d59cfb7d23f65dbb5b609097ee72f)
+    #2 0xef8c707d2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xef8c707d3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xc5b5d34936ac  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case12-use-after-pool-destroy-read-hwasan-freelist-a1-bug+0x436ac) (BuildId: 7ee498c2018d59cfb7d23f65dbb5b609097ee72f)
+
+
+Thread: T0 0xdf8b00002000 stack: [0xfffffa8f5000,0xfffffb0f5000) sz: 8388608 tls: [0xef8c70ae87a0,0xef8c70ae9640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xef8c6f4ff800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4ff900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4ffa00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4ffb00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4ffc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4ffd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4ffe00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f4fff00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xef8c6f500000:[00] 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500100: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500200: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500300: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500400: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500500: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500600: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500700: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xef8c6f500800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xef8c6f4fff00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xef8c6f500000:[..] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xef8c6f500100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xc5b5d34dea2c):
+    x0  0000000000000000  x1  0000ef8c70972480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1000ef8c6f500000  x9  0000000000000000  x10 00000ef8c6f50000  x11 0000ef8c70af1798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000ef8c70afb340
+    x16 0000c5b5d34acb9c  x17 0000000000000000  x18 000000000000000f  x19 0000fffffb0f41c8
+    x20 0200df8c00000000  x21 0000000000000001  x22 0000fffffb0f41d8  x23 0000ef8c70af9c98
+    x24 0000c5b5d34de684  x25 0000000000000000  x26 0000ef8c70afa000  x27 0000c5b5d34f4668
+    x28 0000000000000000  x29 0000fffffb0f3fe0  x30 0000c5b5d34dea30   sp 0000fffffb0f3fb0
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case12-use-after-pool-destroy-read-hwasan-freelist-a1-bug+0x8ea2c) (BuildId: 7ee498c2018d59cfb7d23f65dbb5b609097ee72f) 

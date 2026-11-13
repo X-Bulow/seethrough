@@ -1,0 +1,72 @@
+==2810==ERROR: HWAddressSanitizer: tag-mismatch on address 0xd871fffe0000 at pc 0xc2f5a12ee840
+WRITE of size 1 at 0xd871fffe0000 tags: c0/ec (ptr/mem) in thread T0
+==2810==WARNING: invalid path to external symbolizer!
+==2810==WARNING: Failed to use and restart external symbolizer!
+    #0 0xc2f5a12ee840  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e840) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #1 0xc2f5a12ee598  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e598) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #2 0xec5353bc2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xec5353bc3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xc2f5a12a34ac  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x434ac) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+
+[0xd871fffe0000,0xd871fffe0020) is a small unallocated heap chunk; size: 32 offset: 0
+
+Cause: use-after-free
+0xd871fffe0000 is located 0 bytes inside a 24-byte region [0xd871fffe0000,0xd871fffe0018)
+freed by thread T0 here:
+    #0 0xc2f5a12ab880  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x4b880) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #1 0xc2f5a12eeaf8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8eaf8) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #2 0xc2f5a12ee778  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e778) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #3 0xc2f5a12ee598  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e598) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #4 0xec5353bc2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xec5353bc3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #6 0xc2f5a12a34ac  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x434ac) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+
+previously allocated by thread T0 here:
+    #0 0xc2f5a12abef8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x4bef8) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #1 0xc2f5a12eea48  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8ea48) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #2 0xc2f5a12ee6c0  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e6c0) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #3 0xc2f5a12ee598  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e598) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+    #4 0xec5353bc2f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xec5353bc3058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #6 0xc2f5a12a34ac  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x434ac) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439)
+
+hwasan_dev_note_heap_rb_distance: 1 1023
+hwasan_dev_note_num_matching_addrs: 0
+hwasan_dev_note_num_matching_addrs_4b: 0
+Thread: T0 0xdc5200002000 stack: [0xffffc41c8000,0xffffc49c8000) sz: 8388608 tls: [0xec5353ed67a0,0xec5353ed7640)
+
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xd871fffdf800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdf900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdfa00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdfb00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdfc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdfd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdfe00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffdff00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xd871fffe0000:[ec] ec  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0100: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0200: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0300: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0400: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0500: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0600: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0700: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xd871fffe0800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xd871fffdff00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xd871fffe0000:[..] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xd871fffe0100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xc2f5a12ee840):
+    x0  0000000000000000  x1  0000ec5353d62480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  c000d871fffe0000  x9  00000000000000ec  x10 00000d871fffe000  x11 0000ec5353edf798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000ec5353ee9340
+    x16 0000c2f5a12bc99c  x17 0000ec5353c14220  x18 000000000000000f  x19 0000ffffc49c69c8
+    x20 0200dc5300000000  x21 0000000000000001  x22 0000ffffc49c69d8  x23 0000ec5353ee7c98
+    x24 0000c2f5a12ee484  x25 0000000000000000  x26 0000ec5353ee8000  x27 0000c2f5a12ff608
+    x28 0000000000000000  x29 0000ffffc49c67e0  x30 0000c2f5a12ee844   sp 0000ffffc49c67b0
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case08-use-after-free-write-hwasan-malloc-a1-bug+0x8e840) (BuildId: b65215e3d2bc6d29339162d6a4807d1fa3f38439) 

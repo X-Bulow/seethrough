@@ -1,0 +1,60 @@
+==2050==ERROR: HWAddressSanitizer: tag-mismatch on address 0xe33bfffe001f at pc 0xca855fe1e8d8
+WRITE of size 1 at 0xe33bfffe001f tags: 10/08(45) (ptr/mem) in thread T0
+==2050==WARNING: invalid path to external symbolizer!
+==2050==WARNING: Failed to use and restart external symbolizer!
+    #0 0xca855fe1e8d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x8e8d8) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+    #1 0xca855fe1e5d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x8e5d8) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+    #2 0xf71da1e32f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xf71da1e33058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xca855fdd34ec  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x434ec) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+
+[0xe33bfffe0000,0xe33bfffe0020) is a small allocated heap chunk; size: 32 offset: 31
+
+Cause: heap-buffer-overflow
+0xe33bfffe001f is located 1 bytes before a 24-byte region [0xe33bfffe0020,0xe33bfffe0038)
+allocated by thread T0 here:
+    #0 0xca855fddbf38  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x4bf38) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+    #1 0xca855fe1ec6c  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x8ec6c) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+    #2 0xca855fe1e748  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x8e748) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+    #3 0xca855fe1e5d8  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x8e5d8) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+    #4 0xf71da1e32f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #5 0xf71da1e33058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #6 0xca855fdd34ec  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x434ec) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2)
+
+
+Thread: T0 0xe71c00002000 stack: [0xfffff3a20000,0xfffff4220000) sz: 8388608 tls: [0xf71da21487a0,0xf71da2149640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xe33bfffdf800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdf900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdfa00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdfb00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdfc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdfd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdfe00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffdff00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xe33bfffe0000: 45 [08] 10  08  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0100: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0200: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0300: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0400: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0500: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0600: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0700: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xe33bfffe0800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xe33bfffdff00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xe33bfffe0000: .. [45] 5a  10  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xe33bfffe0100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xca855fe1e8d8):
+    x0  0000000000000000  x1  0000f71da1fd2480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1000e33bfffe001f  x9  0000000000000008  x10 00000e33bfffe001  x11 0000f71da2151798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000f71da215b340
+    x16 0000ca855fdec9dc  x17 000000000000000f  x18 000000000000000f  x19 0000fffff421f118
+    x20 0200e71d00000000  x21 0000000000000001  x22 0000fffff421f128  x23 0000f71da2159c98
+    x24 0000ca855fe1e4c4  x25 0000000000000000  x26 0000f71da215a000  x27 0000ca855fe2f848
+    x28 0000000000000000  x29 0000fffff421ef30  x30 0000ca855fe1e8dc   sp 0000fffff421eee0
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case05-heap-underflow-write-hwasan-malloc-a0-bug+0x8e8d8) (BuildId: b039de36c29c91233ab73e43626f2ac3e6c8ebd2) 

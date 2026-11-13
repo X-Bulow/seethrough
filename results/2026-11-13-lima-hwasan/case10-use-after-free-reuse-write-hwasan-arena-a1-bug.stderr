@@ -1,0 +1,48 @@
+==4170==ERROR: HWAddressSanitizer: tag-mismatch on address 0xec35b9e4e000 at pc 0xbe212a3deadc
+WRITE of size 1 at 0xec35b9e4e000 tags: 10/1f (ptr/mem) in thread T0
+==4170==WARNING: invalid path to external symbolizer!
+==4170==WARNING: Failed to use and restart external symbolizer!
+    #0 0xbe212a3deadc  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case10-use-after-free-reuse-write-hwasan-arena-a1-bug+0x8eadc) (BuildId: 5349846643909cfb554e3c759f9ef228619b5baf)
+    #1 0xbe212a3de718  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case10-use-after-free-reuse-write-hwasan-arena-a1-bug+0x8e718) (BuildId: 5349846643909cfb554e3c759f9ef228619b5baf)
+    #2 0xec35ba322f18  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x22f18) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #3 0xec35ba323058  (/usr/lib/aarch64-linux-gnu/libc.so.6+0x23058) (BuildId: 5697d481680bea92debb50f8a02893668fb7f6e1)
+    #4 0xbe212a39362c  (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case10-use-after-free-reuse-write-hwasan-arena-a1-bug+0x4362c) (BuildId: 5349846643909cfb554e3c759f9ef228619b5baf)
+
+[0xec35b9e4e000,0xec35b9f4e000) is a large allocated heap chunk; size: 1048576 offset: 0
+
+Thread: T0 0xdc3400002000 stack: [0xffffe5db0000,0xffffe65b0000) sz: 8388608 tls: [0xec35ba6337a0,0xec35ba634640)
+
+Memory tags around the buggy address (one tag corresponds to 16 bytes):
+  0xec35b9e4d800: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4d900: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4da00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4db00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4dc00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4dd00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4de00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+  0xec35b9e4df00: 00  00  00  00  00  00  00  00  00  00  00  00  00  00  00  00 
+=>0xec35b9e4e000:[1f] 1f  11  11  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e100: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e200: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e300: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e400: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e500: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e600: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e700: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+  0xec35b9e4e800: 1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f  1f 
+Tags for short granules around the buggy address (one tag corresponds to 16 bytes):
+  0xec35b9e4df00: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+=>0xec35b9e4e000:[..] ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+  0xec35b9e4e100: ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  .. 
+See https://clang.llvm.org/docs/HardwareAssistedAddressSanitizerDesign.html#short-granules for a description of short granule tags
+
+Registers where the failure occurred (pc 0xbe212a3deadc):
+    x0  0000000000000000  x1  0000ec35ba4c2480  x2  0000000000000000  x3  0000000000000001
+    x4  0000000000000000  x5  0000000000000000  x6  0000000000000040  x7  0000000000000000
+    x8  1000ec35b9e4e000  x9  000000000000001f  x10 00000ec35b9e4e00  x11 0000ec35ba63c798
+    x12 0000000000000000  x13 0000000000000000  x14 00000000000000e3  x15 0000ec35ba646340
+    x16 0000be212a3acb1c  x17 0000ec35ba374220  x18 000000000000000f  x19 0000ffffe65af508
+    x20 0200dc3500000000  x21 0000000000000001  x22 0000ffffe65af518  x23 0000ec35ba644c98
+    x24 0000be212a3de604  x25 0000000000000000  x26 0000ec35ba645000  x27 0000be212a3f2a08
+    x28 0000000000000000  x29 0000ffffe65af320  x30 0000be212a3deae0   sp 0000ffffe65af2d0
+SUMMARY: HWAddressSanitizer: tag-mismatch (/home/zephyr.guest/st-formal/build/2026-11-13-lima-hwasan/case10-use-after-free-reuse-write-hwasan-arena-a1-bug+0x8eadc) (BuildId: 5349846643909cfb554e3c759f9ef228619b5baf) 
