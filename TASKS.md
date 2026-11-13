@@ -41,7 +41,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 A4.2 `harness/classify.py`：从 tool 输出判 DETECTED / MISSED / FALSE-POSITIVE / UNSUPPORTED / TOOL-ERROR
 - [x] P0 A4.3 CSV 输出：`results/<date>-<arm>/matrix.csv`，列见 `harness/README.md`
 - [x] P0 A4.4 每个 bundle 带 `env.txt`：tool 版本、编译器版本、flags、服务器 CPU / 内核（`tools/env.sh` 生成）
-- [ ] P1 A4.5 `harness/render-matrix.py`：CSV → 报告用 Detection Matrix（markdown / LaTeX 表）
+- [x] P1 A4.5 `harness/render-matrix.py`：CSV → 报告用 Detection Matrix（markdown / LaTeX 表）；`--check` 对照 `case.json` 的预期
 
 ### A5 检测实验（每一行就是矩阵里的一个 cell 组，A 跑，B/C 提供 allocator / tool）
 A5.1–A5.7、A5.11、A5.14 已有 B 在 AWS EC2 x86-64 上跑的 bundle（commit `2763402`，`env.txt` 记 `dirty=2`，见 `results/README.md`）。是否作为正式结果，还是在实验室 VM 上从干净提交重跑，待三人确认，所以先标 `[~]`。

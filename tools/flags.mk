@@ -1,4 +1,6 @@
-# Per-tool flags. Included by the top-level Makefile. TODO(C1.3): verify on the server.
+# Per-tool flags. Included by the top-level Makefile. asan and valgrind are verified on x86-64
+# (the EC2 Part B bundles and C's VirtualBox benchmarks), hwasan on aarch64 (docs/hwasan.md);
+# ubsan and lowfat have not been run through the matrix yet (A5.10, A5.12).
 # Detection builds are -O0 -g so the compiler cannot delete the defect; Q2 benchmarks are -O2.
 CC_asan      := clang
 CFLAGS_asan  := -fsanitize=address -fno-omit-frame-pointer -DST_TOOL_ASAN
@@ -18,7 +20,8 @@ CC_valgrind     := gcc
 CFLAGS_valgrind := -DST_TOOL_VALGRIND
 LD_valgrind     :=
 
-CC_lowfat      := $(SEETHROUGH_TOOLS)/lowfat/bin/clang   # TODO(C4.1)
+# LowFat exists only inside the Ubuntu 18.04 container of docs/lowfat.md, at this path.
+CC_lowfat      := /work/build/bin/clang
 CFLAGS_lowfat  := -fsanitize=lowfat -DST_TOOL_LOWFAT
 LD_lowfat      := -fsanitize=lowfat
 

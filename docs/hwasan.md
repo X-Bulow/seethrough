@@ -19,7 +19,7 @@ HWASan 在实验室 x86-64 VM 上不能运行，在 Apple Silicon Mac 上的 aar
 - 工具：`clang=1:21.1.6-71`、`clang-21=1:21.1.8-6ubuntu1`（与实验室 VM 相同），`lld-21=1:21.1.8-6ubuntu1`；系统默认链接器 GNU ld 2.46。
 - 问题：用 GNU ld 链接时，`positive-overflow.c` 被检测到，`positive-uaf.c` 却以 SIGILL 退出（`Illegal instruction`，exit 132）。内核日志里的 pc 落在 `main` 中的一条 `0xb2e47fe0`（未定义指令）。HWASan 也给全局变量和字符串常量加标签，取它们的地址时用 `adrp` 加一条 `movk`（重定位 `R_AARCH64_MOVW_PREL_G3`）把标签写进地址高位。GNU ld 按 MOVZ/MOVN 的规则处理这个重定位，值为负（标签 ≥ 0x80）时清掉第 30 位，MOVK 就变成未定义指令。`positive-uaf.c` 的全局变量 `sink` 标签是 `0xdd`，所以中招；标签小于 0x80 的程序不受影响。
 - 解决：`-fuse-ld=lld`；`-mllvm -hwasan-globals=0` 关掉全局变量插桩也可以，但会少检查全局变量。用 lld 后两个 positive control 都 DETECTED（exit 99）：`positive-uaf` 报 `tag-mismatch`，`Cause: use-after-free`；`positive-overflow` 报 `Cause: heap-buffer-overflow`。
-- 完整 HWASan 列（malloc / arena / freelist × annot 0/1 × 16 case）：positive control 通过，96 个负对照全部 CLEAN，各格结果写进每个 case 的 `case.json` `measured` 和 README。这是从工作区跑的开发运行，正式 bundle 待 A5.8/A5.9。
+- 完整 HWASan 列（malloc / arena / freelist × annot 0/1 × 16 case）：positive control 通过，96 个负对照中 94 个 CLEAN；case 12 malloc 的两个对照是 HWASan 自带的 LeakSanitizer 在退出时报泄漏（exit 99），当时被误记为 CLEAN，bug 行本来就是 UNSUPPORTED，不影响结论。harness 已改为对 HWASan 也关掉泄漏检测，并把崩溃的对照记为 TOOL-ERROR，复跑后这两个对照为 CLEAN。各格结果写进每个 case 的 `case.json` `measured` 和 README。这是从工作区跑的开发运行，正式 bundle 待 A5.8/A5.9。
 
 ## 复现
 

@@ -7,8 +7,11 @@
     TOOL-ERROR      no ST READY, or a crash with no report, or a report before READY
     UNSUPPORTED     (decided by the caller) the build failed for this tool x allocator
 
-Each tool's report signature is one regex. Add tools here only. TODO(A4.2): verify the
-Valgrind and HWASan patterns against real output on the server before trusting them.
+Each tool's report signature is one regex. Add tools here only. Checked against real output:
+Valgrind on the four EC2 x86-64 bundles of 2026-11-10 (every error Memcheck printed is an
+Invalid read / write / free, and no row with a nonzero ERROR SUMMARY was classified MISSED);
+HWASan on the 192-row development run in the aarch64 VM, docs/hwasan.md (tag-mismatch and
+invalid-free only). The ubsan and lowfat patterns have not been run through the matrix yet.
 """
 import re
 

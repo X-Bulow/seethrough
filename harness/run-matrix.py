@@ -61,8 +61,11 @@ def run(tool, exe):
     cmd = [str(exe)]
     if tool == "valgrind":
         cmd = ["valgrind", "--error-exitcode=99", "--leak-check=no", str(exe)]
+    # Leaks are not a defect class here. HWASan on aarch64 Linux bundles LeakSanitizer just as
+    # ASan does, and without detect_leaks=0 case 12's malloc arm (fini is a no-op, the object
+    # stays live) ends with a leak report and exit 99 instead of ST DONE.
     env = dict(os.environ, ASAN_OPTIONS="detect_leaks=0:abort_on_error=0",
-               HWASAN_OPTIONS="abort_on_error=0", UBSAN_OPTIONS="print_stacktrace=1")
+               HWASAN_OPTIONS="detect_leaks=0:abort_on_error=0", UBSAN_OPTIONS="print_stacktrace=1")
     t0 = time.time()
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=TIMEOUT, env=env)
@@ -122,7 +125,9 @@ def main():
                         (bundle / (stem + ".stderr")).write_text(err)
                         v, n = classify(tool, out, err, code)
                         if control and v == "MISSED":
-                            v = "CLEAN"          # a control that ran to completion unreported is what it should do
+                            # A control that ran to completion unreported is what it should do. One
+                            # that crashed after READY did not run clean, so the cell carries nothing.
+                            v = "TOOL-ERROR" if n else "CLEAN"
                         verdicts[image] = (v, n, code, secs)
                     # the control decides whether the bug verdict stands
                     bv, bn, bc, bs = verdicts["bug"]; cv, cn, cc, cs = verdicts["control"]

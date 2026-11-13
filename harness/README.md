@@ -6,7 +6,7 @@
 | `run-matrix.py` | enumerates tool x alloc x annot x case x {bug, control}, builds via `make image`, runs, classifies, writes `matrix.csv` |
 | `classify.py` | output + exit code → verdict; one regex per tool; a sanitizer `SEGV`/`BUS`/... report is a crash, recorded MISSED |
 | `run-real.py` | `corpus/real/` (A7): tool x arm x case over SQLite 3.22.0, builds via `make real-image`, gates on asan/rewrite, writes `real.csv` |
-| `render-matrix.py` | TODO(A4.5): `matrix.csv` → the Detection Matrix table for the report |
+| `render-matrix.py` | one or more `matrix.csv` → the Detection Matrix (markdown or LaTeX; `--tools` / `--arms` pick the columns); `--check` lists cells that differ from `case.json`'s expectations |
 
 ## matrix.csv columns
 
