@@ -7,17 +7,17 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 ## 0. 三人共同（Week 1 第一天）
 
 - [x] P0 C0.1 确认统一 allocator 接口 `corpus/include/alloc.h`（A 分支已合入 B 工作分支；malloc / arena 已按新增接口构建验证）
-- [ ] P0 C0.2 确认 CSV 列和 verdict 五种取值（`harness/README.md`）
-- [ ] P0 C0.3 确认测试矩阵：tool × allocator × annotation × case × {bug, control}
-- [ ] P0 C0.4 建 Git 远端，三人都能 push；`results/` 只增不改
-- [ ] P0 C0.5 第一条端到端：case00-heap-overflow-write 在 malloc / arena / arena+annot 下各跑一次 ASan，拿到 3 个 verdict
+- [x] P0 C0.2 确认 CSV 列和 verdict 五种取值（`harness/README.md`）
+- [x] P0 C0.3 确认测试矩阵：tool × allocator × annotation × case × {bug, control}（`harness/run-matrix.py` 按此枚举）
+- [x] P0 C0.4 建 Git 远端，三人都能 push；`results/` 只增不改（三人都已推送过分支）
+- [x] P0 C0.5 第一条端到端：case00-heap-overflow-write 在 malloc / arena / arena+annot 下各跑一次 ASan，拿到 3 个 verdict（DETECTED / MISSED / DETECTED，见 `results/2026-11-10-ec2-b-core/`）
 
 ## A. Test Corpus & Harness（Part A）
 
 ### A1 接口与骨架
 - [x] P0 A1.1 写 `corpus/include/alloc.h`：`st_alloc / st_free / st_realloc`，由 `-DST_ALLOC=` 选实现
 - [x] P0 A1.2 写 `corpus/include/harness.h`：`ST_CASE(n)`、`ST_READY()`、`ST_NEGATIVE_CONTROL` 约定、`st_sink` 防优化
-- [ ] P0 A1.3 写 `harness/main.c`：调用 case，打印 `ST READY` / `ST DONE` 标记（判 reached / completed 用）
+- [x] P0 A1.3 写 `harness/main.c`：调用 case，打印 `ST READY` / `ST DONE` 标记（判 reached / completed 用）
 
 ### A2 核心漏洞测试（每个 case：case.c + case.json + README.md；索引见 `corpus/cases/INDEX.md`）
 - [x] P0 A2.1 heap overflow：0 越界写 1 字节 / 1 越界读 / 2 写进对齐 slack（偏移 28）/ 3 远距离写进第三个活对象（偏移 64）/ 4 读出 pool 之外
@@ -32,35 +32,36 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 A2.10 合入 B1.2/B1.3 后重推预期：case 7、8、9、11、13、14 按新 arena（side table、会搬迁的 realloc）和 free list 改了 ASan/Valgrind/HWASan 预期；2026-11-07 本机冒烟（asan + none × malloc/arena/freelist）与 ASan 预期 80 格全部一致，新旧两次冒烟都留在 `measured`。Valgrind 格仍是预测，等 A2.9
 
 ### A3 控制组
-- [ ] P0 A3.1 positive control：malloc 的 UAF，ASan/Valgrind/HWASan 必须报；不报则本轮 exit 75 无 verdict
-- [ ] P0 A3.2 positive control：malloc 的 1 字节 heap overflow
-- [ ] P1 A3.3 bug-free 对照程序：一组完全没有漏洞的程序，确认各 tool 在 CMA 下不误报
+- [x] P0 A3.1 positive control：malloc 的 UAF，ASan/Valgrind/HWASan 必须报；不报则本轮 exit 75 无 verdict（`corpus/controls/positive-uaf.c`）
+- [x] P0 A3.2 positive control：malloc 的 1 字节 heap overflow（`corpus/controls/positive-overflow.c`）
+- [x] P1 A3.3 bug-free 对照程序：一组完全没有漏洞的程序，确认各 tool 在 CMA 下不误报（由 A2.5 的 16 个 negative control 承担；EC2 core bundle 192 个对照全部 CLEAN，无 FALSE-POSITIVE）
 
 ### A4 自动化
-- [ ] P0 A4.1 `harness/run-matrix.py`：枚举矩阵、编译、运行、超时、收集 stdout/stderr/exit code
-- [ ] P0 A4.2 `harness/classify.py`：从 tool 输出判 DETECTED / MISSED / FALSE-POSITIVE / UNSUPPORTED / TOOL-ERROR
-- [ ] P0 A4.3 CSV 输出：`results/<date>-<arm>/matrix.csv`，列见 `harness/README.md`
-- [ ] P0 A4.4 每个 bundle 带 `env.txt`：tool 版本、编译器版本、flags、服务器 CPU / 内核（`tools/env.sh` 生成）
+- [x] P0 A4.1 `harness/run-matrix.py`：枚举矩阵、编译、运行、超时、收集 stdout/stderr/exit code
+- [x] P0 A4.2 `harness/classify.py`：从 tool 输出判 DETECTED / MISSED / FALSE-POSITIVE / UNSUPPORTED / TOOL-ERROR
+- [x] P0 A4.3 CSV 输出：`results/<date>-<arm>/matrix.csv`，列见 `harness/README.md`
+- [x] P0 A4.4 每个 bundle 带 `env.txt`：tool 版本、编译器版本、flags、服务器 CPU / 内核（`tools/env.sh` 生成）
 - [ ] P1 A4.5 `harness/render-matrix.py`：CSV → 报告用 Detection Matrix（markdown / LaTeX 表）
 
 ### A5 检测实验（每一行就是矩阵里的一个 cell 组，A 跑，B/C 提供 allocator / tool）
-- [ ] P0 A5.1 malloc 下用 ASan 检测 7 类
-- [ ] P0 A5.2 arena CMA 下用 ASan 检测 7 类（未标注）
-- [ ] P0 A5.3 arena CMA + ASan manual poisoning 下检测 7 类
-- [ ] P0 A5.4 freelist CMA 下用 ASan 检测 7 类（未标注 / 标注）
-- [ ] P0 A5.5 malloc 下用 Valgrind Memcheck 检测 7 类
-- [ ] P0 A5.6 arena / freelist CMA 下用 Valgrind 检测 7 类（未标注）
-- [ ] P0 A5.7 arena / freelist CMA + Valgrind mempool 标注下检测 7 类
+A5.1–A5.7、A5.11、A5.14 已有 B 在 AWS EC2 x86-64 上跑的 bundle（commit `2763402`，`env.txt` 记 `dirty=2`，见 `results/README.md`）。是否作为正式结果，还是在实验室 VM 上从干净提交重跑，待三人确认，所以先标 `[~]`。
+- [~] P0 A5.1 malloc 下用 ASan 检测 7 类（`results/2026-11-10-ec2-b-core/`）
+- [~] P0 A5.2 arena CMA 下用 ASan 检测 7 类（未标注）（同上）
+- [~] P0 A5.3 arena CMA + ASan manual poisoning 下检测 7 类（同上）
+- [~] P0 A5.4 freelist CMA 下用 ASan 检测 7 类（未标注 / 标注）（同上）
+- [~] P0 A5.5 malloc 下用 Valgrind Memcheck 检测 7 类（同上）
+- [~] P0 A5.6 arena / freelist CMA 下用 Valgrind 检测 7 类（未标注）（同上）
+- [~] P0 A5.7 arena / freelist CMA + Valgrind mempool 标注下检测 7 类（同上）
 - [ ] P0 A5.8 malloc 下用 HWASan 检测 7 类（在 Mac 上的 aarch64 VM 中运行，见 `docs/hwasan.md`；2026-11-11 开发运行已写入 `measured`，正式 bundle 待跑）
 - [ ] P0 A5.9 arena / freelist CMA 下用 HWASan 检测 7 类（标注用 `hwasan_interface.h` 的打标签接口，即 `st_annot.h` 的 `ST_TAG_*`；2026-11-11 开发运行已写入 `measured`，正式 bundle 待跑）
 - [ ] P1 A5.10 UBSan（`-fsanitize=bounds,object-size`）在 malloc / CMA 下检测 7 类
-- [ ] P1 A5.11 memsys5 / lookaside 下用 ASan、Valgrind 检测 7 类（依赖 B3）
+- [~] P1 A5.11 memsys5 / lookaside 下用 ASan、Valgrind 检测 7 类（依赖 B3）（`results/2026-11-10-ec2-b-memsys5/`、`results/2026-11-10-ec2-b-lookaside/`）
 - [ ] P1 A5.12 使用 C4 已验证的 Ubuntu 18.04 Docker / LowFat clang 4.0.0 环境检测 7 类；记录填充空间内越界、跨分配边界越界及 UAF 的实际结果，并注明容器环境差异（运行步骤见 `docs/lowfat.md`）
 - [ ] P1 A5.13 复查所有 MISSED / FALSE-POSITIVE，确认不是编译配置、优化或 harness 的问题
-- [ ] P1 A5.14 CMA-rewrite 版本（B4）下重跑 ASan / Valgrind，和标注版本对比
+- [~] P1 A5.14 CMA-rewrite 版本（B4）下重跑 ASan / Valgrind，和标注版本对比（`results/2026-11-10-ec2-b-rewrite/`，对比见 `docs/cma-rewrite.md`）
 
 ### A6 Week 2 扩展
-- [ ] P1 A6.1 读/写变体补全（每类 read + write 各一）
+- [x] P1 A6.1 读/写变体补全（每类 read + write 各一）（overflow 0/1、underflow 5/6、UAF 8/9；free 类错误没有读写之分）
 - [ ] P2 A6.2 overflow 距离变体：1 字节 / padding 内 / size-class slack 内（stretch (a)）
 - [ ] P1 A6.3 完整 Detection Matrix 和文字解释
 - [ ] P1 A6.4 报告章节：Test Corpus、Methodology、Q1 Results
