@@ -1,0 +1,28 @@
+==161064== Memcheck, a memory error detector
+==161064== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==161064== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==161064== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case10-use-after-free-reuse-write-valgrind-malloc-a1-bug
+==161064== 
+==161064== Invalid write of size 1
+==161064==    at 0x4001327: st_case_10 (case.c:35)
+==161064==    by 0x4001265: main (main.c:26)
+==161064==  Address 0x4a98080 is 0 bytes inside a block of size 24 free'd
+==161064==    at 0x485286F: free (vg_replace_malloc.c:990)
+==161064==    by 0x4001392: st_free (malloc.c:7)
+==161064==    by 0x40012BC: st_case_10 (case.c:27)
+==161064==    by 0x4001265: main (main.c:26)
+==161064==  Block was alloc'd at
+==161064==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==161064==    by 0x4001374: st_alloc (malloc.c:6)
+==161064==    by 0x4001296: st_case_10 (case.c:25)
+==161064==    by 0x4001265: main (main.c:26)
+==161064== 
+==161064== 
+==161064== HEAP SUMMARY:
+==161064==     in use at exit: 0 bytes in 0 blocks
+==161064==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==161064== 
+==161064== For a detailed leak analysis, rerun with: --leak-check=full
+==161064== 
+==161064== For lists of detected and suppressed errors, rerun with: -s
+==161064== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

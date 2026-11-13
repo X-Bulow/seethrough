@@ -1,0 +1,4 @@
+ST BEGIN case=11 alloc=freelist annot=0 control=1
+ST NOTE realloc=1 moved=1
+ST READY
+ST DONE

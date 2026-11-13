@@ -1,0 +1,28 @@
+==160397== Memcheck, a memory error detector
+==160397== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==160397== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==160397== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-valgrind-malloc-a0-bug
+==160397== 
+==160397== Invalid read of size 1
+==160397==    at 0x4001343: st_case_11 (case.c:32)
+==160397==    by 0x4001265: main (main.c:26)
+==160397==  Address 0x4a98080 is 0 bytes inside a block of size 24 free'd
+==160397==    at 0x485720F: realloc (vg_replace_malloc.c:1804)
+==160397==    by 0x40013D3: st_realloc (malloc.c:8)
+==160397==    by 0x40012C1: st_case_11 (case.c:24)
+==160397==    by 0x4001265: main (main.c:26)
+==160397==  Block was alloc'd at
+==160397==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==160397==    by 0x400138B: st_alloc (malloc.c:6)
+==160397==    by 0x4001296: st_case_11 (case.c:22)
+==160397==    by 0x4001265: main (main.c:26)
+==160397== 
+==160397== 
+==160397== HEAP SUMMARY:
+==160397==     in use at exit: 0 bytes in 0 blocks
+==160397==   total heap usage: 3 allocs, 3 frees, 8,216 bytes allocated
+==160397== 
+==160397== For a detailed leak analysis, rerun with: --leak-check=full
+==160397== 
+==160397== For lists of detected and suppressed errors, rerun with: -s
+==160397== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

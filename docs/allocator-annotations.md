@@ -33,6 +33,17 @@ temporarily opens its in-slot next link while maintaining the list, then closes 
 otherwise allocator-internal reads would be misreported as user defects. Its `st_realloc`
 always moves, preserves the prefix, and ends the old slot's lifetime.
 
+## SQLite memsys5 extension
+
+The optional B3 memsys5 arm uses a generated patch against pinned SQLite
+3.53.3. The patch tracks rounded buddy blocks with ASan poison/unpoison and
+Valgrind mempool requests. It opens each in-band free-list link only while
+SQLite reads or writes it, then closes it. The adapter's side table tracks
+the exact `st_alloc(n)` request and poisons the remaining size-class slack;
+without it, a 24-byte request's `p[24]` lies inside a valid 32-byte buddy
+block. SQLite's own internal allocations retain rounded-block precision.
+Lookaside has no verified annotation arm.
+
 ## Development checks, not report data
 
 On 2026-11-07, the two positive controls were DETECTED under ASan and Valgrind. All 16
@@ -51,4 +62,9 @@ Memcheck report double and interior frees through `MEMPOOL_FREE`.
 Case 4 initially used `pool_bytes + 64`, which landed exactly in an adjacent valid metadata
 allocation under Valgrind and appeared as a miss. The corpus now uses `pool_bytes + 8192`;
 both ASan and Valgrind reported the outer-block over-read in local reruns. This offset still
-needs confirmation on the official server because the surrounding address space can differ.
+depends on the surrounding address space. In the formal x86-64 EC2 run, Valgrind reported
+the outer-block read, but ASan printed only `SEGV on unknown address` without a heap-boundary
+diagnosis. The Arena and Free-list ASan cases are correctly classified as
+`MISSED crashed SEGV`, including for their annotated arms. Annotated memsys5
+also missed case 4 but did not signal. See the raw case-4 stderr in the
+[core matrix](../results/2026-11-10-ec2-b-core/).

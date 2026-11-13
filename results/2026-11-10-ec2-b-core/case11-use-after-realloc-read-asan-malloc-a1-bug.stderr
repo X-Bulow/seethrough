@@ -1,0 +1,61 @@
+=================================================================
+==157500==ERROR: AddressSanitizer: heap-use-after-free on address 0x716299be0040 at pc 0x5f2fb132a664 bp 0x7fff3eaaa970 sp 0x7fff3eaaa968
+READ of size 1 at 0x716299be0040 thread T0
+    #0 0x5f2fb132a663 in st_case_11 /home/ubuntu/seethrough-b/corpus/cases/case11-use-after-realloc-read/case.c:32:5
+    #1 0x5f2fb132a4e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x75329a82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x75329a82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x5f2fb1202364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-asan-malloc-a1-bug+0x2d364) (BuildId: 8955ff788901fb8cc6f804c541e247336a336bea)
+
+0x716299be0040 is located 0 bytes inside of 24-byte region [0x716299be0040,0x716299be0058)
+freed by thread T0 here:
+    #0 0x5f2fb12e4a40 in realloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-asan-malloc-a1-bug+0x10fa40) (BuildId: 8955ff788901fb8cc6f804c541e247336a336bea)
+    #1 0x5f2fb132a72c in st_realloc /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:8:52
+    #2 0x5f2fb132a586 in st_case_11 /home/ubuntu/seethrough-b/corpus/cases/case11-use-after-realloc-read/case.c:24:26
+    #3 0x5f2fb132a4e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x75329a82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x75329a82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5f2fb1202364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-asan-malloc-a1-bug+0x2d364) (BuildId: 8955ff788901fb8cc6f804c541e247336a336bea)
+
+previously allocated by thread T0 here:
+    #0 0x5f2fb12e4638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-asan-malloc-a1-bug+0x10f638) (BuildId: 8955ff788901fb8cc6f804c541e247336a336bea)
+    #1 0x5f2fb132a6e4 in st_alloc /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:6:50
+    #2 0x5f2fb132a561 in st_case_11 /home/ubuntu/seethrough-b/corpus/cases/case11-use-after-realloc-read/case.c:22:24
+    #3 0x5f2fb132a4e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x75329a82a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x75329a82a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5f2fb1202364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case11-use-after-realloc-read-asan-malloc-a1-bug+0x2d364) (BuildId: 8955ff788901fb8cc6f804c541e247336a336bea)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/ubuntu/seethrough-b/corpus/cases/case11-use-after-realloc-read/case.c:32:5 in st_case_11
+Shadow bytes around the buggy address:
+  0x716299bdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x716299bdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x716299bdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x716299bdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x716299bdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x716299be0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa fa fa
+  0x716299be0080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x716299be0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x716299be0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x716299be0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x716299be0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==157500==ABORTING

@@ -1,0 +1,22 @@
+=================================================================
+==157598==ERROR: AddressSanitizer: attempting free on address which was not malloc()-ed: 0x702a247e0048 in thread T0
+    #0 0x622fb3fb339a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x10e39a) (BuildId: edd25a6591128c12afbe6f12b132778e3d85ef13)
+    #1 0x622fb3ff9614 in st_free /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:7:43
+    #2 0x622fb3ff95c2 in st_case_14 /home/ubuntu/seethrough-b/corpus/cases/case14-invalid-free-interior/case.c:28:5
+    #3 0x622fb3ff94e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x73fa2562a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x73fa2562a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x622fb3ed1364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x2c364) (BuildId: edd25a6591128c12afbe6f12b132778e3d85ef13)
+
+0x702a247e0048 is located 8 bytes inside of 24-byte region [0x702a247e0040,0x702a247e0058)
+allocated by thread T0 here:
+    #0 0x622fb3fb3638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x10e638) (BuildId: edd25a6591128c12afbe6f12b132778e3d85ef13)
+    #1 0x622fb3ff95f4 in st_alloc /home/ubuntu/seethrough-b/allocators/malloc/malloc.c:6:50
+    #2 0x622fb3ff9561 in st_case_14 /home/ubuntu/seethrough-b/corpus/cases/case14-invalid-free-interior/case.c:22:24
+    #3 0x622fb3ff94e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x73fa2562a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x73fa2562a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x622fb3ed1364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x2c364) (BuildId: edd25a6591128c12afbe6f12b132778e3d85ef13)
+
+SUMMARY: AddressSanitizer: bad-free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x10e39a) (BuildId: edd25a6591128c12afbe6f12b132778e3d85ef13) in free
+==157598==ABORTING

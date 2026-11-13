@@ -1,0 +1,27 @@
+==162483== Memcheck, a memory error detector
+==162483== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==162483== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==162483== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case12-use-after-pool-destroy-read-valgrind-arena-a1-bug
+==162483== 
+==162483== Invalid read of size 1
+==162483==    at 0x400133C: st_case_12 (case.c:39)
+==162483==    by 0x40012A5: main (main.c:26)
+==162483==  Address 0x4a97040 is 0 bytes inside a block of size 1,048,576 free'd
+==162483==    at 0x485286F: free (vg_replace_malloc.c:990)
+==162483==    by 0x4001C2D: st_alloc_fini (arena.c:93)
+==162483==    by 0x4001319: st_case_12 (case.c:37)
+==162483==    by 0x40012A5: main (main.c:26)
+==162483==  Block was alloc'd at
+==162483==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==162483==    by 0x400176A: st_alloc_init (arena.c:44)
+==162483==    by 0x4001265: main (main.c:23)
+==162483== 
+==162483== 
+==162483== HEAP SUMMARY:
+==162483==     in use at exit: 0 bytes in 0 blocks
+==162483==   total heap usage: 4 allocs, 3 frees, 1,054,232 bytes allocated
+==162483== 
+==162483== For a detailed leak analysis, rerun with: --leak-check=full
+==162483== 
+==162483== For lists of detected and suppressed errors, rerun with: -s
+==162483== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

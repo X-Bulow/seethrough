@@ -1,0 +1,60 @@
+=================================================================
+==169010==ERROR: AddressSanitizer: heap-use-after-free on address 0x6e03bb7dd780 at pc 0x560a9cc2b6fd bp 0x7ffca67c57e0 sp 0x7ffca67c57d8
+READ of size 1 at 0x6e03bb7dd780 thread T0
+    #0 0x560a9cc2b6fc in st_case_12 /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5
+    #1 0x560a9cc2b5d3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x7203bc62a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7203bc62a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x560a9cb03454 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case12-use-after-pool-destroy-read-asan-lookaside-a0-bug+0x52454) (BuildId: e227a224e45b23338b90c6ebccb6e3f421fe5ad8)
+
+0x6e03bb7dd780 is located 1048448 bytes inside of 1048576-byte region [0x6e03bb6dd800,0x6e03bb7dd800)
+freed by thread T0 here:
+    #0 0x560a9cbe548a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case12-use-after-pool-destroy-read-asan-lookaside-a0-bug+0x13448a) (BuildId: e227a224e45b23338b90c6ebccb6e3f421fe5ad8)
+    #1 0x560a9cc2b870 in st_alloc_fini /home/ubuntu/seethrough-b/allocators/sqlite/lookaside.c:48:5
+    #2 0x560a9cc2b68c in st_case_12 /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:37:5
+    #3 0x560a9cc2b5d3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7203bc62a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7203bc62a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x560a9cb03454 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case12-use-after-pool-destroy-read-asan-lookaside-a0-bug+0x52454) (BuildId: e227a224e45b23338b90c6ebccb6e3f421fe5ad8)
+
+previously allocated by thread T0 here:
+    #0 0x560a9cbe5728 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case12-use-after-pool-destroy-read-asan-lookaside-a0-bug+0x134728) (BuildId: e227a224e45b23338b90c6ebccb6e3f421fe5ad8)
+    #1 0x560a9cc2b7c4 in st_alloc_init /home/ubuntu/seethrough-b/allocators/sqlite/lookaside.c:27:14
+    #2 0x560a9cc2b57e in main /home/ubuntu/seethrough-b/harness/main.c:23:5
+    #3 0x7203bc62a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7203bc62a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x560a9cb03454 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-lookaside/case12-use-after-pool-destroy-read-asan-lookaside-a0-bug+0x52454) (BuildId: e227a224e45b23338b90c6ebccb6e3f421fe5ad8)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5 in st_case_12
+Shadow bytes around the buggy address:
+  0x6e03bb7dd500: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x6e03bb7dd580: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x6e03bb7dd600: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x6e03bb7dd680: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x6e03bb7dd700: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+=>0x6e03bb7dd780:[fd]fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x6e03bb7dd800: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x6e03bb7dd880: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x6e03bb7dd900: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x6e03bb7dd980: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x6e03bb7dda00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==169010==ABORTING

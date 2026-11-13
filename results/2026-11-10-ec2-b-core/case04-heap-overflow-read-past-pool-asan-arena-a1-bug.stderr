@@ -1,0 +1,18 @@
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==158431==ERROR: AddressSanitizer: SEGV on unknown address 0x77e86dfdf800 (pc 0x6411c5c4663a bp 0x7ffd9dc2b7e0 sp 0x7ffd9dc2b7a0 T0)
+==158431==The signal is caused by a READ memory access.
+    #0 0x6411c5c4663a in st_case_4 /home/ubuntu/seethrough-b/corpus/cases/case04-heap-overflow-read-past-pool/case.c:32:5
+    #1 0x6411c5c464e5 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x7be86ec2a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7be86ec2a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x6411c5b1e364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case04-heap-overflow-read-past-pool-asan-arena-a1-bug+0x2d364) (BuildId: 7812e8032b9405e1fe471ea8340055c5305c41ab)
+
+==158431==Register values:
+rax = 0x000077e86dfdf800  rbx = 0x0000000000000000  rcx = 0x0000000000000000  rdx = 0x0000000000000000  
+rdi = 0x00006411c5c94e70  rsi = 0x00007ffd9dc2b758  rbp = 0x00007ffd9dc2b7e0  rsp = 0x00007ffd9dc2b7a0  
+ r8 = 0x0000000000000000   r9 = 0xffffff0000000000  r10 = 0xefffffffffffffff  r11 = 0x4000000000000000  
+r12 = 0x00007ffd9dc2b938  r13 = 0x0000000000000001  r14 = 0x00007be86f060000  r15 = 0x00006411c5c805a0  
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /home/ubuntu/seethrough-b/corpus/cases/case04-heap-overflow-read-past-pool/case.c:32:5 in st_case_4
+==158431==ABORTING

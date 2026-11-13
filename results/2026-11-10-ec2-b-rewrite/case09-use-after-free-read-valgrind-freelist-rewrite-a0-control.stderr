@@ -1,0 +1,14 @@
+==172715== Memcheck, a memory error detector
+==172715== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==172715== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==172715== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case09-use-after-free-read-valgrind-freelist-rewrite-a0-control
+==172715== 
+==172715== 
+==172715== HEAP SUMMARY:
+==172715==     in use at exit: 0 bytes in 0 blocks
+==172715==   total heap usage: 2 allocs, 2 frees, 4,120 bytes allocated
+==172715== 
+==172715== For a detailed leak analysis, rerun with: --leak-check=full
+==172715== 
+==172715== For lists of detected and suppressed errors, rerun with: -s
+==172715== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

@@ -82,14 +82,14 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 B1.2 实现 `allocators/arena/`：bump-pointer arena，一次 malloc 大块，free 不归还；side table 记录大小和存活状态，`realloc` 搬迁，`fini` 可重复调用
 - [x] P0 B1.3 实现 `allocators/freelist/`：固定 size-class free list，free 立即重用
 - [x] P0 B2.1 ASan manual poisoning：`ASAN_POISON_MEMORY_REGION` / `UNPOISON`，`-DST_ANNOT=1` 时启用；Arena / Free list 本机开发验证通过
-- [x] P0 B2.2 Valgrind mempool：`VALGRIND_CREATE_MEMPOOL` / `MEMPOOL_ALLOC` / `MEMPOOL_FREE`；Arena / Free list 在 Linux 开发容器验证通过，正式服务器复核仍属 A5
+- [x] P0 B2.2 Valgrind mempool：`VALGRIND_CREATE_MEMPOOL` / `MEMPOOL_ALLOC` / `MEMPOOL_FREE`；Arena / Free list 在 Linux 开发容器和 EC2 x86-64 正式矩阵均验证通过
 - [x] P1 B2.3 记录每个 allocator 标注了哪些边界，哪些标注不了（`docs/allocator-annotations.md`）
-- [ ] P1 B3.1 SQLite memsys5 作为 `allocators/sqlite/`（`SQLITE_ENABLE_MEMSYS5`，`sqlite3_malloc` 走它）
-- [ ] P2 B3.2 SQLite lookaside 作为另一层
-- [ ] P0 B4.1 CMA rewrite：把 arena / freelist 改写成直接 malloc/free（教授提示的 "undo the CMA"），记录改了几行
-- [ ] P1 B4.2 分析 rewrite 的可行性边界：哪些 CMA 容易撤销（薄包装），哪些不能（依赖布局、批量释放、线程局部池）
-- [ ] P1 B4.3 Rewrite vs Annotation 对比：检测能力、语义变化、性能（配合 C）
-- [ ] P1 B5.1 报告章节：CMA Implementation、Annotations、CMA Rewrite、Q1 Analysis
+- [x] P1 B3.1 SQLite memsys5 作为 `allocators/sqlite/`（`SQLITE_ENABLE_MEMSYS5`，`sqlite3_malloc64` 走它）；另有 ASan/Valgrind 标注补丁，3.53.3 全 16 case 已在 EC2 x86-64 正式验证，64 个负例 CLEAN
+- [x] P2 B3.2 SQLite lookaside 作为另一层；验证命中 lookaside slot 且释放后立即重用，ASan/Valgrind 全 16 case 已在 EC2 x86-64 正式验证，32 个负例 CLEAN
+- [x] P0 B4.1 CMA rewrite：arena / freelist 改写成直接 malloc/free，两份实现各 14 行（见各自 README）
+- [x] P1 B4.2 分析 rewrite 的可行性边界：见 `docs/cma-rewrite.md`
+- [x] P1 B4.3 Rewrite vs Annotation 对比：EC2 Ubuntu 26.04 x86-64 上完整 ASan/Valgrind 16-case 矩阵、全部负对照、五次重复性能与 RSS 已完成；原始 bundle 见 `results/README.md`，解释见 `docs/cma-rewrite.md`
+- [x] P1 B5.1 报告章节：`report/part-b.md` 已写入 CMA Implementation、Annotations、CMA Rewrite、Q1 Analysis 和 EC2 正式结果；C 的 VirtualBox 性能结果单独标注
 
 ## C. Tools & Performance（Part C）
 
@@ -114,7 +114,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 ### C5 Q2 性能
 - [x] P0 C5.1 SQLite speedtest1：baseline -O2，ASan，Valgrind；5 次取中位数，wall time + peak RSS
 - [x] P0 C5.2 同上加 SQLite 自带 memsys5 开关，看 CMA 对 overhead 的影响
-- [ ] P1 C5.3 annotated vs unannotated 的 overhead（配合 B2）
+- [~] P1 C5.3 annotated vs unannotated 的 overhead（配合 B2）：B 已交付 EC2 五次重复的 90 行原始 CSV、汇总与报告解释，见 `results/2026-11-10-allocator-churn-IkUTIU/`；C 仍需在其 Q2 章节接入并标注与 VirtualBox 数据的机器差异
 - [ ] P1 C5.4 HWASan overhead（若 C3 可行）
 - [x] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
 - [x] P1 C5.6 `benchmarks/plot.py`：CSV → 性能图

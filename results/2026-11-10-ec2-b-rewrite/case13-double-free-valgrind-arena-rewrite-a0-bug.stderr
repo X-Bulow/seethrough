@@ -1,0 +1,30 @@
+==172166== Memcheck, a memory error detector
+==172166== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==172166== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==172166== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case13-double-free-valgrind-arena-rewrite-a0-bug
+==172166== 
+==172166== Invalid free() / delete / delete[] / realloc()
+==172166==    at 0x485286F: free (vg_replace_malloc.c:990)
+==172166==    by 0x4001364: st_free (arena-rewrite.c:7)
+==172166==    by 0x400130A: st_case_13 (case.c:31)
+==172166==    by 0x4001265: main (main.c:26)
+==172166==  Address 0x4a98080 is 0 bytes inside a block of size 24 free'd
+==172166==    at 0x485286F: free (vg_replace_malloc.c:990)
+==172166==    by 0x4001364: st_free (arena-rewrite.c:7)
+==172166==    by 0x40012E0: st_case_13 (case.c:26)
+==172166==    by 0x4001265: main (main.c:26)
+==172166==  Block was alloc'd at
+==172166==    at 0x484F888: malloc (vg_replace_malloc.c:447)
+==172166==    by 0x400133F: st_alloc (arena-rewrite.c:6)
+==172166==    by 0x4001296: st_case_13 (case.c:22)
+==172166==    by 0x4001265: main (main.c:26)
+==172166== 
+==172166== 
+==172166== HEAP SUMMARY:
+==172166==     in use at exit: 24 bytes in 1 blocks
+==172166==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==172166== 
+==172166== For a detailed leak analysis, rerun with: --leak-check=full
+==172166== 
+==172166== For lists of detected and suppressed errors, rerun with: -s
+==172166== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

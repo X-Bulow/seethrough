@@ -48,7 +48,7 @@ was DETECTED in the same run; otherwise the whole cell is TOOL-ERROR, not MISSED
 | verdict | meaning |
 |---|---|
 | `DETECTED` | the tool reported the defect, at the right site, and the control image ran clean |
-| `MISSED` | the bug image ran to completion with no report, and the control ran clean |
+| `MISSED` | the bug image produced no valid defect report and the control ran clean; a signal-handler SEGV alone does not count as detection |
 | `FALSE-POSITIVE` | the control image (no defect) produced a report |
 | `UNSUPPORTED` | the tool cannot build or run this configuration at all (e.g. HWASan on an x86-64 CPU without LAM) |
 | `TOOL-ERROR` | the positive control failed, or the tool crashed: the cell carries no information |
@@ -59,18 +59,24 @@ was DETECTED in the same run; otherwise the whole cell is TOOL-ERROR, not MISSED
     make help                                  # all targets
     make case CASE=case00-heap-overflow-write TOOL=asan ALLOC=malloc ANNOT=0
     make control CASE=case00-heap-overflow-write TOOL=asan ALLOC=arena ANNOT=1
+    make case CASE=case08-use-after-free-write TOOL=asan ALLOC=memsys5 ANNOT=1
     python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena --out results/$(date +%F)-local
     python3 harness/run-real.py   --tools asan valgrind --out results/$(date +%F)-local-real   # corpus/real, fetches SQLite 3.22.0 into vendor/
+    bash tools/run-part-b-server.sh results/$(date +%F)-server-b             # full Part B matrix and overhead
 
-All measured runs happen natively on the lab's x86-64 Linux server, with the tool versions
-pinned in `tools/setup-server.sh` and recorded by `tools/env.sh` into every results bundle.
-Runs on a laptop (macOS, arm64) are for development only and must not appear in `results/`.
+Part B's formal ASan/Valgrind detection and allocator-churn performance runs used an AWS EC2
+Ubuntu 26.04 x86-64 VM; C's SQLite speedtest runs used a separate VirtualBox Ubuntu 26.04
+x86-64 VM. The [results index](results/README.md) and [Part B report](report/part-b.md)
+label each environment. Tool versions are recorded by `tools/setup-server.sh` and
+`tools/env.sh`. LowFat uses the separate
+Ubuntu 18.04 container documented in `docs/lowfat.md`. Laptop and arm64 Docker runs are
+development checks only; they go under ignored `results/scratch-*/`, not committed bundles.
 
 ## Conventions we took from the Capstone bug corpora
 
 The layout follows `capstone/bug-corpora` in project-starch/llvm-capstone (dev branch):
 
-- one directory per case, the directory name is metadata (`NN_<class>_<slug>`), numbers dense;
+- one directory per case, named `caseNN-<slug>` with dense numeric prefixes;
 - `case.c` holds the sequence inside `ST_CASE(NN)`; `case.json` holds the machine-readable claims
   (class, access kind, object, expected fault site, per-arm verdicts with `verdict_from`);
 - every case has a **negative control** under `-DST_NEGATIVE_CONTROL` that keeps the allocation

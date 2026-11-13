@@ -1,0 +1,4 @@
+ST BEGIN case=11 alloc=arena annot=1 control=0
+ST NOTE realloc=1 moved=1
+ST READY
+ST DONE

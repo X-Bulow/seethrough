@@ -1,0 +1,60 @@
+=================================================================
+==159268==ERROR: AddressSanitizer: heap-use-after-free on address 0x762b81add800 at pc 0x652139f2060d bp 0x7ffdee4f9980 sp 0x7ffdee4f9978
+READ of size 1 at 0x762b81add800 thread T0
+    #0 0x652139f2060c in st_case_12 /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5
+    #1 0x652139f204e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #2 0x7a2b8282a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7a2b8282a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x652139df8364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case12-use-after-pool-destroy-read-asan-freelist-a0-bug+0x2d364) (BuildId: aafe41f3befc0af8c4471a95015ba3ed8947d474)
+
+0x762b81add800 is located 0 bytes inside of 1048576-byte region [0x762b81add800,0x762b81bdd800)
+freed by thread T0 here:
+    #0 0x652139eda39a in free (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case12-use-after-pool-destroy-read-asan-freelist-a0-bug+0x10f39a) (BuildId: aafe41f3befc0af8c4471a95015ba3ed8947d474)
+    #1 0x652139f206fb in st_alloc_fini /home/ubuntu/seethrough-b/allocators/freelist/freelist.c:154:5
+    #2 0x652139f2059c in st_case_12 /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:37:5
+    #3 0x652139f204e3 in main /home/ubuntu/seethrough-b/harness/main.c:26:5
+    #4 0x7a2b8282a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7a2b8282a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x652139df8364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case12-use-after-pool-destroy-read-asan-freelist-a0-bug+0x2d364) (BuildId: aafe41f3befc0af8c4471a95015ba3ed8947d474)
+
+previously allocated by thread T0 here:
+    #0 0x652139eda638 in malloc (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case12-use-after-pool-destroy-read-asan-freelist-a0-bug+0x10f638) (BuildId: aafe41f3befc0af8c4471a95015ba3ed8947d474)
+    #1 0x652139f20682 in st_alloc_init /home/ubuntu/seethrough-b/allocators/freelist/freelist.c:66:12
+    #2 0x652139f2048e in main /home/ubuntu/seethrough-b/harness/main.c:23:5
+    #3 0x7a2b8282a8c0 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7a2b8282a9d7 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x652139df8364 in _start (/home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case12-use-after-pool-destroy-read-asan-freelist-a0-bug+0x2d364) (BuildId: aafe41f3befc0af8c4471a95015ba3ed8947d474)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/ubuntu/seethrough-b/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5 in st_case_12
+Shadow bytes around the buggy address:
+  0x762b81add580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x762b81add600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x762b81add680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x762b81add700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x762b81add780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x762b81add800:[fd]fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x762b81add880: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x762b81add900: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x762b81add980: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x762b81adda00: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x762b81adda80: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==159268==ABORTING

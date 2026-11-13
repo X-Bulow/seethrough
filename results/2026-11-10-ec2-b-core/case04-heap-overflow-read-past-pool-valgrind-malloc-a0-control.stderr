@@ -1,0 +1,14 @@
+==160137== Memcheck, a memory error detector
+==160137== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==160137== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==160137== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case04-heap-overflow-read-past-pool-valgrind-malloc-a0-control
+==160137== 
+==160137== 
+==160137== HEAP SUMMARY:
+==160137==     in use at exit: 0 bytes in 0 blocks
+==160137==   total heap usage: 2 allocs, 2 frees, 4,120 bytes allocated
+==160137== 
+==160137== For a detailed leak analysis, rerun with: --leak-check=full
+==160137== 
+==160137== For lists of detected and suppressed errors, rerun with: -s
+==160137== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

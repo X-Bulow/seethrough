@@ -1,0 +1,14 @@
+==172104== Memcheck, a memory error detector
+==172104== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==172104== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==172104== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-rewrite/case11-use-after-realloc-read-valgrind-arena-rewrite-a0-control
+==172104== 
+==172104== 
+==172104== HEAP SUMMARY:
+==172104==     in use at exit: 0 bytes in 0 blocks
+==172104==   total heap usage: 3 allocs, 3 frees, 8,216 bytes allocated
+==172104== 
+==172104== For a detailed leak analysis, rerun with: --leak-check=full
+==172104== 
+==172104== For lists of detected and suppressed errors, rerun with: -s
+==172104== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

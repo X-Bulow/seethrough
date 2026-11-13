@@ -1,0 +1,14 @@
+==160924== Memcheck, a memory error detector
+==160924== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==160924== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==160924== Command: /home/ubuntu/seethrough-b/build/2026-11-10-ec2-b-core/case06-heap-underflow-read-valgrind-malloc-a1-control
+==160924== 
+==160924== 
+==160924== HEAP SUMMARY:
+==160924==     in use at exit: 0 bytes in 0 blocks
+==160924==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==160924== 
+==160924== For a detailed leak analysis, rerun with: --leak-check=full
+==160924== 
+==160924== For lists of detected and suppressed errors, rerun with: -s
+==160924== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
