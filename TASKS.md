@@ -57,14 +57,14 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P1 A5.10 UBSan（`-fsanitize=bounds,object-size`）在 malloc / CMA 下检测 7 类
 - [x] P1 A5.11 memsys5 / lookaside 下用 ASan、Valgrind 检测 7 类（依赖 B3）（`results/2026-11-13-lab-memsys5/`、`results/2026-11-13-lab-lookaside/`）
 - [ ] P1 A5.12 使用 C4 已验证的 Ubuntu 18.04 Docker / LowFat clang 4.0.0 环境检测 7 类；记录填充空间内越界、跨分配边界越界及 UAF 的实际结果，并注明容器环境差异（运行步骤见 `docs/lowfat.md`）
-- [ ] P1 A5.13 复查所有 MISSED / FALSE-POSITIVE，确认不是编译配置、优化或 harness 的问题
+- [x] P1 A5.13 复查所有 MISSED / FALSE-POSITIVE，确认不是编译配置、优化或 harness 的问题（2026-11-14：174 个 MISSED、0 个 FALSE-POSITIVE，全部执行到缺陷行且工具无任何报告，归入 7 类机制；`harness/audit-missed.py` 可重跑，结论见 `docs/missed-review.md`）
 - [x] P1 A5.14 CMA-rewrite 版本（B4）下重跑 ASan / Valgrind，和标注版本对比（`results/2026-11-13-lab-rewrite/`，对比见 `docs/cma-rewrite.md`）
 
 ### A6 Week 2 扩展
 - [x] P1 A6.1 读/写变体补全（每类 read + write 各一）（overflow 0/1、underflow 5/6、UAF 8/9；free 类错误没有读写之分）
 - [ ] P2 A6.2 overflow 距离变体：1 字节 / padding 内 / size-class slack 内（stretch (a)）
-- [ ] P1 A6.3 完整 Detection Matrix 和文字解释
-- [ ] P1 A6.4 报告章节：Test Corpus、Methodology、Q1 Results
+- [x] P1 A6.3 完整 Detection Matrix 和文字解释（报告 §5，表 4–7、图 2；表格由 `report/scripts/gen.py` 从正式 bundle 生成）
+- [x] P1 A6.4 报告章节：Test Corpus、Methodology、Q1 Results（`report/src/04-methodology.tex`、`05-detection.tex`）
 
 ### A7 真实 SQLite 漏洞（Tier 2，验证 Tier 1 的结论能否迁移；Week 2 末–Week 3）
 - [x] P1 A7.1 `tools/fetch-sqlite.sh 3.22.0`：pin 与 capstone engine-repros 一致（sqlite3.c sha256 7991acd0…），源码只进 `vendor/`
@@ -75,7 +75,7 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P1 A7.6 classify 的 SEGV 规则（sanitizer 信号处理函数的报告记 MISSED crashed）在服务器上用 case 19 memsys5 arm 复核
 - [ ] P2 A7.7 越界步长：29/31 的 fuzz 镜像越界约 2 KB，越过整个 arena 和 pcache bulk 块；找或构造一个越界停在 arena 内的真实 spatial case（配合 A6.2 stretch (a)）
 - [ ] P2 A7.8 PostgreSQL mmgr（capstone `postgres/mmgr-repros`）或 CPython pymalloc 各取 1 个 case，时间不够就砍
-- [ ] P1 A7.9 报告段落：Tier 1 的 MISSED 在真实程序里是否重现（temporal 是，spatial 取决于步长）；SQLite 不化简的理由；default arm 两层的说明
+- [~] P1 A7.9 报告段落（初稿 §7.3，只有 macOS 开发运行，A7.5 实验室运行后需更新）：Tier 1 的 MISSED 在真实程序里是否重现（temporal 是，spatial 取决于步长）；SQLite 不化简的理由；default arm 两层的说明
 
 ## B. CMA & Annotations（Part B）
 
@@ -119,13 +119,13 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [ ] P1 C5.4 HWASan overhead（若 C3 可行）
 - [x] P2 C5.5 PostgreSQL regression 子集 或 Lua / CPython benchmark
 - [x] P1 C5.6 `benchmarks/plot.py`：CSV → 性能图
-- [ ] P1 C5.7 报告章节：Tool Setup、Performance Methodology、Q2 Results
+- [~] P1 C5.7 报告章节：Tool Setup、Performance Methodology、Q2 Results（A 写了初稿 `report/src/06-performance.tex`，待 C 审阅）
 
 ## D. 报告与提交（Week 2–3，三人）
 
-- [ ] P0 D1 Introduction、Related Work（CMASan、MSET、Jung CGO'25）
-- [ ] P0 D2 回应教授三点：CMA rewrite、测试程序解释、HWASan 结论
-- [ ] P0 D3 Discussion / Limitations / Conclusion
+- [x] P0 D1 Introduction、Related Work（CMASan、MSET、Jung CGO'25）（初稿，`report/src/01-*`、`03-*`）
+- [x] P0 D2 回应教授三点：CMA rewrite、测试程序解释、HWASan 结论（报告 §7.2）
+- [x] P0 D3 Discussion / Limitations / Conclusion（初稿，`report/src/07-*`、`08-*`）
 - [~] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图（C 部分已复现，见 `docs/reproducibility.md`；Detection Matrix 待完成）
-- [ ] P0 D5 15 页报告定稿，11 月 19 日前提交
+- [~] P0 D5 15 页报告定稿，11 月 19 日前提交（2026-11-14 初稿 15 页：`make -C report`；待填组号和视频链接、三人审阅）
 - [ ] P1 D6 演示视频（如果课程要求）

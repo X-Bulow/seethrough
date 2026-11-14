@@ -7,6 +7,7 @@
 | `classify.py` | output + exit code → verdict; one regex per tool; a sanitizer `SEGV`/`BUS`/... report is a crash, recorded MISSED |
 | `run-real.py` | `corpus/real/` (A7): tool x arm x case over SQLite 3.22.0, builds via `make real-image`, gates on asan/rewrite, writes `real.csv` |
 | `render-matrix.py` | one or more `matrix.csv` → the Detection Matrix (markdown or LaTeX; `--tools` / `--arms` pick the columns); `--check` lists cells that differ from `case.json`'s expectations |
+| `audit-missed.py` | A5.13: checks from the raw files that every MISSED row reached the defect, finished and was silent (no report of any tool, Memcheck error summary 0), that controls are CLEAN and builds `-O0`; `--replica` compares another machine's bundles (`docs/missed-review.md`) |
 
 ## matrix.csv columns
 
