@@ -55,3 +55,12 @@ Under ASan the annotated arena and free list are both MISSED, consistent with "p
 | hwasan | DETECTED invalid-free | MISSED | MISSED | MISSED | MISSED |
 
 HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. The pool columns are MISSED: `st_free` makes no tagged access, and a tag cannot report a free call.
+
+## Formal results (2026-11-13)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 | memsys5 a0 | memsys5 a1 | lookaside | arena-rewrite | freelist-rewrite |
+|---|---|---|---|---|---|---|---|---|---|---|
+| asan | DETECTED | MISSED | MISSED | MISSED | MISSED | MISSED | MISSED | MISSED | DETECTED | DETECTED |
+| valgrind | DETECTED | MISSED | DETECTED | MISSED | DETECTED | MISSED | DETECTED | MISSED | DETECTED | DETECTED |
+| hwasan | DETECTED | MISSED | MISSED | MISSED | MISSED | — | — | — | — | — |
+
+ASan and Valgrind: lab server, x86-64 (`results/2026-11-13-lab-core`, `-memsys5`, `-lookaside`, `-rewrite`; commit `6b54739`); every bug cell is identical to the EC2 bundles of 2026-11-10. HWASan: aarch64 Lima VM (`results/2026-11-13-lima-hwasan`, commit `c214ad3`); it was not run on the SQLite or rewrite arms. Every negative control was CLEAN. MISSED (SEGV) means the program crashed after READY inside the tool's signal handler, without a report on the defect.

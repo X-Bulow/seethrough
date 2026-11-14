@@ -93,7 +93,45 @@
         "freelist": "MISSED",
         "freelist+annot": "DETECTED tag-mismatch"
       }
+    },
+    "2026-11-13 lab server x86-64, formal (results/2026-11-13-lab-core, -memsys5, -lookaside, -rewrite; commit 6b54739; Ubuntu 26.04.1, Xeon Gold 6230, clang 21.1.8, Valgrind 3.26.0; every bug cell identical to the EC2 bundles of 2026-11-10 at 2763402)": {
+      "asan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED use-after-poison",
+        "memsys5": "MISSED",
+        "memsys5+annot": "DETECTED use-after-poison",
+        "lookaside": "MISSED",
+        "arena-rewrite": "UNSUPPORTED precondition not met",
+        "freelist-rewrite": "UNSUPPORTED precondition not met"
+      },
+      "valgrind": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED Invalid read of size 1",
+        "memsys5": "MISSED",
+        "memsys5+annot": "DETECTED Invalid read of size 1",
+        "lookaside": "MISSED",
+        "arena-rewrite": "UNSUPPORTED precondition not met",
+        "freelist-rewrite": "UNSUPPORTED precondition not met"
+      }
+    },
+    "2026-11-13 Apple M5 Lima VM aarch64, HWASan formal (results/2026-11-13-lima-hwasan; commit c214ad3; Ubuntu 26.04.1, kernel 7.0.0-43, clang 21.1.8 + lld)": {
+      "hwasan": {
+        "malloc": "DETECTED invalid-free",
+        "malloc+annot": "DETECTED invalid-free",
+        "arena": "UNSUPPORTED precondition not met",
+        "arena+annot": "UNSUPPORTED precondition not met",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
+      }
     }
   },
-  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
 }

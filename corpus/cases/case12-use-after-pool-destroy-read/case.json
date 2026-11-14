@@ -90,9 +90,47 @@
         "freelist": "DETECTED tag-mismatch",
         "freelist+annot": "DETECTED tag-mismatch"
       }
+    },
+    "2026-11-13 lab server x86-64, formal (results/2026-11-13-lab-core, -memsys5, -lookaside, -rewrite; commit 6b54739; Ubuntu 26.04.1, Xeon Gold 6230, clang 21.1.8, Valgrind 3.26.0; every bug cell identical to the EC2 bundles of 2026-11-10 at 2763402)": {
+      "asan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "DETECTED heap-use-after-free",
+        "arena+annot": "DETECTED heap-use-after-free",
+        "freelist": "DETECTED heap-use-after-free",
+        "freelist+annot": "DETECTED heap-use-after-free",
+        "memsys5": "DETECTED heap-use-after-free",
+        "memsys5+annot": "DETECTED heap-use-after-free",
+        "lookaside": "DETECTED heap-use-after-free",
+        "arena-rewrite": "UNSUPPORTED precondition not met",
+        "freelist-rewrite": "UNSUPPORTED precondition not met"
+      },
+      "valgrind": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "DETECTED Invalid read of size 1",
+        "arena+annot": "DETECTED Invalid read of size 1",
+        "freelist": "DETECTED Invalid read of size 1",
+        "freelist+annot": "DETECTED Invalid read of size 1",
+        "memsys5": "DETECTED Invalid read of size 1",
+        "memsys5+annot": "DETECTED Invalid read of size 1",
+        "lookaside": "DETECTED Invalid read of size 1",
+        "arena-rewrite": "UNSUPPORTED precondition not met",
+        "freelist-rewrite": "UNSUPPORTED precondition not met"
+      }
+    },
+    "2026-11-13 Apple M5 Lima VM aarch64, HWASan formal (results/2026-11-13-lima-hwasan; commit c214ad3; Ubuntu 26.04.1, kernel 7.0.0-43, clang 21.1.8 + lld)": {
+      "hwasan": {
+        "malloc": "UNSUPPORTED precondition not met",
+        "malloc+annot": "UNSUPPORTED precondition not met",
+        "arena": "DETECTED tag-mismatch",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "DETECTED tag-mismatch",
+        "freelist+annot": "DETECTED tag-mismatch"
+      }
     }
   },
-  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)",
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)",
   "requires": {
     "marker": "ST NOTE pool=1",
     "why": "the allocator must carve from a pool whose lifetime st_alloc_fini ends. Under malloc st_alloc_fini is a no-op, the object stays live and the read is legitimate; that column is UNSUPPORTED by construction and the malloc equivalent is case 9."

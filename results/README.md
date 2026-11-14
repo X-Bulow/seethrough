@@ -12,6 +12,10 @@ CSV) and the raw `.stdout` / `.stderr` of every run. Written by `harness/run-mat
 | [2026-11-10-ec2-b-lookaside/](2026-11-10-ec2-b-lookaside/) | EC2 SQLite 3.53.3 lookaside, unannotated | complete; 64 rows, 32 CLEAN controls |
 | [2026-11-10-ec2-b-rewrite/](2026-11-10-ec2-b-rewrite/) | EC2 Arena and Free-list libc rewrites | complete; 128 rows, 64 CLEAN controls |
 | [2026-11-10-allocator-churn-IkUTIU/](2026-11-10-allocator-churn-IkUTIU/) | EC2 annotation overhead and rewrite performance | complete; 90 successful runs, five per setting |
+| [2026-11-13-lab-core/](2026-11-13-lab-core/) | Lab server, formal: malloc, Arena and Free list; annotation off/on; ASan and Valgrind | complete; 384 rows, 192 CLEAN controls |
+| [2026-11-13-lab-memsys5/](2026-11-13-lab-memsys5/) | Lab server, formal: SQLite 3.53.3 memsys5; annotation off/on | complete; 128 rows, 64 CLEAN controls |
+| [2026-11-13-lab-lookaside/](2026-11-13-lab-lookaside/) | Lab server, formal: SQLite 3.53.3 lookaside, unannotated | complete; 64 rows, 32 CLEAN controls |
+| [2026-11-13-lab-rewrite/](2026-11-13-lab-rewrite/) | Lab server, formal: Arena and Free-list libc rewrites | complete; 128 rows, 64 CLEAN controls |
 | [2026-11-13-lima-hwasan/](2026-11-13-lima-hwasan/) | HWASan (A5.8/A5.9): malloc, Arena and Free list; annotation off/on; aarch64 Lima VM on the M5 Mac | complete; 192 rows, 96 CLEAN controls; case 4 malloc MISSED by a tag collision (198 of 200 reruns detected, see [docs/hwasan.md](../docs/hwasan.md)) |
 
 The five EC2 B bundles above use commit `2763402`, Ubuntu 26.04 x86-64,
@@ -20,6 +24,12 @@ have 352 bug rows and 352 paired controls. All controls are CLEAN; there
 are no `TOOL-ERROR` or `FALSE-POSITIVE` verdicts. See
 [Part B report](../report/part-b.md) for counts and interpretation. The EC2
 performance bundle is separate from C's VirtualBox benchmark bundles below.
+
+The four lab bundles are the formal ASan and Valgrind results (A2.9, A5): commit `6b54739`, an
+LXD container on the lab server (Ubuntu 26.04.1, host kernel 6.12.111, Intel Xeon Gold 6230,
+glibc 2.43), clang/ASan 21.1.8 and Valgrind 3.26.0. All 352 controls are CLEAN, with no
+`TOOL-ERROR` or `FALSE-POSITIVE`, and every one of the 352 bug cells has the same verdict as the
+corresponding EC2 bundle, which therefore stands as a replication on a second x86-64 machine.
 
 The HWASan bundle uses commit `c214ad3`, Ubuntu 26.04.1 aarch64 (kernel
 7.0.0-43) in a Lima VM, clang 21.1.8 linked with lld. HWASan cannot run on

@@ -10,11 +10,11 @@
   "expected": {
     "asan": {
       "malloc": "DETECTED",
-      "arena": "DETECTED",
-      "arena+annot": "DETECTED",
-      "freelist": "DETECTED",
-      "freelist+annot": "DETECTED",
-      "why": "The pool is one malloc block, so an access past its end is an ordinary heap-buffer-overflow of that block. Every malloc-granular tool recovers its sight; the annotation columns add nothing."
+      "arena": "MISSED",
+      "arena+annot": "MISSED",
+      "freelist": "MISSED",
+      "freelist+annot": "MISSED",
+      "why": "malloc: the offset degenerates to 24 and this is case 1, DETECTED. Pools: MISSED, not the DETECTED first predicted. The 1 MiB pool comes from ASan's large-allocation path, a separate mapping whose redzone ends with its last page; 8192 bytes past the pool is outside anything ASan has poisoned. The read is then either silent (another mapping, clean shadow) or a SEGV caught by ASan's signal handler (nothing mapped there), which is a crash, not a boundary report. Which one depends on what was mapped next: all four pool columns were SEGVs on EC2, two of each on the lab server. The macOS development host, with another layout, did report it. Annotation cannot help: it only describes the pool's interior."
     },
     "valgrind": {
       "malloc": "DETECTED",
@@ -22,7 +22,7 @@
       "arena+annot": "DETECTED",
       "freelist": "DETECTED",
       "freelist+annot": "DETECTED",
-      "why": "Same: the byte is outside the block Memcheck tracks."
+      "why": "The byte is outside the block Memcheck tracks: Memcheck serves the pool from its own client arena and reports the address as inside an unallocated part of it, so every column is DETECTED."
     },
     "hwasan": {
       "malloc": "DETECTED",
@@ -91,7 +91,45 @@
         "freelist": "DETECTED tag-mismatch",
         "freelist+annot": "DETECTED tag-mismatch"
       }
+    },
+    "2026-11-13 lab server x86-64, formal (results/2026-11-13-lab-core, -memsys5, -lookaside, -rewrite; commit 6b54739; Ubuntu 26.04.1, Xeon Gold 6230, clang 21.1.8, Valgrind 3.26.0; every bug cell identical to the EC2 bundles of 2026-11-10 at 2763402)": {
+      "asan": {
+        "malloc": "DETECTED heap-buffer-overflow",
+        "malloc+annot": "DETECTED heap-buffer-overflow",
+        "arena": "MISSED",
+        "arena+annot": "MISSED crashed SEGV (tool signal handler, not a detection)",
+        "freelist": "MISSED crashed SEGV (tool signal handler, not a detection)",
+        "freelist+annot": "MISSED",
+        "memsys5": "MISSED crashed SEGV (tool signal handler, not a detection)",
+        "memsys5+annot": "MISSED crashed SEGV (tool signal handler, not a detection)",
+        "lookaside": "MISSED",
+        "arena-rewrite": "DETECTED heap-buffer-overflow",
+        "freelist-rewrite": "DETECTED heap-buffer-overflow"
+      },
+      "valgrind": {
+        "malloc": "DETECTED Invalid read of size 1",
+        "malloc+annot": "DETECTED Invalid read of size 1",
+        "arena": "DETECTED Invalid read of size 1",
+        "arena+annot": "DETECTED Invalid read of size 1",
+        "freelist": "DETECTED Invalid read of size 1",
+        "freelist+annot": "DETECTED Invalid read of size 1",
+        "memsys5": "DETECTED Invalid read of size 1",
+        "memsys5+annot": "DETECTED Invalid read of size 1",
+        "lookaside": "DETECTED Invalid read of size 1",
+        "arena-rewrite": "DETECTED Invalid read of size 1",
+        "freelist-rewrite": "DETECTED Invalid read of size 1"
+      }
+    },
+    "2026-11-13 Apple M5 Lima VM aarch64, HWASan formal (results/2026-11-13-lima-hwasan; commit c214ad3; Ubuntu 26.04.1, kernel 7.0.0-43, clang 21.1.8 + lld)": {
+      "hwasan": {
+        "malloc": "MISSED (tag collision: 198 of 200 reruns of this image detected, docs/hwasan.md)",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "DETECTED tag-mismatch",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "DETECTED tag-mismatch",
+        "freelist+annot": "DETECTED tag-mismatch"
+      }
     }
   },
-  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
 }

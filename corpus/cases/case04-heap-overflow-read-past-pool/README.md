@@ -47,3 +47,14 @@ This run used the `+8192` offset: under the arena and the free list stdout recor
 | hwasan | DETECTED tag-mismatch | DETECTED tag-mismatch | DETECTED tag-mismatch | DETECTED tag-mismatch | DETECTED tag-mismatch |
 
 HWASan cannot run on the x86-64 lab VM; this ran in the aarch64 VM described in `docs/hwasan.md`. Unannotated, every object in a pool carries the pool's tag; the a1 columns tag each object through the `ST_TAG_*` macros in `st_annot.h`. Every column is DETECTED: the read leaves the backing block.
+
+## Formal results (2026-11-13)
+| tool | malloc | arena a0 | arena a1 | freelist a0 | freelist a1 | memsys5 a0 | memsys5 a1 | lookaside | arena-rewrite | freelist-rewrite |
+|---|---|---|---|---|---|---|---|---|---|---|
+| asan | DETECTED | MISSED | MISSED (SEGV) | MISSED (SEGV) | MISSED | MISSED (SEGV) | MISSED (SEGV) | MISSED | DETECTED | DETECTED |
+| valgrind | DETECTED | DETECTED | DETECTED | DETECTED | DETECTED | DETECTED | DETECTED | DETECTED | DETECTED | DETECTED |
+| hwasan | MISSED | DETECTED | DETECTED | DETECTED | DETECTED | — | — | — | — | — |
+
+ASan and Valgrind: lab server, x86-64 (`results/2026-11-13-lab-core`, `-memsys5`, `-lookaside`, `-rewrite`; commit `6b54739`); every bug cell is identical to the EC2 bundles of 2026-11-10. HWASan: aarch64 Lima VM (`results/2026-11-13-lima-hwasan`, commit `c214ad3`); it was not run on the SQLite or rewrite arms. Every negative control was CLEAN. MISSED (SEGV) means the program crashed after READY inside the tool's signal handler, without a report on the defect.
+
+ASan's pool columns are MISSED, not the DETECTED predicted above: the 1 MiB pool comes from ASan's large-allocation path, and 8192 bytes past it is outside anything ASan poisons. The read is silent or a SEGV in ASan's signal handler, depending on what is mapped next (two of each here; all four were SEGVs on EC2). Valgrind still reports every column: the address is in an unallocated part of its own client arena. HWASan's malloc column is MISSED in this run by a tag collision; 198 of 200 reruns of the same image detected it, and malloc a1 (the same allocator) was DETECTED (`docs/hwasan.md`).

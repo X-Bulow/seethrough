@@ -10,7 +10,8 @@
 | clang | 21.1.8（`1:21.1.8-6ubuntu1`，Ubuntu 包；安装途径未记录） | C | 2026-11-07 |
 | gcc | 15.2.0（`15.2.0-16ubuntu1`） | C | 2026-11-07 |
 | valgrind | 3.26.0（`1:3.26.0-0ubuntu1`） | C | 2026-11-07 |
-| HWASan | 实验室 x86-64 VM 无 LAM，不能运行；改在 Apple M5 Mac 上的 Lima aarch64 VM 中运行：Ubuntu 26.04.1、内核 7.0.0-38、clang 21.1.8 + lld 21.1.8，链接需 `-fuse-ld=lld`；见 [hwasan.md](hwasan.md)。实验室服务器（Xeon Gold 6230，无 LAM）上的 x86-64 别名模式能运行，但不检查 64 KiB 以上的堆块，看不到分配器池子内部，未采用（hwasan.md 第三轮） | A | 2026-11-13 |
+| 检测实验服务器（A2.9 / A5 的 ASan、Valgrind 正式结果） | 实验室服务器 pinwheel12 上的 LXD 容器；Intel Xeon Gold 6230，76 个逻辑 CPU；Ubuntu 26.04.1 LTS（2026-11-13 由 18.04 升级），glibc 2.43（`2.43-2ubuntu2.7`）；容器共用宿主内核 `6.12.111+deb13-amd64`，`lam: 0`；clang 21.1.8、gcc 15.2.0、valgrind 3.26.0，与上面 VM 的版本相同 | A | 2026-11-13 |
+| HWASan | 实验室 x86-64 VM 无 LAM，不能运行；改在 Apple M5 Mac 上的 Lima aarch64 VM 中运行：Ubuntu 26.04.1、内核 7.0.0-38（2026-11-13 正式 bundle 时为 7.0.0-43）、clang 21.1.8 + lld 21.1.8，链接需 `-fuse-ld=lld`；见 [hwasan.md](hwasan.md)。实验室服务器（Xeon Gold 6230，无 LAM）上的 x86-64 别名模式能运行，但不检查 64 KiB 以上的堆块，看不到分配器池子内部，未采用（hwasan.md 第三轮） | A | 2026-11-13 |
 | LowFat | commit `20f8075`；Ubuntu 18.04 Docker / glibc 2.27 中构建 clang 4.0.0，跨分配边界写入检测通过，见 [lowfat.md](lowfat.md) | C | 2026-11-09 |
 | SQLite | 3.50.4 amalgamation；memsys5：`-DSQLITE_ENABLE_MEMSYS5` | C | 2026-11-07 |
 | PostgreSQL / Lua / CPython | Lua 5.4.9：baseline、ASan、Valgrind 已测；PostgreSQL、CPython 未测试 | C | 2026-11-08 |

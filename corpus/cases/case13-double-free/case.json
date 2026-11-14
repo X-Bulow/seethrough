@@ -89,7 +89,45 @@
         "freelist": "MISSED",
         "freelist+annot": "MISSED"
       }
+    },
+    "2026-11-13 lab server x86-64, formal (results/2026-11-13-lab-core, -memsys5, -lookaside, -rewrite; commit 6b54739; Ubuntu 26.04.1, Xeon Gold 6230, clang 21.1.8, Valgrind 3.26.0; every bug cell identical to the EC2 bundles of 2026-11-10 at 2763402)": {
+      "asan": {
+        "malloc": "DETECTED attempting",
+        "malloc+annot": "DETECTED attempting",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED",
+        "memsys5": "MISSED",
+        "memsys5+annot": "MISSED",
+        "lookaside": "MISSED",
+        "arena-rewrite": "DETECTED attempting",
+        "freelist-rewrite": "DETECTED attempting"
+      },
+      "valgrind": {
+        "malloc": "DETECTED Invalid free()",
+        "malloc+annot": "DETECTED Invalid free()",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED Invalid free()",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED Invalid free()",
+        "memsys5": "MISSED",
+        "memsys5+annot": "DETECTED Invalid free()",
+        "lookaside": "MISSED",
+        "arena-rewrite": "DETECTED Invalid free()",
+        "freelist-rewrite": "DETECTED Invalid free()"
+      }
+    },
+    "2026-11-13 Apple M5 Lima VM aarch64, HWASan formal (results/2026-11-13-lima-hwasan; commit c214ad3; Ubuntu 26.04.1, kernel 7.0.0-43, clang 21.1.8 + lld)": {
+      "hwasan": {
+        "malloc": "DETECTED invalid-free",
+        "malloc+annot": "DETECTED invalid-free",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED"
+      }
     }
   },
-  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
 }

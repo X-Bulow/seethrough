@@ -9,20 +9,20 @@
   "control": "writes a[23]",
   "expected": {
     "asan": {
-      "malloc": "MISSED (to verify)",
+      "malloc": "MISSED",
       "arena": "MISSED",
       "arena+annot": "MISSED",
       "freelist": "MISSED",
       "freelist+annot": "MISSED",
-      "why": "The row where ANNOTATION FAILS FOR A SPATIAL BUG: a[64] lands on c[0], which is a live object and must stay unpoisoned, so no poison-on-allocate scheme can object. On malloc the verdict depends on ASan's redzone width: if offset 64 clears a's right redzone and lands in b's data it is also MISSED, which is what must be measured."
+      "why": "The row where ANNOTATION FAILS FOR A SPATIAL BUG: a[64] lands on c[0], which is a live object and must stay unpoisoned, so no poison-on-allocate scheme can object. On malloc the verdict depends on ASan's redzone width: offset 64 clears a's right redzone and lands in a later live object, so it is MISSED too (marked to verify; measured MISSED on the lab server and on EC2)."
     },
     "valgrind": {
-      "malloc": "MISSED (to verify)",
+      "malloc": "DETECTED",
       "arena": "MISSED",
       "arena+annot": "MISSED",
       "freelist": "MISSED",
       "freelist+annot": "MISSED",
-      "why": "Same reasoning: the destination byte is addressable and owned."
+      "why": "Pools: the destination byte is c[0], addressable and owned, so MISSED with or without annotation. malloc: Memcheck replaces malloc with its own allocator, which puts a redzone (16 bytes by default) around every block, so a+64 falls between blocks, not in a live one, and is DETECTED (the original prediction, MISSED, was marked to verify and was wrong; measured on the lab server and on EC2)."
     },
     "hwasan": {
       "malloc": "DETECTED",
@@ -91,7 +91,45 @@
         "freelist": "MISSED",
         "freelist+annot": "DETECTED tag-mismatch"
       }
+    },
+    "2026-11-13 lab server x86-64, formal (results/2026-11-13-lab-core, -memsys5, -lookaside, -rewrite; commit 6b54739; Ubuntu 26.04.1, Xeon Gold 6230, clang 21.1.8, Valgrind 3.26.0; every bug cell identical to the EC2 bundles of 2026-11-10 at 2763402)": {
+      "asan": {
+        "malloc": "MISSED",
+        "malloc+annot": "MISSED",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED",
+        "memsys5": "MISSED",
+        "memsys5+annot": "MISSED",
+        "lookaside": "MISSED",
+        "arena-rewrite": "MISSED",
+        "freelist-rewrite": "MISSED"
+      },
+      "valgrind": {
+        "malloc": "DETECTED Invalid write of size 1",
+        "malloc+annot": "DETECTED Invalid write of size 1",
+        "arena": "MISSED",
+        "arena+annot": "MISSED",
+        "freelist": "MISSED",
+        "freelist+annot": "MISSED",
+        "memsys5": "MISSED",
+        "memsys5+annot": "MISSED",
+        "lookaside": "MISSED",
+        "arena-rewrite": "DETECTED Invalid write of size 1",
+        "freelist-rewrite": "DETECTED Invalid write of size 1"
+      }
+    },
+    "2026-11-13 Apple M5 Lima VM aarch64, HWASan formal (results/2026-11-13-lima-hwasan; commit c214ad3; Ubuntu 26.04.1, kernel 7.0.0-43, clang 21.1.8 + lld)": {
+      "hwasan": {
+        "malloc": "DETECTED tag-mismatch",
+        "malloc+annot": "DETECTED tag-mismatch",
+        "arena": "MISSED",
+        "arena+annot": "DETECTED tag-mismatch",
+        "freelist": "MISSED",
+        "freelist+annot": "DETECTED tag-mismatch"
+      }
     }
   },
-  "status": "written, smoke-run on malloc, arena and freelist; server run pending (A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
 }
