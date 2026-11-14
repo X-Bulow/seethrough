@@ -1,0 +1,23 @@
+==68943== Memcheck, a memory error detector
+==68943== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==68943== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==68943== Command: /home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case02-heap-overflow-write-slack-valgrind-freelist-rewrite-a0-bug
+==68943== 
+==68943== Invalid write of size 1
+==68943==    at 0x40012FB: st_case_2 (case.c:27)
+==68943==    by 0x4001265: main (main.c:26)
+==68943==  Address 0x4a9409c is 4 bytes after a block of size 24 alloc'd
+==68943==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==68943==    by 0x400135B: st_alloc (freelist-rewrite.c:6)
+==68943==    by 0x4001296: st_case_2 (case.c:19)
+==68943==    by 0x4001265: main (main.c:26)
+==68943== 
+==68943== 
+==68943== HEAP SUMMARY:
+==68943==     in use at exit: 0 bytes in 0 blocks
+==68943==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==68943== 
+==68943== For a detailed leak analysis, rerun with: --leak-check=full
+==68943== 
+==68943== For lists of detected and suppressed errors, rerun with: -s
+==68943== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

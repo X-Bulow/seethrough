@@ -1,0 +1,28 @@
+==68616== Memcheck, a memory error detector
+==68616== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==68616== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==68616== Command: /home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-valgrind-arena-rewrite-a0-bug
+==68616== 
+==68616== Invalid write of size 1
+==68616==    at 0x400133A: st_case_10 (case.c:36)
+==68616==    by 0x4001265: main (main.c:26)
+==68616==  Address 0x4a94080 is 0 bytes inside a block of size 24 free'd
+==68616==    at 0x48538BF: free (vg_replace_malloc.c:990)
+==68616==    by 0x40013B3: st_free (arena-rewrite.c:7)
+==68616==    by 0x40012BC: st_case_10 (case.c:28)
+==68616==    by 0x4001265: main (main.c:26)
+==68616==  Block was alloc'd at
+==68616==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==68616==    by 0x400138E: st_alloc (arena-rewrite.c:6)
+==68616==    by 0x4001296: st_case_10 (case.c:26)
+==68616==    by 0x4001265: main (main.c:26)
+==68616== 
+==68616== 
+==68616== HEAP SUMMARY:
+==68616==     in use at exit: 0 bytes in 0 blocks
+==68616==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==68616== 
+==68616== For a detailed leak analysis, rerun with: --leak-check=full
+==68616== 
+==68616== For lists of detected and suppressed errors, rerun with: -s
+==68616== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

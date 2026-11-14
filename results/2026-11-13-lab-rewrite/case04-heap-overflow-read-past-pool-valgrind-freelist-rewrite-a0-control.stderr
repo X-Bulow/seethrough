@@ -1,0 +1,14 @@
+==69043== Memcheck, a memory error detector
+==69043== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==69043== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==69043== Command: /home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case04-heap-overflow-read-past-pool-valgrind-freelist-rewrite-a0-control
+==69043== 
+==69043== 
+==69043== HEAP SUMMARY:
+==69043==     in use at exit: 0 bytes in 0 blocks
+==69043==   total heap usage: 2 allocs, 2 frees, 4,120 bytes allocated
+==69043== 
+==69043== For a detailed leak analysis, rerun with: --leak-check=full
+==69043== 
+==69043== For lists of detected and suppressed errors, rerun with: -s
+==69043== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

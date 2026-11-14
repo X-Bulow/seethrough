@@ -1,0 +1,53 @@
+=================================================================
+==53538==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7b92f7fe0068 at pc 0x558b831a17f9 bp 0x7ffce5c18a10 sp 0x7ffce5c181e0
+WRITE of size 8 at 0x7b92f7fe0068 thread T0
+    #0 0x558b831a17f8 in __asan_memset (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0xcf7f8) (BuildId: dc590fe8bde826eef70ec5c24611789836e6c4ef)
+    #1 0x558b831e7c2d in st_case_7 /home/zephyr/seethrough/corpus/cases/case07-heap-underflow-write-metadata/case.c:29:5
+    #2 0x558b831e7b23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #3 0x7f62f8c2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7f62f8c2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x558b830fe364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x2c364) (BuildId: dc590fe8bde826eef70ec5c24611789836e6c4ef)
+
+0x7b92f7fe0068 is located 8 bytes before 24-byte region [0x7b92f7fe0070,0x7b92f7fe0088)
+allocated by thread T0 here:
+    #0 0x558b831a3908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0xd1908) (BuildId: dc590fe8bde826eef70ec5c24611789836e6c4ef)
+    #1 0x558b831e7ce4 in st_alloc /home/zephyr/seethrough/allocators/malloc/malloc.c:6:50
+    #2 0x558b831e7baf in st_case_7 /home/zephyr/seethrough/corpus/cases/case07-heap-underflow-write-metadata/case.c:22:24
+    #3 0x558b831e7b23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f62f8c2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f62f8c2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x558b830fe364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0x2c364) (BuildId: dc590fe8bde826eef70ec5c24611789836e6c4ef)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-malloc-a0-bug+0xcf7f8) (BuildId: dc590fe8bde826eef70ec5c24611789836e6c4ef) in __asan_memset
+Shadow bytes around the buggy address:
+  0x7b92f7fdfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b92f7fdfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b92f7fdfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b92f7fdff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b92f7fdff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b92f7fe0000: fa fa 00 00 00 fa fa fa 00 00 00 fa fa[fa]00 00
+  0x7b92f7fe0080: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b92f7fe0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b92f7fe0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b92f7fe0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b92f7fe0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==53538==ABORTING

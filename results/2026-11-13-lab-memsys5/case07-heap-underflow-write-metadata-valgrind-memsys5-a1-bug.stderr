@@ -1,0 +1,27 @@
+==64342== Memcheck, a memory error detector
+==64342== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==64342== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==64342== Command: /home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case07-heap-underflow-write-metadata-valgrind-memsys5-a1-bug
+==64342== 
+==64342== Invalid write of size 8
+==64342==    at 0x4990A6E: memset (vg_replace_strmem.c:1391)
+==64342==    by 0x400A78C: st_case_7 (case.c:29)
+==64342==    by 0x400A6E5: main (main.c:26)
+==64342==  Address 0x4cb5e58 is 24 bytes inside a block of size 32 client-defined
+==64342==    at 0x4012377: memsys5Malloc (sqlite3.c:29791)
+==64342==    by 0x4013252: mallocWithAlarm (sqlite3.c:31788)
+==64342==    by 0x40132FE: sqlite3Malloc (sqlite3.c:31813)
+==64342==    by 0x40133A3: sqlite3_malloc64 (sqlite3.c:31837)
+==64342==    by 0x400AC6D: st_alloc (memsys5.c:57)
+==64342==    by 0x400A716: st_case_7 (case.c:21)
+==64342==    by 0x400A6E5: main (main.c:26)
+==64342== 
+==64342== 
+==64342== HEAP SUMMARY:
+==64342==     in use at exit: 0 bytes in 0 blocks
+==64342==   total heap usage: 7 allocs, 3 frees, 1,054,864 bytes allocated
+==64342== 
+==64342== For a detailed leak analysis, rerun with: --leak-check=full
+==64342== 
+==64342== For lists of detected and suppressed errors, rerun with: -s
+==64342== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

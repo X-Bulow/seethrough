@@ -1,0 +1,23 @@
+==57364== Memcheck, a memory error detector
+==57364== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==57364== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==57364== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case04-heap-overflow-read-past-pool-valgrind-malloc-a1-bug
+==57364== 
+==57364== Invalid read of size 1
+==57364==    at 0x4001321: st_case_4 (case.c:32)
+==57364==    by 0x4001265: main (main.c:26)
+==57364==  Address 0x4a94098 is 0 bytes after a block of size 24 alloc'd
+==57364==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==57364==    by 0x4001367: st_alloc (malloc.c:6)
+==57364==    by 0x40012BE: st_case_4 (case.c:25)
+==57364==    by 0x4001265: main (main.c:26)
+==57364== 
+==57364== 
+==57364== HEAP SUMMARY:
+==57364==     in use at exit: 0 bytes in 0 blocks
+==57364==   total heap usage: 2 allocs, 2 frees, 4,120 bytes allocated
+==57364== 
+==57364== For a detailed leak analysis, rerun with: --leak-check=full
+==57364== 
+==57364== For lists of detected and suppressed errors, rerun with: -s
+==57364== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

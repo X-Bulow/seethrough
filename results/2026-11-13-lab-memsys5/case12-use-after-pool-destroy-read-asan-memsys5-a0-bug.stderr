@@ -1,0 +1,60 @@
+=================================================================
+==61760==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b6f6ebce600 at pc 0x564954d09d3d bp 0x7ffff321abb0 sp 0x7ffff321aba8
+READ of size 1 at 0x7b6f6ebce600 thread T0
+    #0 0x564954d09d3c in st_case_12 /home/zephyr/seethrough/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5
+    #1 0x564954d09c13 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7f6f6f82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7f6f6f82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x564954c20454 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a0-bug+0x52454) (BuildId: 9820a3beb965b1b45ebab43cb93a5f8fd4b49036)
+
+0x7b6f6ebce600 is located 986624 bytes inside of 1048576-byte region [0x7b6f6eadd800,0x7b6f6ebdd800)
+freed by thread T0 here:
+    #0 0x564954cc575a in free (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a0-bug+0xf775a) (BuildId: 9820a3beb965b1b45ebab43cb93a5f8fd4b49036)
+    #1 0x564954d09e60 in st_alloc_fini /home/zephyr/seethrough/allocators/sqlite/memsys5.c:117:5
+    #2 0x564954d09ccc in st_case_12 /home/zephyr/seethrough/corpus/cases/case12-use-after-pool-destroy-read/case.c:37:5
+    #3 0x564954d09c13 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f6f6f82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f6f6f82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x564954c20454 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a0-bug+0x52454) (BuildId: 9820a3beb965b1b45ebab43cb93a5f8fd4b49036)
+
+previously allocated by thread T0 here:
+    #0 0x564954cc59f8 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a0-bug+0xf79f8) (BuildId: 9820a3beb965b1b45ebab43cb93a5f8fd4b49036)
+    #1 0x564954d09dbe in st_alloc_init /home/zephyr/seethrough/allocators/sqlite/memsys5.c:42:12
+    #2 0x564954d09bbe in main /home/zephyr/seethrough/harness/main.c:23:5
+    #3 0x7f6f6f82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7f6f6f82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x564954c20454 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case12-use-after-pool-destroy-read-asan-memsys5-a0-bug+0x52454) (BuildId: 9820a3beb965b1b45ebab43cb93a5f8fd4b49036)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/zephyr/seethrough/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5 in st_case_12
+Shadow bytes around the buggy address:
+  0x7b6f6ebce380: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce400: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce480: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce500: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce580: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+=>0x7b6f6ebce600:[fd]fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce680: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce700: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce780: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce800: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7b6f6ebce880: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==61760==ABORTING

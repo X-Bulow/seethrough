@@ -1,0 +1,3 @@
+ST BEGIN case=3 alloc=malloc annot=1 control=1
+ST READY
+ST DONE

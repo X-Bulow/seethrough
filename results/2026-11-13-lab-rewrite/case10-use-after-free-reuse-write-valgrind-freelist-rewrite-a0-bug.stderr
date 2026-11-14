@@ -1,0 +1,28 @@
+==69263== Memcheck, a memory error detector
+==69263== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==69263== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==69263== Command: /home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-valgrind-freelist-rewrite-a0-bug
+==69263== 
+==69263== Invalid write of size 1
+==69263==    at 0x400133A: st_case_10 (case.c:36)
+==69263==    by 0x4001265: main (main.c:26)
+==69263==  Address 0x4a94080 is 0 bytes inside a block of size 24 free'd
+==69263==    at 0x48538BF: free (vg_replace_malloc.c:990)
+==69263==    by 0x40013B3: st_free (freelist-rewrite.c:7)
+==69263==    by 0x40012BC: st_case_10 (case.c:28)
+==69263==    by 0x4001265: main (main.c:26)
+==69263==  Block was alloc'd at
+==69263==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==69263==    by 0x400138E: st_alloc (freelist-rewrite.c:6)
+==69263==    by 0x4001296: st_case_10 (case.c:26)
+==69263==    by 0x4001265: main (main.c:26)
+==69263== 
+==69263== 
+==69263== HEAP SUMMARY:
+==69263==     in use at exit: 0 bytes in 0 blocks
+==69263==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==69263== 
+==69263== For a detailed leak analysis, rerun with: --leak-check=full
+==69263== 
+==69263== For lists of detected and suppressed errors, rerun with: -s
+==69263== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

@@ -1,0 +1,27 @@
+==58978== Memcheck, a memory error detector
+==58978== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==58978== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==58978== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-valgrind-arena-a1-bug
+==58978== 
+==58978== Invalid read of size 1
+==58978==    at 0x400133C: st_case_12 (case.c:39)
+==58978==    by 0x40012A5: main (main.c:26)
+==58978==  Address 0x4a93040 is 0 bytes inside a block of size 1,048,576 free'd
+==58978==    at 0x48538BF: free (vg_replace_malloc.c:990)
+==58978==    by 0x4001C1C: st_alloc_fini (arena.c:96)
+==58978==    by 0x4001319: st_case_12 (case.c:37)
+==58978==    by 0x40012A5: main (main.c:26)
+==58978==  Block was alloc'd at
+==58978==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==58978==    by 0x400175A: st_alloc_init (arena.c:44)
+==58978==    by 0x4001265: main (main.c:23)
+==58978== 
+==58978== 
+==58978== HEAP SUMMARY:
+==58978==     in use at exit: 0 bytes in 0 blocks
+==58978==   total heap usage: 4 allocs, 3 frees, 1,054,232 bytes allocated
+==58978== 
+==58978== For a detailed leak analysis, rerun with: --leak-check=full
+==58978== 
+==58978== For lists of detected and suppressed errors, rerun with: -s
+==58978== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

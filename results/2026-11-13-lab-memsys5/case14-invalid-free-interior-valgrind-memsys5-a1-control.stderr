@@ -1,0 +1,14 @@
+==64754== Memcheck, a memory error detector
+==64754== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==64754== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==64754== Command: /home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case14-invalid-free-interior-valgrind-memsys5-a1-control
+==64754== 
+==64754== 
+==64754== HEAP SUMMARY:
+==64754==     in use at exit: 0 bytes in 0 blocks
+==64754==   total heap usage: 6 allocs, 3 frees, 1,054,832 bytes allocated
+==64754== 
+==64754== For a detailed leak analysis, rerun with: --leak-check=full
+==64754== 
+==64754== For lists of detected and suppressed errors, rerun with: -s
+==64754== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

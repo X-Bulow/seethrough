@@ -1,0 +1,28 @@
+==57564== Memcheck, a memory error detector
+==57564== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==57564== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==57564== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case09-use-after-free-read-valgrind-malloc-a1-bug
+==57564== 
+==57564== Invalid read of size 1
+==57564==    at 0x40012DF: st_case_9 (case.c:21)
+==57564==    by 0x4001265: main (main.c:26)
+==57564==  Address 0x4a94080 is 0 bytes inside a block of size 24 free'd
+==57564==    at 0x48538BF: free (vg_replace_malloc.c:990)
+==57564==    by 0x4001337: st_free (malloc.c:7)
+==57564==    by 0x40012BC: st_case_9 (case.c:19)
+==57564==    by 0x4001265: main (main.c:26)
+==57564==  Block was alloc'd at
+==57564==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==57564==    by 0x4001319: st_alloc (malloc.c:6)
+==57564==    by 0x4001296: st_case_9 (case.c:12)
+==57564==    by 0x4001265: main (main.c:26)
+==57564== 
+==57564== 
+==57564== HEAP SUMMARY:
+==57564==     in use at exit: 0 bytes in 0 blocks
+==57564==   total heap usage: 2 allocs, 2 frees, 4,120 bytes allocated
+==57564== 
+==57564== For a detailed leak analysis, rerun with: --leak-check=full
+==57564== 
+==57564== For lists of detected and suppressed errors, rerun with: -s
+==57564== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

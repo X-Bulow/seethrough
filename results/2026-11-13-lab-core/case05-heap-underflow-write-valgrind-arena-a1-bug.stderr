@@ -1,0 +1,22 @@
+==58698== Memcheck, a memory error detector
+==58698== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==58698== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==58698== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case05-heap-underflow-write-valgrind-arena-a1-bug
+==58698== 
+==58698== Invalid write of size 1
+==58698==    at 0x400133B: st_case_5 (case.c:27)
+==58698==    by 0x40012A5: main (main.c:26)
+==58698==  Address 0x4a9305f is 31 bytes inside a block of size 1,048,576 alloc'd
+==58698==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==58698==    by 0x4001778: st_alloc_init (arena.c:44)
+==58698==    by 0x4001265: main (main.c:23)
+==58698== 
+==58698== 
+==58698== HEAP SUMMARY:
+==58698==     in use at exit: 0 bytes in 0 blocks
+==58698==   total heap usage: 5 allocs, 3 frees, 1,054,256 bytes allocated
+==58698== 
+==58698== For a detailed leak analysis, rerun with: --leak-check=full
+==58698== 
+==58698== For lists of detected and suppressed errors, rerun with: -s
+==58698== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

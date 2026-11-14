@@ -1,0 +1,22 @@
+=================================================================
+==54330==ERROR: AddressSanitizer: attempting free on address which was not malloc()-ed: 0x7b4cadde0048 in thread T0
+    #0 0x55742f21966a in free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case14-invalid-free-interior-asan-malloc-a1-bug+0xd166a) (BuildId: 0f514b34000a48fb0fa2b719ba703f0cd0651541)
+    #1 0x55742f25dc54 in st_free /home/zephyr/seethrough/allocators/malloc/malloc.c:7:43
+    #2 0x55742f25dc02 in st_case_14 /home/zephyr/seethrough/corpus/cases/case14-invalid-free-interior/case.c:28:5
+    #3 0x55742f25db25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f1caec2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f1caec2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55742f174364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x2c364) (BuildId: 0f514b34000a48fb0fa2b719ba703f0cd0651541)
+
+0x7b4cadde0048 is located 8 bytes inside of 24-byte region [0x7b4cadde0040,0x7b4cadde0058)
+allocated by thread T0 here:
+    #0 0x55742f219908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-core/case14-invalid-free-interior-asan-malloc-a1-bug+0xd1908) (BuildId: 0f514b34000a48fb0fa2b719ba703f0cd0651541)
+    #1 0x55742f25dc34 in st_alloc /home/zephyr/seethrough/allocators/malloc/malloc.c:6:50
+    #2 0x55742f25dba1 in st_case_14 /home/zephyr/seethrough/corpus/cases/case14-invalid-free-interior/case.c:22:24
+    #3 0x55742f25db25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f1caec2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f1caec2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55742f174364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case14-invalid-free-interior-asan-malloc-a1-bug+0x2c364) (BuildId: 0f514b34000a48fb0fa2b719ba703f0cd0651541)
+
+SUMMARY: AddressSanitizer: bad-free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case14-invalid-free-interior-asan-malloc-a1-bug+0xd166a) (BuildId: 0f514b34000a48fb0fa2b719ba703f0cd0651541) in free
+==54330==ABORTING

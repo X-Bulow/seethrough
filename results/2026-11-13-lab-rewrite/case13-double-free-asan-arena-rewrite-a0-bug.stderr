@@ -1,0 +1,31 @@
+=================================================================
+==67531==ERROR: AddressSanitizer: attempting double-free on 0x7c283efe0040 in thread T0:
+    #0 0x563f1510166a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0xd166a) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc)
+    #1 0x563f15145c94 in st_free /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x563f15145c28 in st_case_13 /home/zephyr/seethrough/corpus/cases/case13-double-free/case.c:31:5
+    #3 0x563f15145b23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7ff83fe2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7ff83fe2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x563f1505c364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc)
+
+0x7c283efe0040 is located 0 bytes inside of 24-byte region [0x7c283efe0040,0x7c283efe0058)
+freed by thread T0 here:
+    #0 0x563f1510166a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0xd166a) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc)
+    #1 0x563f15145c94 in st_free /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x563f15145be2 in st_case_13 /home/zephyr/seethrough/corpus/cases/case13-double-free/case.c:26:5
+    #3 0x563f15145b23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7ff83fe2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7ff83fe2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x563f1505c364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc)
+
+previously allocated by thread T0 here:
+    #0 0x563f15101908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0xd1908) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc)
+    #1 0x563f15145c5b in st_alloc /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:6:39
+    #2 0x563f15145ba1 in st_case_13 /home/zephyr/seethrough/corpus/cases/case13-double-free/case.c:22:24
+    #3 0x563f15145b23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7ff83fe2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7ff83fe2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x563f1505c364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc)
+
+SUMMARY: AddressSanitizer: double-free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case13-double-free-asan-arena-rewrite-a0-bug+0xd166a) (BuildId: 3aac7e0192ab457046d4c247eef8fd991fef71dc) in free
+==67531==ABORTING

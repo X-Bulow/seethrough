@@ -1,0 +1,54 @@
+=================================================================
+==62030==ERROR: AddressSanitizer: use-after-poison on address 0x7bd5055ce618 at pc 0x55c677bebd3c bp 0x7ffe91c6c060 sp 0x7ffe91c6c058
+WRITE of size 1 at 0x7bd5055ce618 thread T0
+    #0 0x55c677bebd3b in st_case_0 /home/zephyr/seethrough/corpus/cases/case00-heap-overflow-write/case.c:20:11
+    #1 0x55c677bebc13 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7fd50642a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7fd50642a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x55c677b02454 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case00-heap-overflow-write-asan-memsys5-a1-bug+0x52454) (BuildId: 4dc24c32dafa7d3c3bda8b68073fde2556a3c44e)
+
+0x7bd5055ce618 is located 986648 bytes inside of 1048576-byte region [0x7bd5054dd800,0x7bd5055dd800)
+allocated by thread T0 here:
+    #0 0x55c677ba79f8 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case00-heap-overflow-write-asan-memsys5-a1-bug+0xf79f8) (BuildId: 4dc24c32dafa7d3c3bda8b68073fde2556a3c44e)
+    #1 0x55c677bebe0e in st_alloc_init /home/zephyr/seethrough/allocators/sqlite/memsys5.c:42:12
+    #2 0x55c677bebbbe in main /home/zephyr/seethrough/harness/main.c:23:5
+    #3 0x7fd50642a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7fd50642a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x55c677b02454 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case00-heap-overflow-write-asan-memsys5-a1-bug+0x52454) (BuildId: 4dc24c32dafa7d3c3bda8b68073fde2556a3c44e)
+
+SUMMARY: AddressSanitizer: use-after-poison /home/zephyr/seethrough/corpus/cases/case00-heap-overflow-write/case.c:20:11 in st_case_0
+Shadow bytes around the buggy address:
+  0x7bd5055ce380: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7bd5055ce400: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7bd5055ce480: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7bd5055ce500: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7bd5055ce580: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+=>0x7bd5055ce600: 00 00 00[f7]00 00 00 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7bd5055ce680: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7bd5055ce700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd5055ce780: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd5055ce800: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd5055ce880: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+
+NOTE: the stack trace above identifies the code that *accessed* the poisoned memory.
+To identify the code that *poisoned* the memory, try the experimental setting ASAN_OPTIONS=poison_history_size=<size>.
+==62030==ABORTING

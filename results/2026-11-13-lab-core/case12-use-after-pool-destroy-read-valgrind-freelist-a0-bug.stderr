@@ -1,0 +1,27 @@
+==59625== Memcheck, a memory error detector
+==59625== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==59625== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==59625== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-valgrind-freelist-a0-bug
+==59625== 
+==59625== Invalid read of size 1
+==59625==    at 0x400131C: st_case_12 (case.c:39)
+==59625==    by 0x4001285: main (main.c:26)
+==59625==  Address 0x4a93040 is 0 bytes inside a block of size 1,048,576 free'd
+==59625==    at 0x48538BF: free (vg_replace_malloc.c:990)
+==59625==    by 0x40019C7: st_alloc_fini (freelist.c:163)
+==59625==    by 0x40012F9: st_case_12 (case.c:37)
+==59625==    by 0x4001285: main (main.c:26)
+==59625==  Block was alloc'd at
+==59625==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==59625==    by 0x400156D: st_alloc_init (freelist.c:66)
+==59625==    by 0x4001245: main (main.c:23)
+==59625== 
+==59625== 
+==59625== HEAP SUMMARY:
+==59625==     in use at exit: 0 bytes in 0 blocks
+==59625==   total heap usage: 3 allocs, 3 frees, 1,054,720 bytes allocated
+==59625== 
+==59625== For a detailed leak analysis, rerun with: --leak-check=full
+==59625== 
+==59625== For lists of detected and suppressed errors, rerun with: -s
+==59625== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

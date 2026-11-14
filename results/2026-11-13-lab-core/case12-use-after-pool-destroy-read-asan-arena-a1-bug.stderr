@@ -1,0 +1,60 @@
+=================================================================
+==55326==ERROR: AddressSanitizer: heap-use-after-free on address 0x7f3ae3971800 at pc 0x556784986c4d bp 0x7ffd5cae8450 sp 0x7ffd5cae8448
+READ of size 1 at 0x7f3ae3971800 thread T0
+    #0 0x556784986c4c in st_case_12 /home/zephyr/seethrough/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5
+    #1 0x556784986b25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7f3ae3e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7f3ae3e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x55678489d364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-asan-arena-a1-bug+0x2d364) (BuildId: c9b0e0ce29080e469b44694604b108cfbaf84ced)
+
+0x7f3ae3971800 is located 0 bytes inside of 1048576-byte region [0x7f3ae3971800,0x7f3ae3a71800)
+freed by thread T0 here:
+    #0 0x55678494266a in free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-asan-arena-a1-bug+0xd266a) (BuildId: c9b0e0ce29080e469b44694604b108cfbaf84ced)
+    #1 0x556784986d4e in st_alloc_fini /home/zephyr/seethrough/allocators/arena/arena.c:96:5
+    #2 0x556784986bdc in st_case_12 /home/zephyr/seethrough/corpus/cases/case12-use-after-pool-destroy-read/case.c:37:5
+    #3 0x556784986b25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f3ae3e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f3ae3e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55678489d364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-asan-arena-a1-bug+0x2d364) (BuildId: c9b0e0ce29080e469b44694604b108cfbaf84ced)
+
+previously allocated by thread T0 here:
+    #0 0x556784942908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-asan-arena-a1-bug+0xd2908) (BuildId: c9b0e0ce29080e469b44694604b108cfbaf84ced)
+    #1 0x556784986cc2 in st_alloc_init /home/zephyr/seethrough/allocators/arena/arena.c:44:12
+    #2 0x556784986ace in main /home/zephyr/seethrough/harness/main.c:23:5
+    #3 0x7f3ae3e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7f3ae3e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x55678489d364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case12-use-after-pool-destroy-read-asan-arena-a1-bug+0x2d364) (BuildId: c9b0e0ce29080e469b44694604b108cfbaf84ced)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/zephyr/seethrough/corpus/cases/case12-use-after-pool-destroy-read/case.c:39:5 in st_case_12
+Shadow bytes around the buggy address:
+  0x7f3ae3971580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7f3ae3971600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7f3ae3971680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7f3ae3971700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7f3ae3971780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x7f3ae3971800:[fd]fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7f3ae3971880: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7f3ae3971900: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7f3ae3971980: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7f3ae3971a00: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7f3ae3971a80: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==55326==ABORTING

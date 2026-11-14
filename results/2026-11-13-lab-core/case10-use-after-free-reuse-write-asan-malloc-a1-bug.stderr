@@ -1,0 +1,61 @@
+=================================================================
+==54189==ERROR: AddressSanitizer: heap-use-after-free on address 0x7c07e91e0040 at pc 0x565410a3ec8c bp 0x7ffc85c26440 sp 0x7ffc85c26438
+WRITE of size 1 at 0x7c07e91e0040 thread T0
+    #0 0x565410a3ec8b in st_case_10 /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:36:10
+    #1 0x565410a3eb25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7fd7e9e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7fd7e9e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x565410955364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case10-use-after-free-reuse-write-asan-malloc-a1-bug+0x2d364) (BuildId: 108b2864133ab080324418625741ad91487b4ed1)
+
+0x7c07e91e0040 is located 0 bytes inside of 24-byte region [0x7c07e91e0040,0x7c07e91e0058)
+freed by thread T0 here:
+    #0 0x5654109fa66a in free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case10-use-after-free-reuse-write-asan-malloc-a1-bug+0xd266a) (BuildId: 108b2864133ab080324418625741ad91487b4ed1)
+    #1 0x565410a3ed54 in st_free /home/zephyr/seethrough/allocators/malloc/malloc.c:7:43
+    #2 0x565410a3ebc1 in st_case_10 /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:28:5
+    #3 0x565410a3eb25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fd7e9e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fd7e9e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x565410955364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case10-use-after-free-reuse-write-asan-malloc-a1-bug+0x2d364) (BuildId: 108b2864133ab080324418625741ad91487b4ed1)
+
+previously allocated by thread T0 here:
+    #0 0x5654109fa908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-core/case10-use-after-free-reuse-write-asan-malloc-a1-bug+0xd2908) (BuildId: 108b2864133ab080324418625741ad91487b4ed1)
+    #1 0x565410a3ed34 in st_alloc /home/zephyr/seethrough/allocators/malloc/malloc.c:6:50
+    #2 0x565410a3eba1 in st_case_10 /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:26:24
+    #3 0x565410a3eb25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fd7e9e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fd7e9e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x565410955364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case10-use-after-free-reuse-write-asan-malloc-a1-bug+0x2d364) (BuildId: 108b2864133ab080324418625741ad91487b4ed1)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:36:10 in st_case_10
+Shadow bytes around the buggy address:
+  0x7c07e91dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c07e91dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c07e91dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c07e91dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c07e91dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7c07e91e0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa 00 00
+  0x7c07e91e0080: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7c07e91e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7c07e91e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7c07e91e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7c07e91e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==54189==ABORTING

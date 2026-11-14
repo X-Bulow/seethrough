@@ -1,0 +1,18 @@
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==61278==ERROR: AddressSanitizer: SEGV on unknown address 0x7b29084d0600 (pc 0x55c4483c1d6a bp 0x7ffc036594e0 sp 0x7ffc036594a0 T0)
+==61278==The signal is caused by a READ memory access.
+    #0 0x55c4483c1d6a in st_case_4 /home/zephyr/seethrough/corpus/cases/case04-heap-overflow-read-past-pool/case.c:32:5
+    #1 0x55c4483c1c13 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7f290902a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7f290902a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x55c4482d8454 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case04-heap-overflow-read-past-pool-asan-memsys5-a0-bug+0x52454) (BuildId: 7345ea08160a7c89aa310623a509b825bacd7e17)
+
+==61278==Register values:
+rax = 0x00007b29084d0600  rbx = 0x0000000000000000  rcx = 0x0000000000000000  rdx = 0x0000000000000000  
+rdi = 0x000055c4487475b0  rsi = 0x00007ffc03659458  rbp = 0x00007ffc036594e0  rsp = 0x00007ffc036594a0  
+ r8 = 0x0000000000000000   r9 = 0xffffff0000000000  r10 = 0xefffffffffffffff  r11 = 0x4000000000000000  
+r12 = 0x00007ffc03659638  r13 = 0x0000000000000001  r14 = 0x00007f290947b000  r15 = 0x000055c448712510  
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /home/zephyr/seethrough/corpus/cases/case04-heap-overflow-read-past-pool/case.c:32:5 in st_case_4
+==61278==ABORTING

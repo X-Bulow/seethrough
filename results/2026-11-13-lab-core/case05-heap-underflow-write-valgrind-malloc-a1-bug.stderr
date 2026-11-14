@@ -1,0 +1,23 @@
+==57404== Memcheck, a memory error detector
+==57404== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==57404== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==57404== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case05-heap-underflow-write-valgrind-malloc-a1-bug
+==57404== 
+==57404== Invalid write of size 1
+==57404==    at 0x40012FB: st_case_5 (case.c:27)
+==57404==    by 0x4001265: main (main.c:26)
+==57404==  Address 0x4a940df is 1 bytes before a block of size 24 alloc'd
+==57404==    at 0x4850858: malloc (vg_replace_malloc.c:447)
+==57404==    by 0x4001354: st_alloc (malloc.c:6)
+==57404==    by 0x40012A4: st_case_5 (case.c:20)
+==57404==    by 0x4001265: main (main.c:26)
+==57404== 
+==57404== 
+==57404== HEAP SUMMARY:
+==57404==     in use at exit: 0 bytes in 0 blocks
+==57404==   total heap usage: 3 allocs, 3 frees, 4,144 bytes allocated
+==57404== 
+==57404== For a detailed leak analysis, rerun with: --leak-check=full
+==57404== 
+==57404== For lists of detected and suppressed errors, rerun with: -s
+==57404== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

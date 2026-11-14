@@ -1,0 +1,27 @@
+==66755== Memcheck, a memory error detector
+==66755== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==66755== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==66755== Command: /home/zephyr/seethrough/build/2026-11-13-lab-lookaside/case12-use-after-pool-destroy-read-valgrind-lookaside-a0-bug
+==66755== 
+==66755== Invalid read of size 1
+==66755==    at 0x400A77C: st_case_12 (case.c:39)
+==66755==    by 0x400A6E5: main (main.c:26)
+==66755==  Address 0x4cc2fc0 is 1,048,448 bytes inside a block of size 1,048,576 free'd
+==66755==    at 0x49838BF: free (vg_replace_malloc.c:990)
+==66755==    by 0x400A9A0: st_alloc_fini (lookaside.c:48)
+==66755==    by 0x400A759: st_case_12 (case.c:37)
+==66755==    by 0x400A6E5: main (main.c:26)
+==66755==  Block was alloc'd at
+==66755==    at 0x4980858: malloc (vg_replace_malloc.c:447)
+==66755==    by 0x400A80C: st_alloc_init (lookaside.c:27)
+==66755==    by 0x400A6A5: main (main.c:23)
+==66755== 
+==66755== 
+==66755== HEAP SUMMARY:
+==66755==     in use at exit: 0 bytes in 0 blocks
+==66755==   total heap usage: 27 allocs, 27 frees, 1,110,040 bytes allocated
+==66755== 
+==66755== For a detailed leak analysis, rerun with: --leak-check=full
+==66755== 
+==66755== For lists of detected and suppressed errors, rerun with: -s
+==66755== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

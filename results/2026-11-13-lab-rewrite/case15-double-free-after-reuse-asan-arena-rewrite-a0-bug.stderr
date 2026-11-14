@@ -1,0 +1,31 @@
+=================================================================
+==67599==ERROR: AddressSanitizer: attempting double-free on 0x7b40cefe0040 in thread T0:
+    #0 0x559865bb966a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0xd266a) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62)
+    #1 0x559865bfdd44 in st_free /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x559865bfdc63 in st_case_15 /home/zephyr/seethrough/corpus/cases/case15-double-free-after-reuse/case.c:34:5
+    #3 0x559865bfdb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f10cfc2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f10cfc2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x559865b14364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62)
+
+0x7b40cefe0040 is located 0 bytes inside of 24-byte region [0x7b40cefe0040,0x7b40cefe0058)
+freed by thread T0 here:
+    #0 0x559865bb966a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0xd266a) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62)
+    #1 0x559865bfdd44 in st_free /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x559865bfdbc1 in st_case_15 /home/zephyr/seethrough/corpus/cases/case15-double-free-after-reuse/case.c:26:5
+    #3 0x559865bfdb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f10cfc2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f10cfc2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x559865b14364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62)
+
+previously allocated by thread T0 here:
+    #0 0x559865bb9908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0xd2908) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62)
+    #1 0x559865bfdd0b in st_alloc /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:6:39
+    #2 0x559865bfdba1 in st_case_15 /home/zephyr/seethrough/corpus/cases/case15-double-free-after-reuse/case.c:24:24
+    #3 0x559865bfdb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f10cfc2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f10cfc2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x559865b14364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62)
+
+SUMMARY: AddressSanitizer: double-free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-arena-rewrite-a0-bug+0xd266a) (BuildId: 54def24ca83d4471595152a85ea110e54b29bb62) in free
+==67599==ABORTING

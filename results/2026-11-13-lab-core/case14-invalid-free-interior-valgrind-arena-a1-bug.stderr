@@ -1,0 +1,23 @@
+==59058== Memcheck, a memory error detector
+==59058== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==59058== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==59058== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case14-invalid-free-interior-valgrind-arena-a1-bug
+==59058== 
+==59058== Invalid free() / delete / delete[] / realloc()
+==59058==    at 0x4001A69: st_free (arena.c:74)
+==59058==    by 0x400131E: st_case_14 (case.c:28)
+==59058==    by 0x40012A5: main (main.c:26)
+==59058==  Address 0x4a93048 is 8 bytes inside a block of size 24 client-defined
+==59058==    at 0x400198C: st_alloc (arena.c:61)
+==59058==    by 0x40012D6: st_case_14 (case.c:22)
+==59058==    by 0x40012A5: main (main.c:26)
+==59058== 
+==59058== 
+==59058== HEAP SUMMARY:
+==59058==     in use at exit: 0 bytes in 0 blocks
+==59058==   total heap usage: 4 allocs, 3 frees, 1,054,232 bytes allocated
+==59058== 
+==59058== For a detailed leak analysis, rerun with: --leak-check=full
+==59058== 
+==59058== For lists of detected and suppressed errors, rerun with: -s
+==59058== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

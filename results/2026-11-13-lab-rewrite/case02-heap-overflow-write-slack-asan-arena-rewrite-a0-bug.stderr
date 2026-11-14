@@ -1,0 +1,52 @@
+=================================================================
+==67153==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7b36aa9e005c at pc 0x55eb1f02fc4c bp 0x7ffc481a46d0 sp 0x7ffc481a46c8
+WRITE of size 1 at 0x7b36aa9e005c thread T0
+    #0 0x55eb1f02fc4b in st_case_2 /home/zephyr/seethrough/corpus/cases/case02-heap-overflow-write-slack/case.c:27:11
+    #1 0x55eb1f02fb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7f06ab82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7f06ab82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x55eb1ef46364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case02-heap-overflow-write-slack-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: c333f606b4952ec77549afcd9f5eb31d5853bf1f)
+
+0x7b36aa9e005c is located 4 bytes after 24-byte region [0x7b36aa9e0040,0x7b36aa9e0058)
+allocated by thread T0 here:
+    #0 0x55eb1efeb908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case02-heap-overflow-write-slack-asan-arena-rewrite-a0-bug+0xd1908) (BuildId: c333f606b4952ec77549afcd9f5eb31d5853bf1f)
+    #1 0x55eb1f02fd0b in st_alloc /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:6:39
+    #2 0x55eb1f02fba1 in st_case_2 /home/zephyr/seethrough/corpus/cases/case02-heap-overflow-write-slack/case.c:19:24
+    #3 0x55eb1f02fb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7f06ab82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7f06ab82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x55eb1ef46364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case02-heap-overflow-write-slack-asan-arena-rewrite-a0-bug+0x2c364) (BuildId: c333f606b4952ec77549afcd9f5eb31d5853bf1f)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /home/zephyr/seethrough/corpus/cases/case02-heap-overflow-write-slack/case.c:27:11 in st_case_2
+Shadow bytes around the buggy address:
+  0x7b36aa9dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b36aa9dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b36aa9dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b36aa9dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b36aa9dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7b36aa9e0000: fa fa 00 00 00 fa fa fa 00 00 00[fa]fa fa 00 00
+  0x7b36aa9e0080: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b36aa9e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b36aa9e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b36aa9e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b36aa9e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==67153==ABORTING

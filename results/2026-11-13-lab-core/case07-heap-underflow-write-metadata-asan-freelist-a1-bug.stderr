@@ -1,0 +1,55 @@
+=================================================================
+==56220==ERROR: AddressSanitizer: use-after-poison on address 0x7b12232dd818 at pc 0x559738c387f9 bp 0x7fffcd8faa20 sp 0x7fffcd8fa1f0
+WRITE of size 8 at 0x7b12232dd818 thread T0
+    #0 0x559738c387f8 in __asan_memset (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0xd07f8) (BuildId: c637efcf88bec7da026a98f52f3ff5c53f14f586)
+    #1 0x559738c7ec2d in st_case_7 /home/zephyr/seethrough/corpus/cases/case07-heap-underflow-write-metadata/case.c:29:5
+    #2 0x559738c7eb25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #3 0x7f122402a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7f122402a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x559738b95364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x2d364) (BuildId: c637efcf88bec7da026a98f52f3ff5c53f14f586)
+
+0x7b12232dd818 is located 24 bytes inside of 1048576-byte region [0x7b12232dd800,0x7b12233dd800)
+allocated by thread T0 here:
+    #0 0x559738c3a908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0xd2908) (BuildId: c637efcf88bec7da026a98f52f3ff5c53f14f586)
+    #1 0x559738c7ecf2 in st_alloc_init /home/zephyr/seethrough/allocators/freelist/freelist.c:66:12
+    #2 0x559738c7eace in main /home/zephyr/seethrough/harness/main.c:23:5
+    #3 0x7f122402a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #4 0x7f122402a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #5 0x559738b95364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0x2d364) (BuildId: c637efcf88bec7da026a98f52f3ff5c53f14f586)
+
+SUMMARY: AddressSanitizer: use-after-poison (/home/zephyr/seethrough/build/2026-11-13-lab-core/case07-heap-underflow-write-metadata-asan-freelist-a1-bug+0xd07f8) (BuildId: c637efcf88bec7da026a98f52f3ff5c53f14f586) in __asan_memset
+Shadow bytes around the buggy address:
+  0x7b12232dd580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b12232dd600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b12232dd680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b12232dd700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7b12232dd780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x7b12232dd800: 00 00 00[f7]00 00 00 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7b12232dd880: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7b12232dd900: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7b12232dd980: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7b12232dda00: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+  0x7b12232dda80: f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7 f7
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+
+NOTE: the stack trace above identifies the code that *accessed* the poisoned memory.
+To identify the code that *poisoned* the memory, try the experimental setting ASAN_OPTIONS=poison_history_size=<size>.
+==56220==ABORTING

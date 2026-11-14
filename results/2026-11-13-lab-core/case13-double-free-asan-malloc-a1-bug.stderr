@@ -1,0 +1,31 @@
+=================================================================
+==54296==ERROR: AddressSanitizer: attempting double-free on 0x7be4b3be0040 in thread T0:
+    #0 0x559a1d82566a in free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0xd166a) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695)
+    #1 0x559a1d869c74 in st_free /home/zephyr/seethrough/allocators/malloc/malloc.c:7:43
+    #2 0x559a1d869c28 in st_case_13 /home/zephyr/seethrough/corpus/cases/case13-double-free/case.c:31:5
+    #3 0x559a1d869b25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fb4b482a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fb4b482a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x559a1d780364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0x2c364) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695)
+
+0x7be4b3be0040 is located 0 bytes inside of 24-byte region [0x7be4b3be0040,0x7be4b3be0058)
+freed by thread T0 here:
+    #0 0x559a1d82566a in free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0xd166a) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695)
+    #1 0x559a1d869c74 in st_free /home/zephyr/seethrough/allocators/malloc/malloc.c:7:43
+    #2 0x559a1d869be2 in st_case_13 /home/zephyr/seethrough/corpus/cases/case13-double-free/case.c:26:5
+    #3 0x559a1d869b25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fb4b482a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fb4b482a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x559a1d780364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0x2c364) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695)
+
+previously allocated by thread T0 here:
+    #0 0x559a1d825908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0xd1908) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695)
+    #1 0x559a1d869c54 in st_alloc /home/zephyr/seethrough/allocators/malloc/malloc.c:6:50
+    #2 0x559a1d869ba1 in st_case_13 /home/zephyr/seethrough/corpus/cases/case13-double-free/case.c:22:24
+    #3 0x559a1d869b25 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fb4b482a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fb4b482a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x559a1d780364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0x2c364) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695)
+
+SUMMARY: AddressSanitizer: double-free (/home/zephyr/seethrough/build/2026-11-13-lab-core/case13-double-free-asan-malloc-a1-bug+0xd166a) (BuildId: 73ac7d6de4a0a7f7eeb27aa9775d08eba28b5695) in free
+==54296==ABORTING

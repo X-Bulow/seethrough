@@ -1,0 +1,31 @@
+=================================================================
+==68146==ERROR: AddressSanitizer: attempting double-free on 0x7c210d5e0040 in thread T0:
+    #0 0x5573ee16b66a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0xd266a) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc)
+    #1 0x5573ee1afd44 in st_free /home/zephyr/seethrough/allocators/freelist/rewrite/freelist-rewrite.c:7:25
+    #2 0x5573ee1afc63 in st_case_15 /home/zephyr/seethrough/corpus/cases/case15-double-free-after-reuse/case.c:34:5
+    #3 0x5573ee1afb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7ff10e42a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7ff10e42a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5573ee0c6364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x2d364) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc)
+
+0x7c210d5e0040 is located 0 bytes inside of 24-byte region [0x7c210d5e0040,0x7c210d5e0058)
+freed by thread T0 here:
+    #0 0x5573ee16b66a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0xd266a) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc)
+    #1 0x5573ee1afd44 in st_free /home/zephyr/seethrough/allocators/freelist/rewrite/freelist-rewrite.c:7:25
+    #2 0x5573ee1afbc1 in st_case_15 /home/zephyr/seethrough/corpus/cases/case15-double-free-after-reuse/case.c:26:5
+    #3 0x5573ee1afb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7ff10e42a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7ff10e42a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5573ee0c6364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x2d364) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc)
+
+previously allocated by thread T0 here:
+    #0 0x5573ee16b908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0xd2908) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc)
+    #1 0x5573ee1afd0b in st_alloc /home/zephyr/seethrough/allocators/freelist/rewrite/freelist-rewrite.c:6:39
+    #2 0x5573ee1afba1 in st_case_15 /home/zephyr/seethrough/corpus/cases/case15-double-free-after-reuse/case.c:24:24
+    #3 0x5573ee1afb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7ff10e42a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7ff10e42a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x5573ee0c6364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0x2d364) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc)
+
+SUMMARY: AddressSanitizer: double-free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case15-double-free-after-reuse-asan-freelist-rewrite-a0-bug+0xd266a) (BuildId: 9ed85d499e4f6ec26122b504eaa58dcb451d1fbc) in free
+==68146==ABORTING

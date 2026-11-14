@@ -1,0 +1,14 @@
+==57971== Memcheck, a memory error detector
+==57971== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==57971== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==57971== Command: /home/zephyr/seethrough/build/2026-11-13-lab-core/case03-heap-overflow-write-far-valgrind-arena-a0-bug
+==57971== 
+==57971== 
+==57971== HEAP SUMMARY:
+==57971==     in use at exit: 0 bytes in 0 blocks
+==57971==   total heap usage: 3 allocs, 3 frees, 1,054,208 bytes allocated
+==57971== 
+==57971== For a detailed leak analysis, rerun with: --leak-check=full
+==57971== 
+==57971== For lists of detected and suppressed errors, rerun with: -s
+==57971== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

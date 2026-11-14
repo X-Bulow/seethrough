@@ -1,0 +1,61 @@
+=================================================================
+==67424==ERROR: AddressSanitizer: heap-use-after-free on address 0x7bd98e9e0040 at pc 0x560abc9bdc8c bp 0x7fffe1a1b8f0 sp 0x7fffe1a1b8e8
+WRITE of size 1 at 0x7bd98e9e0040 thread T0
+    #0 0x560abc9bdc8b in st_case_10 /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:36:10
+    #1 0x560abc9bdb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #2 0x7fa98f82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #3 0x7fa98f82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #4 0x560abc8d4364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: adcd951000798f74d5da7cad260e3a6847043f51)
+
+0x7bd98e9e0040 is located 0 bytes inside of 24-byte region [0x7bd98e9e0040,0x7bd98e9e0058)
+freed by thread T0 here:
+    #0 0x560abc97966a in free (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0xd266a) (BuildId: adcd951000798f74d5da7cad260e3a6847043f51)
+    #1 0x560abc9bdd74 in st_free /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:7:25
+    #2 0x560abc9bdbc1 in st_case_10 /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:28:5
+    #3 0x560abc9bdb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fa98f82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fa98f82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x560abc8d4364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: adcd951000798f74d5da7cad260e3a6847043f51)
+
+previously allocated by thread T0 here:
+    #0 0x560abc979908 in malloc (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0xd2908) (BuildId: adcd951000798f74d5da7cad260e3a6847043f51)
+    #1 0x560abc9bdd3b in st_alloc /home/zephyr/seethrough/allocators/arena/rewrite/arena-rewrite.c:6:39
+    #2 0x560abc9bdba1 in st_case_10 /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:26:24
+    #3 0x560abc9bdb23 in main /home/zephyr/seethrough/harness/main.c:26:5
+    #4 0x7fa98f82a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #5 0x7fa98f82a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #6 0x560abc8d4364 in _start (/home/zephyr/seethrough/build/2026-11-13-lab-rewrite/case10-use-after-free-reuse-write-asan-arena-rewrite-a0-bug+0x2d364) (BuildId: adcd951000798f74d5da7cad260e3a6847043f51)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/zephyr/seethrough/corpus/cases/case10-use-after-free-reuse-write/case.c:36:10 in st_case_10
+Shadow bytes around the buggy address:
+  0x7bd98e9dfd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd98e9dfe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd98e9dfe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd98e9dff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7bd98e9dff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x7bd98e9e0000: fa fa 00 00 00 fa fa fa[fd]fd fd fa fa fa 00 00
+  0x7bd98e9e0080: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bd98e9e0100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bd98e9e0180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bd98e9e0200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7bd98e9e0280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==67424==ABORTING

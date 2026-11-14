@@ -1,0 +1,27 @@
+==64619== Memcheck, a memory error detector
+==64619== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==64619== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==64619== Command: /home/zephyr/seethrough/build/2026-11-13-lab-memsys5/case12-use-after-pool-destroy-read-valgrind-memsys5-a1-bug
+==64619== 
+==64619== Invalid read of size 1
+==64619==    at 0x400A77C: st_case_12 (case.c:39)
+==64619==    by 0x400A6E5: main (main.c:26)
+==64619==  Address 0x4cb5e40 is 986,624 bytes inside a block of size 1,048,576 free'd
+==64619==    at 0x49858BF: free (vg_replace_malloc.c:990)
+==64619==    by 0x400B1CD: st_alloc_fini (memsys5.c:117)
+==64619==    by 0x400A759: st_case_12 (case.c:37)
+==64619==    by 0x400A6E5: main (main.c:26)
+==64619==  Block was alloc'd at
+==64619==    at 0x4982858: malloc (vg_replace_malloc.c:447)
+==64619==    by 0x400AB6F: st_alloc_init (memsys5.c:42)
+==64619==    by 0x400A6A5: main (main.c:23)
+==64619== 
+==64619== 
+==64619== HEAP SUMMARY:
+==64619==     in use at exit: 0 bytes in 0 blocks
+==64619==   total heap usage: 6 allocs, 3 frees, 1,054,832 bytes allocated
+==64619== 
+==64619== For a detailed leak analysis, rerun with: --leak-check=full
+==64619== 
+==64619== For lists of detected and suppressed errors, rerun with: -s
+==64619== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
