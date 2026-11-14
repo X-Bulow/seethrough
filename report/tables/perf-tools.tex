@@ -1,0 +1,17 @@
+\begin{tabular}{llrrrr}
+\toprule
+workload & tool & time (s) & $\times$ & peak RSS (MiB) & $\times$ \\
+\midrule
+SQLite speedtest1, default & baseline & 2.30 & 1.00 & 77.1 & 1.00 \\
+ & ASan & 6.08 & 2.64 & 611.4 & 7.94 \\
+ & Valgrind & 62.04 & 26.97 & 189.7 & 2.46 \\
+\addlinespace
+SQLite speedtest1, memsys5 & baseline & 2.47 & 1.00 & 121.2 & 1.00 \\
+ & ASan & 5.34 & 2.16 & 166.5 & 1.37 \\
+ & Valgrind & 60.58 & 24.53 & 208.3 & 1.72 \\
+\addlinespace
+Lua 5.4.9 table/GC workload & baseline & 4.65 & 1.00 & 29.7 & 1.00 \\
+ & ASan & 13.85 & 2.98 & 473.4 & 15.94 \\
+ & Valgrind & 133.64 & 28.74 & 188.4 & 6.34 \\
+\bottomrule
+\end{tabular}

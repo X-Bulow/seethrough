@@ -1,0 +1,10 @@
+\begin{tabular}{llrrrrr}
+\toprule
+allocator & tool & off (s) & on (s) & on/off & RSS off / on (MiB) & rewrite (s, MiB) \\
+\midrule
+Arena & ASan & 1.510 & 1.582 & 1.05$\times$ & 46.1 / 46.0 & 0.547, 154 \\
+ & Valgrind & 2.273 & 4.038 & 1.78$\times$ & 72.0 / 72.3 & 2.672, 142 \\
+Free list & ASan & 1.478 & 1.625 & 1.10$\times$ & 43.6 / 43.6 & 0.535, 154 \\
+ & Valgrind & 2.413 & 5.209 & 2.16$\times$ & 72.9 / 72.8 & 2.686, 142 \\
+\bottomrule
+\end{tabular}

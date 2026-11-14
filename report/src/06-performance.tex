@@ -1,0 +1,73 @@
+\section{Q2: Overhead}
+\label{sec:perf}
+
+\paragraph{Method.} Benchmarks are built at \code{-O2 -g -fno-omit-frame-pointer}; ASan adds
+\code{-fsanitize=address}, and Valgrind runs the uninstrumented binary. Each configuration runs five
+times; we report the median wall time and the median peak resident set size (RSS) from
+\code{/usr/bin/time}, and ratios against the uninstrumented baseline of the same configuration.
+Valgrind's RSS includes the tool's own memory. The workloads are SQLite~3.50.4
+\code{speedtest1}~\cite{sqlitespeedtest} (\code{--memdb --size 100 --testset main}) in SQLite's
+default configuration and with memsys5 serving all allocations from a 256~MiB heap (minimum block 64
+bytes); a synthetic Lua~5.4.9 workload~\cite{lua} that builds, sorts and garbage-collects 20 rounds
+of 100{,}000 tables with strings, with Lua's stock allocator; and an allocator micro-benchmark that
+runs 10{,}000 allocation and reuse cycles on Arena and Free list with annotation off and on, and on
+their rewrites. The first two ran on the VirtualBox VM and the third on EC2 (Table~\ref{tab:env});
+numbers are compared only within one machine. HWASan was not measured, because its only host is a
+laptop VM whose timings cannot be compared with the others.
+
+\begin{table}[t]
+\centering\small
+\input{tables/perf-tools}
+\caption{Tool overhead on real programs (VirtualBox VM, median of five runs; $\times$ = ratio to the
+baseline of the same configuration). No custom annotations.}
+\label{tab:perf-tools}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/benchmark-overhead.pdf}
+\caption{SQLite \code{speedtest1} overhead in time and peak RSS, default allocator versus memsys5.}
+\label{fig:speedtest}
+\end{figure}
+
+\paragraph{Tool overhead.} Table~\ref{tab:perf-tools} and Figure~\ref{fig:speedtest} show the
+familiar picture: ASan costs 2.2--3.0$\times$ in time, Valgrind 24.5--28.7$\times$. Memory is where
+the allocator matters. With SQLite's default allocator ASan's peak RSS is 7.9$\times$ the baseline
+(611~MiB); with memsys5 it is 1.4$\times$ (167~MiB), and its time overhead also drops, from
+2.64$\times$ to 2.16$\times$. On Lua, which allocates many small objects through the stock allocator,
+ASan's RSS reaches 15.9$\times$. The likely reason is the one behind Q1: ASan pays redzones and
+quarantine per \code{malloc} block, and under memsys5 there is a single 256~MiB block, so SQLite's
+objects carry no redzones and their frees enter no quarantine. The lower overhead is the price of
+the lost visibility measured in \S\ref{sec:q1-blind} --- a sanitizer run that is cheaper under a CMA
+is also checking less. Valgrind's overhead is dominated by binary translation and changes little.
+
+\begin{table}[t]
+\centering\small
+\input{tables/perf-churn}
+\caption{Annotation overhead on the allocator micro-benchmark (EC2, median of five runs). ``off'' and
+``on'' are the plain and annotated builds of the same allocator; the last column is the rewrite.}
+\label{tab:perf-churn}
+\end{table}
+
+\paragraph{Annotation overhead.} On the allocation-heavy loop (Table~\ref{tab:perf-churn},
+Figure~\ref{fig:churn}), ASan's annotations add 5--10\%: poisoning and unpoisoning a region are plain
+shadow-memory writes. Memcheck's annotations cost
+1.78$\times$ on Arena and 2.16$\times$ on Free list, because every pool request is a client request
+that Memcheck must process and record; the Free list issues more of them, since it also opens and
+closes its in-slot link. Annotation does not change peak RSS for either tool. The rewrites are faster
+under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB against 46~MiB), the
+per-object redzones and quarantine that make them detectable. They change the allocation algorithm
+and lifetimes, so their numbers are a different trade-off, not an annotation cost.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/part-b-churn-performance.pdf}
+\caption{Allocator micro-benchmark on EC2: wall time and peak RSS per allocator, annotation setting
+and tool.}
+\label{fig:churn}
+\end{figure}
+
+For a project deciding how to test a program with a CMA, the two questions meet here. Annotating for
+ASan is nearly free and recovers most bugs; annotating for Memcheck roughly doubles an already large
+cost but also catches bad frees; and a rewrite gives \code{malloc}-level detection at \code{malloc}-level
+memory cost, while giving up whatever behaviour the CMA provided.

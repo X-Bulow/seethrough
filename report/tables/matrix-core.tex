@@ -1,0 +1,25 @@
+\begin{tabular}{r l|ccccc|ccccc|ccccc}
+\toprule
+ & & \multicolumn{5}{c}{ASan} & \multicolumn{5}{c}{Valgrind} & \multicolumn{5}{c}{HWASan} \\
+ & case & \rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A} & \rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A} & \rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A} \\
+\midrule
+0 & overflow, write +1 & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cM & \cM & \cM \\
+1 & overflow, read +1 & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cM & \cM & \cM \\
+2 & overflow into slack & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cM & \cM & \cM \\
+3 & overflow into live obj. & \cM & \cM & \cM & \cM & \cM & \cD & \cM & \cM & \cM & \cM & \cD & \cM & \cD & \cM & \cD \\
+4 & read past the pool & \cD & \cM & \cMs & \cMs & \cM & \cD & \cD & \cD & \cD & \cD & \cM & \cD & \cD & \cD & \cD \\
+5 & underflow, write -1 & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD \\
+6 & underflow, read -1 & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD \\
+7 & underflow into header & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD \\
+8 & UAF write & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD \\
+9 & UAF read & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD \\
+10 & UAF after reuse & \cU & \cU & \cU & \cM & \cM & \cU & \cU & \cU & \cM & \cM & \cD & \cU & \cU & \cM & \cD \\
+11 & UAF after realloc & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD \\
+12 & UAF after pool destroy & \cU & \cD & \cD & \cD & \cD & \cU & \cD & \cD & \cD & \cD & \cU & \cD & \cD & \cD & \cD \\
+13 & double free & \cD & \cM & \cM & \cM & \cM & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cM & \cM & \cM \\
+14 & interior free & \cD & \cM & \cM & \cM & \cM & \cD & \cM & \cD & \cM & \cD & \cM & \cM & \cM & \cM & \cM \\
+15 & double free after reuse & \cU & \cU & \cU & \cM & \cD & \cU & \cU & \cU & \cM & \cD & \cD & \cU & \cU & \cM & \cD \\
+\midrule
+ & detected / eligible & \scriptsize 12/13 & \scriptsize 1/14 & \scriptsize 10/14 & \scriptsize 1/16 & \scriptsize 11/16 & \scriptsize 13/13 & \scriptsize 2/14 & \scriptsize 13/14 & \scriptsize 2/16 & \scriptsize 14/16 & \scriptsize 13/15 & \scriptsize 2/14 & \scriptsize 9/14 & \scriptsize 2/16 & \scriptsize 11/16 \\
+\bottomrule
+\end{tabular}

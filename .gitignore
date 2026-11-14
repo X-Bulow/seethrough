@@ -12,3 +12,7 @@ results/**/*.core
 __pycache__/
 # third-party sources fetched by tools/fetch-sqlite.sh (pinned by hash, never committed)
 vendor/
+# report/build holds the LaTeX outputs (make -C report); only the folder itself is tracked
+!report/build/
+report/build/*
+!report/build/.gitkeep

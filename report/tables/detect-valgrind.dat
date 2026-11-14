@@ -1,0 +1,7 @@
+layer plain annotated
+malloc 100.0 nan
+arena 14.3 92.9
+freelist 12.5 87.5
+memsys5 12.5 87.5
+lookaside 12.5 nan
+rewrite 100.0 nan

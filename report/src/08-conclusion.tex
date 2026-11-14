@@ -1,0 +1,22 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+Memory-safety detectors see exactly as far as their allocator lets them. On 16 controlled heap bugs,
+ASan, Valgrind Memcheck and HWASan each detected 12--15 on \code{malloc} and one or two inside an
+unannotated custom allocator, whether the allocator was one of ours or one of SQLite's, and the ones
+they kept were detections of the pool rather than of the object. The tools' annotation interfaces
+recover most of the loss, ASan's at almost no cost and Memcheck's at about twice its already large
+cost, but each interface leaves a characteristic set of bugs invisible, because poisoning describes
+addressability, memory pools describe ownership and tags describe provenance at 16-byte granularity.
+Rewriting the allocator away restores \code{malloc}'s detection and memory cost, at the price of the
+behaviour the allocator existed for and of the bugs that depend on it. The results hold, cell for
+cell, on a second machine, and every miss has a mechanism. For testing a program with a CMA, the
+practical advice is to annotate the allocator, to run more than one kind of detector over it, and to
+treat a clean run of an unannotated build as evidence about the code outside the pool only.
+
+\paragraph{Team contributions.} Cheng Zefeng (Part A) designed the corpus, negative and positive
+controls and the harness, ran the formal detection matrices and the HWASan study, and reviewed every
+miss. Wei Yuning (Part B) implemented the allocators, their annotations and rewrites, the SQLite
+allocator layers, and the EC2 matrices and allocator benchmark. Xu Ruofan (Part C) set up and pinned
+the tools, investigated HWASan and LowFat feasibility, and ran the SQLite and Lua benchmarks. All
+three wrote the report.

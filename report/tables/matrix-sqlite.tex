@@ -1,0 +1,25 @@
+\begin{tabular}{r l|ccccc|ccccc}
+\toprule
+ & & \multicolumn{5}{c}{ASan} & \multicolumn{5}{c}{Valgrind} \\
+ & case & \rot{memsys5} & \rot{memsys5+A} & \rot{lookaside} & \rot{Arena rewr.} & \rot{Free-list rewr.} & \rot{memsys5} & \rot{memsys5+A} & \rot{lookaside} & \rot{Arena rewr.} & \rot{Free-list rewr.} \\
+\midrule
+0 & overflow, write +1 & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+1 & overflow, read +1 & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+2 & overflow into slack & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+3 & overflow into live obj. & \cM & \cM & \cM & \cM & \cM & \cM & \cM & \cM & \cD & \cD \\
+4 & read past the pool & \cMs & \cMs & \cM & \cD & \cD & \cD & \cD & \cD & \cD & \cD \\
+5 & underflow, write -1 & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+6 & underflow, read -1 & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+7 & underflow into header & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+8 & UAF write & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+9 & UAF read & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+10 & UAF after reuse & \cM & \cM & \cM & \cU & \cU & \cM & \cM & \cM & \cU & \cU \\
+11 & UAF after realloc & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+12 & UAF after pool destroy & \cD & \cD & \cD & \cU & \cU & \cD & \cD & \cD & \cU & \cU \\
+13 & double free & \cM & \cM & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+14 & interior free & \cM & \cM & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD \\
+15 & double free after reuse & \cM & \cD & \cM & \cU & \cU & \cM & \cD & \cM & \cU & \cU \\
+\midrule
+ & detected / eligible & \scriptsize 1/16 & \scriptsize 11/16 & \scriptsize 1/16 & \scriptsize 12/13 & \scriptsize 12/13 & \scriptsize 2/16 & \scriptsize 14/16 & \scriptsize 2/16 & \scriptsize 13/13 & \scriptsize 13/13 \\
+\bottomrule
+\end{tabular}

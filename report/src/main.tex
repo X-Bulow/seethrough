@@ -1,0 +1,99 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\setlist{nosep,leftmargin=1.4em}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{0pt}
+
+% ---------------------------------------------------------------- submission details
+% Fill in before submitting (Canvas group number; video link, which the course requires in the report).
+\newcommand{\groupnumber}{\textcolor{red}{[group number]}}
+\newcommand{\videolink}{\textcolor{red}{[presentation video link]}}
+\newcommand{\repourl}{\url{https://github.com/X-Bulow/seethrough}}
+
+% ---------------------------------------------------------------- detection-matrix cells
+\definecolor{cellD}{HTML}{D6EEDA}
+\definecolor{cellM}{HTML}{F6D6D1}
+\definecolor{cellU}{HTML}{E4E4E0}
+\definecolor{seriesA}{HTML}{2A78D6}
+\definecolor{seriesB}{HTML}{EB6834}
+\newcommand{\cD}{\cellcolor{cellD}D}
+\newcommand{\cM}{\cellcolor{cellM}M}
+\newcommand{\cMs}{\cellcolor{cellM}M$^{*}$}
+\newcommand{\cU}{\cellcolor{cellU}U}
+\newcommand{\cNA}{--}
+\newcommand{\rot}[1]{\rotatebox{90}{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{\textbf{Do Memory-Safety Detectors See Through Custom Allocators?}\\[2pt]
+\large A Detection and Overhead Comparison of ASan, Valgrind Memcheck and HWASan\\[4pt]
+\normalsize CS5439 Assignment 2 --- Final Report (Group \groupnumber)}
+\author{Cheng Zefeng \quad Wei Yuning \quad Xu Ruofan\\
+\small\texttt{bulow@u.nus.edu} \quad \texttt{weiyuning@u.nus.edu} \quad \texttt{e1536075@u.nus.edu}}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+\begin{center}\small
+Presentation video: \videolink \qquad Code, corpus and raw results: \repourl
+\end{center}
+
+\begin{abstract}
+\noindent
+Memory-safety detectors such as AddressSanitizer (ASan) and Valgrind Memcheck check every access
+against the block that \code{malloc} returned. Many C programs instead take one large block from
+\code{malloc} and carve objects out of it themselves. We measure what that costs the detectors.
+We built a corpus of 16 heap bugs (overflow, underflow, use-after-free, invalid and double free),
+each with a negative control that differs in one line, and ran every bug against seven allocator
+layers: \code{malloc}, two allocators of our own (a bump arena and a size-class free list), two of
+SQLite's allocators (memsys5 and lookaside), and libc rewrites of our two allocators. Each custom
+layer was run with and without the tool's annotation interface. Across 448 bug images and 448 controls
+there were no false positives. Without annotation, every detector found only 1--2 of 14--16 bugs
+inside a custom allocator, against 12--15 of 13--15 on \code{malloc}. Annotation recovered most of
+them: 10--11 for ASan, 13--14 for Valgrind and 9--11 for HWASan. Each annotation interface has its
+own ceiling: poisoning cannot catch an overflow into another live object or a stale pointer to
+reissued storage, and neither poisoning nor tagging can express a bad \code{free}, while memory
+tagging is only 16-byte precise. The ASan and Valgrind verdicts are identical, cell for cell, on a
+second machine. On SQLite and Lua benchmarks ASan costs 2.2--3.0$\times$ in time and Valgrind
+24--29$\times$; switching SQLite to its memsys5 allocator lowers ASan's memory overhead from
+7.9$\times$ to 1.4$\times$, which is the other side of the visibility it loses.
+\end{abstract}
+
+\input{src/01-introduction}
+\input{src/02-background}
+\input{src/03-related-work}
+\input{src/04-methodology}
+\input{src/05-detection}
+\input{src/06-performance}
+\input{src/07-discussion}
+\input{src/08-conclusion}
+
+\bibliographystyle{plainurl}
+\bibliography{src/refs}
+
+\appendix
+\input{src/appendix}
+
+\end{document}

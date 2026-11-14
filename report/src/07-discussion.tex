@@ -1,0 +1,87 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{What a clean sanitizer run means for a program with a CMA}
+
+A sanitizer run of a program whose objects come from an unannotated pool says almost nothing about
+bugs inside the pool: in our corpus it caught only the bugs that destroy or leave the pool. Fuzzing
+such a program under ASan explores the code but not the memory errors inside the allocator's blocks.
+Three practical consequences follow.
+\begin{itemize}
+\item \emph{Annotate, and choose the tool by the bug class.} Fourteen (Arena) to 21 (Free list)
+  annotation calls in the allocator recover most bugs. ASan's poisoning is nearly free but cannot catch bad
+  frees, overflows into live neighbours or stale pointers after reuse; Memcheck's pools add bad frees
+  at a large cost; tags add neighbour overflows and stale pointers but lose byte precision. Running
+  more than one tool covers more than annotating harder for one.
+\item \emph{Annotation needs the allocator's cooperation.} An allocator can only re-poison an object
+  on free if it knows the object's size; our Arena needed a side table for that, and a pure bump
+  allocator without one would miss every use after free even with annotation. The Free list had to
+  open its own link words. Annotation is a small design change to the allocator, not only a set of
+  macro calls.
+\item \emph{A test build without the CMA is cheap where the CMA is configurable.} SQLite can be
+  built without memsys5 and lookaside, which makes every object a \code{malloc} block again. This is
+  the lecturer's rewrite at zero cost and gives \code{malloc}-level detection, but it tests a
+  different program: bugs that depend on immediate reuse or on bulk deallocation disappear.
+\end{itemize}
+
+\subsection{Response to the proposal feedback}
+
+The feedback on our proposal made three points, and each shaped the study.
+\textbf{(1) ``Depending on the CMA, it may be easy to rewrite it to undo the CMA.''} We implemented
+14-line rewrites of both our allocators and used SQLite's configuration switches as the rewrite of a
+real CMA. The rewrite restores \code{malloc}'s detection (\S\ref{sec:q1-rewrite}) and is the cheaper
+answer whenever the CMA's semantics are not part of what is being tested; where they are, only
+annotation keeps the bug reproducible. We kept the rewrite as a separate column rather than a
+replacement, so both answers are measured on the same bugs.
+\textbf{(2) ``The test programs will need to be explained.''} Every case has a README with the trigger,
+the memory layout under each allocator, the expected verdict per tool and the reason, and a
+\code{case.json} that the harness checks results against; Appendix~\ref{app:cases} summarises them.
+\textbf{(3) ``Please check early if you are able to run HWASan.''} We checked in the first week: the
+lab VM has no LAM, user-mode QEMU on an AArch64 cross build failed with an illegal instruction, most
+likely the GNU linker problem we found later (\S\ref{sec:env}), and an AArch64 virtual machine on Apple silicon works with lld. In
+the last week we also tried x86-64's aliasing mode on the lab server and rejected it
+(\S\ref{sec:hwasan-x86}).
+
+\subsection{Do the results transfer to real bugs? A preliminary check}
+\label{sec:tier2}
+
+To see whether the corpus's verdicts transfer to real defects, we ported four bugs from Capstone's
+SQLite corpus~\cite{capstone} that live in SQLite 3.22.0: two uses after free (a connection read after
+\code{sqlite3\_close}, a stale R-tree node) and two fuzzer-found over-reads of page buffers. Each runs
+in three configurations: memsys5 serving everything from a 256~KiB arena, SQLite as shipped
+(lookaside and the page-cache bulk pool on), and the rewrite (no memsys5, lookaside and bulk pool off),
+which is also each case's positive control. Only a development run on an Apple laptop exists so far
+(clang on macOS, not part of the formal results). In it, memsys5 hid both uses after free from ASan,
+as the corpus predicts; for the R-tree case the stale read then crashed on allocator metadata, which
+the harness records as missed, not detected. The two over-reads step about 2~KB past the page, beyond
+the whole arena, and ASan reported them against the arena's bound rather than the page's. So the
+temporal results transfer directly, and whether a real spatial bug is hidden depends, as in cases 3
+and 4, on how far it strides. A run on the lab server is the obvious next step.
+
+\subsection{Limitations}
+\label{sec:limits}
+
+\begin{itemize}
+\item \textbf{UBSan and LowFat are not in the matrix.} At \code{-O0} clang's \code{object-size}
+  check has no effect (the compiler warns so), and \code{bounds} needs a statically known array
+  length, which a pointer returned by an allocator does not have; neither positive control is
+  detected at \code{-O0}, and at \code{-O2} only the overflow is. UBSan is not a heap detector, and
+  inside a CMA it would see nothing even optimised, since \code{st\_alloc} declares no allocation
+  size. LowFat's runtime depends on a fixed offset inside glibc's private thread structure, so it
+  builds only against glibc 2.27 (Ubuntu 18.04) with its own LLVM 4.0, which we did in a container;
+  there it missed both positive controls (a 64-byte block's one-byte overflow falls inside its size
+  class, and it has no temporal checks) while catching an overflow that crosses the size-class bound.
+  Both tools would need different positive controls to enter the harness.
+\item \textbf{Synthetic corpus.} Sixteen single-threaded programs isolate mechanisms; they do not
+  estimate how often each mechanism occurs in real code. The real-bug check is preliminary.
+\item \textbf{One configuration per tool.} Default options, \code{-O0} for detection, one run per cell.
+  HWASan is probabilistic, and one cell was affected; case 4 under ASan depends on the address-space
+  layout.
+\item \textbf{Different machines.} HWASan ran on another architecture, and the performance numbers
+  come from two machines different from the detection server; we never combine numbers across
+  machines. The three SQLite versions (3.53.3 in the corpus, 3.50.4 in \code{speedtest1}, 3.22.0 in
+  the real bugs) are reported separately.
+\item \textbf{Deviations from the proposal.} We ran natively on pinned tool versions instead of in
+  Docker (except LowFat), wrote 16 bug programs with controls and four real cases instead of about 40
+  programs, and replaced the PostgreSQL benchmark with Lua.
+\end{itemize}

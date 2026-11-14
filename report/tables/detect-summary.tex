@@ -1,0 +1,15 @@
+\begin{tabular}{l*{3}{cc}}
+\toprule
+ & \multicolumn{2}{c}{ASan} & \multicolumn{2}{c}{Valgrind} & \multicolumn{2}{c}{HWASan} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+allocator layer & plain & annotated & plain & annotated & plain & annotated \\
+\midrule
+malloc baseline & 12/13 & n/a & 13/13 & n/a & 13/15 & n/a \\
+Arena (ours) & 1/14 & 10/14 & 2/14 & 13/14 & 2/14 & 9/14 \\
+Free list (ours) & 1/16 & 11/16 & 2/16 & 14/16 & 2/16 & 11/16 \\
+SQLite memsys5 & 1/16 & 11/16 & 2/16 & 14/16 & -- & -- \\
+SQLite lookaside & 1/16 & n/a & 2/16 & n/a & -- & -- \\
+Arena rewrite & 12/13 & n/a & 13/13 & n/a & -- & -- \\
+Free-list rewrite & 12/13 & n/a & 13/13 & n/a & -- & -- \\
+\bottomrule
+\end{tabular}
