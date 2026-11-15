@@ -10,7 +10,8 @@ cost, but each interface leaves a characteristic set of bugs invisible, because 
 addressability, memory pools describe ownership and tags describe provenance at 16-byte granularity.
 Rewriting the allocator away restores \code{malloc}'s detection and memory cost, at the price of the
 behaviour the allocator existed for and of the bugs that depend on it. The results hold, cell for
-cell, on a second machine, and every miss has a mechanism. For testing a program with a CMA, the
+cell, on a second machine, every miss has a mechanism, and the same mechanisms hide real SQLite bugs
+inside memsys5. For testing a program with a CMA, the
 practical advice is to annotate the allocator, to run more than one kind of detector over it, and to
 treat a clean run of an unannotated build as evidence about the code outside the pool only.
 

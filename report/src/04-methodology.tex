@@ -268,7 +268,7 @@ generates every table and plot of \S\ref{sec:q1} from the bundles.
 \toprule
 role & machine & software \\
 \midrule
-ASan, Valgrind (formal) & lab server: LXD container, Intel Xeon Gold 6230 (76 logical CPUs) & Ubuntu 26.04.1, host kernel 6.12.111, glibc 2.43; clang 21.1.8, gcc 15.2.0, Valgrind 3.26.0 \\
+ASan, Valgrind (formal; corpus and real bugs) & lab server: LXD container, Intel Xeon Gold 6230 (76 logical CPUs) & Ubuntu 26.04.1, host kernel 6.12.111, glibc 2.43; clang 21.1.8, gcc 15.2.0, Valgrind 3.26.0 \\
 ASan, Valgrind (replica) & AWS EC2, Intel Xeon Platinum 8259CL (2 vCPU) & Ubuntu 26.04, kernel 7.0.0; same tool versions \\
 HWASan & Lima VM (Apple Virtualization) on an Apple M5, 4 vCPU, 4~GiB & Ubuntu 26.04.1 AArch64, kernel 7.0.0-43; clang 21.1.8 + lld 21.1.8 \\
 Q2: \code{speedtest1}, Lua & VirtualBox VM, AMD Ryzen 7 3700X (4 vCPU, 7.25~GiB) & Ubuntu 26.04, kernel 7.0.0-38; same tool versions \\

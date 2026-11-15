@@ -58,6 +58,9 @@ micro-benchmark with annotation off and on (\S\ref{sec:perf}).
   cannot see a bad \code{free}.
 \item Rewriting to \code{malloc} restores \code{malloc}-level detection, but it removes the reuse
   and bulk-free behaviour that three of the bugs depend on, so those bugs no longer exist.
+\item The mechanisms transfer to real bugs. On four SQLite bugs, memsys5 hid both uses after free
+  from ASan and Valgrind. Outside the rewrite, the two over-reads were reported only where they left
+  the arena or the page cache's bulk block, never against the page (\S\ref{sec:tier2}).
 \item No false positive in 448 negative controls, and every one of the 352 ASan and Valgrind
   verdicts was reproduced on a second x86-64 machine. A review of all 174 misses found no build,
   optimisation or harness cause.

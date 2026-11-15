@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "report" / "tables"
 LAB = [ROOT / "results" / f"2026-11-13-lab-{s}" for s in ("core", "memsys5", "lookaside", "rewrite")]
 HW = ROOT / "results" / "2026-11-13-lima-hwasan"
+REAL = ROOT / "results" / "2026-11-16-lab-real"
 TOOLS = ["asan", "valgrind", "hwasan"]
 TOOL_NAME = {"asan": "ASan", "valgrind": "Valgrind", "hwasan": "HWASan"}
 CASE_NAME = {0: "overflow, write +1", 1: "overflow, read +1", 2: "overflow into slack",
@@ -110,6 +111,33 @@ def by_class(bug):
     (OUT / "detect-class.tex").write_text("\n".join(lines) + "\n")
 
 
+def real():
+    """The four real SQLite bugs (corpus/real) on the lab server. Marks: dagger = the tool's report is
+    an invalid access immediately before the process died of a signal; double dagger = an over-read
+    reported outside the rewrite, i.e. after it left its container (arena or page-cache bulk block)."""
+    rows = list(csv.DictReader(open(REAL / "real.csv")))
+    desc = {"03": "use after free: connection read after close", "19": "use after free: stale R-tree node",
+            "29": "over-read of a page (\\code{sqlite3Get4byte})", "31": "over-read of a page (\\code{statDecodePage})"}
+    lines = [r"\begin{tabular}{rl*{6}{c}}", r"\toprule",
+             r" & & \multicolumn{3}{c}{ASan} & \multicolumn{3}{c}{Valgrind} \\",
+             r"\cmidrule(lr){3-5}\cmidrule(lr){6-8}",
+             r"\# & bug & memsys5 & shipped & rewrite & memsys5 & shipped & rewrite \\", r"\midrule"]
+    for case in sorted({r["case"] for r in rows}):
+        row = [case[:2], desc[case[:2]]]
+        for tool in ("asan", "valgrind"):
+            for arm in ("memsys5", "default", "rewrite"):
+                r = next(x for x in rows if x["case"] == case and x["tool"] == tool and x["arm"] == arm)
+                c = cell((r["verdict"], r["note"]))
+                if r["verdict"] == "DETECTED" and int(r["exit_code"]) < 0:
+                    c += r"$^{\dagger}$"
+                elif r["verdict"] == "DETECTED" and r["class"] == "heap-overflow" and arm != "rewrite":
+                    c += r"$^{\ddagger}$"
+                row.append(c)
+        lines.append(" & ".join(row) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    (OUT / "real.tex").write_text("\n".join(lines) + "\n")
+
+
 def matrix(bug, tools, arms, labels, name):
     ncol = len(arms)
     spec = "r l" + "".join("|" + "c" * ncol for _ in tools)
@@ -180,6 +208,7 @@ def main():
            r"\rot{memsys5} & \rot{memsys5+A} & \rot{lookaside} & \rot{Arena rewr.} & \rot{Free-list rewr.}",
            "matrix-sqlite.tex")
     perf()
+    real()
     v = Counter(x[0] for x in bug.values())
     print(f"bug cells {len(bug)} {dict(v)}; controls CLEAN {clean}/{total}")
 

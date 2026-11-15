@@ -54,6 +54,7 @@ python3 harness/run-matrix.py --tools asan valgrind \
     --allocs arena-rewrite freelist-rewrite --annots 0 --cases all --out $P-rewrite
 python3 harness/render-matrix.py $P-* --check     # matrix, diff against case.json
 python3 harness/audit-missed.py $P-* --list       # the review of every miss
+python3 harness/run-real.py --tools asan valgrind --out $P-real   # the real SQLite bugs
 \end{verbatim}}
 HWASan runs the same driver with \code{-{}-tools hwasan} inside an AArch64 Linux VM
 (\code{docs/hwasan.md}). The benchmarks are under \code{benchmarks/} with their own scripts, and
@@ -61,6 +62,7 @@ HWASan runs the same driver with \code{-{}-tools hwasan} inside an AArch64 Linux
 \begin{itemize}
 \item \code{results/2026-11-13-lab-\{core,memsys5,lookaside,rewrite\}}: ASan and Valgrind, commit \code{6b54739};
 \item \code{results/2026-11-13-lima-hwasan}: HWASan, commit \code{c214ad3};
+\item \code{results/2026-11-16-lab-real}: the real SQLite bugs, commit \code{2098f2a};
 \item \code{results/2026-11-10-ec2-b-\{core,memsys5,lookaside,rewrite\}}: the replica, commit \code{2763402};
 \item \code{results/2026-11-05-sqlite-speedtest1-*}, \code{results/2026-11-08-lua-36YPxm}: \code{speedtest1} and Lua;
 \item \code{results/2026-11-10-allocator-churn-IkUTIU}: the allocator micro-benchmark.

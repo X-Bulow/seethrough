@@ -127,5 +127,5 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 D2 回应教授三点：CMA rewrite、测试程序解释、HWASan 结论（报告 §7.2）
 - [x] P0 D3 Discussion / Limitations / Conclusion（初稿，`report/src/07-*`、`08-*`）
 - [~] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图（C 部分已复现，见 `docs/reproducibility.md`；Detection Matrix 待完成）
-- [~] P0 D5 15 页报告定稿，11 月 19 日前提交（2026-11-14 初稿 15 页：`make -C report`；2026-11-16 填组号 501、缩短标题、补全 A 负责的 §4.1 / §4.3 / §5，17 页；待填视频链接、三人审阅）
+- [~] P0 D5 15 页报告定稿，11 月 19 日前提交（2026-11-14 初稿 15 页：`make -C report`；2026-11-16 填组号 501、缩短标题、补全 A 负责的 §4.1 / §4.3 / §5、§7.3 换成 A7.5 正式结果，17 页；待填视频链接、三人审阅）
 - [ ] P1 D6 演示视频（如果课程要求）
