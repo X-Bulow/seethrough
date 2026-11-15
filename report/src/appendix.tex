@@ -55,7 +55,7 @@ python3 harness/run-matrix.py --tools asan valgrind \
 python3 harness/render-matrix.py $P-* --check     # matrix, diff against case.json
 python3 harness/audit-missed.py $P-* --list       # the review of every miss
 \end{verbatim}}
-HWASan runs the same driver with \code{--tools hwasan} inside an AArch64 Linux VM
+HWASan runs the same driver with \code{-{}-tools hwasan} inside an AArch64 Linux VM
 (\code{docs/hwasan.md}). The benchmarks are under \code{benchmarks/} with their own scripts, and
 \code{make -C report tables} regenerates every table of this report from the committed bundles:
 \begin{itemize}

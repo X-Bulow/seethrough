@@ -6,7 +6,7 @@
 times; we report the median wall time and the median peak resident set size (RSS) from
 \code{/usr/bin/time}, and ratios against the uninstrumented baseline of the same configuration.
 Valgrind's RSS includes the tool's own memory. The workloads are SQLite~3.50.4
-\code{speedtest1}~\cite{sqlitespeedtest} (\code{--memdb --size 100 --testset main}) in SQLite's
+\code{speedtest1}~\cite{sqlitespeedtest} (\code{-{}-memdb -{}-size 100 -{}-testset main}) in SQLite's
 default configuration and with memsys5 serving all allocations from a 256~MiB heap (minimum block 64
 bytes); a synthetic Lua~5.4.9 workload~\cite{lua} that builds, sorts and garbage-collects 20 rounds
 of 100{,}000 tables with strings, with Lua's stock allocator; and an allocator micro-benchmark that

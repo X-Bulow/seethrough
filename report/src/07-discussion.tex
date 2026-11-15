@@ -33,9 +33,12 @@ real CMA. The rewrite restores \code{malloc}'s detection (\S\ref{sec:q1-rewrite}
 answer whenever the CMA's semantics are not part of what is being tested; where they are, only
 annotation keeps the bug reproducible. We kept the rewrite as a separate column rather than a
 replacement, so both answers are measured on the same bugs.
-\textbf{(2) ``The test programs will need to be explained.''} Every case has a README with the trigger,
-the memory layout under each allocator, the expected verdict per tool and the reason, and a
-\code{case.json} that the harness checks results against; Appendix~\ref{app:cases} summarises them.
+\textbf{(2) ``The test programs will need to be explained.''} Section~\ref{sec:corpus} explains
+why each case exists, walks through one program line by line (Listing~\ref{lst:case10}) and shows
+where the spatial cases land in memory (Figure~\ref{fig:offsets}); Appendix~\ref{app:cases} lists
+every trigger and control. In the repository every case has a README with the trigger, the memory
+layout under each allocator and the expected verdict per tool with its reason, and a
+\code{case.json} that the harness checks results against.
 \textbf{(3) ``Please check early if you are able to run HWASan.''} We checked in the first week: the
 lab VM has no LAM, user-mode QEMU on an AArch64 cross build failed with an illegal instruction, most
 likely the GNU linker problem we found later (\S\ref{sec:env}), and an AArch64 virtual machine on Apple silicon works with lld. In

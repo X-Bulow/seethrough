@@ -14,21 +14,30 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepgfplotslibrary{groupplots}
+\usetikzlibrary{decorations.pathreplacing,patterns}
+\usepackage{listings}
 \usepackage{enumitem}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage[section,above]{placeins}
 \usepackage[hidelinks]{hyperref}
 \usepackage{url}
 
 \setlist{nosep,leftmargin=1.4em}
+\lstset{basicstyle=\ttfamily\footnotesize, columns=fullflexible, keepspaces=true,
+  numbers=left, numberstyle=\tiny\color{black!50}, numbersep=6pt, xleftmargin=1.6em,
+  frame=tb, framerule=0.4pt, aboveskip=6pt, belowskip=2pt, showstringspaces=false,
+  commentstyle=\color{black!60}\itshape, keywordstyle=\bfseries, language=C,
+  morekeywords={ST_CASE,ST_READY}}
+\captionsetup[lstlisting]{skip=2pt}
 \captionsetup{font=small,labelfont=bf}
 \setlength{\parskip}{3pt}
 \setlength{\parindent}{0pt}
 
 % ---------------------------------------------------------------- submission details
 % Fill in before submitting (Canvas group number; video link, which the course requires in the report).
-\newcommand{\groupnumber}{\textcolor{red}{[group number]}}
+\newcommand{\groupnumber}{501}
 \newcommand{\videolink}{\textcolor{red}{[presentation video link]}}
 \newcommand{\repourl}{\url{https://github.com/X-Bulow/seethrough}}
 
@@ -46,9 +55,9 @@
 \newcommand{\rot}[1]{\rotatebox{90}{#1}}
 \newcommand{\code}[1]{\texttt{#1}}
 
-\title{\textbf{Do Memory-Safety Detectors See Through Custom Allocators?}\\[2pt]
-\large A Detection and Overhead Comparison of ASan, Valgrind Memcheck and HWASan\\[4pt]
-\normalsize CS5439 Assignment 2 --- Final Report (Group \groupnumber)}
+\title{\textbf{Do Detectors See Through Custom Allocators?}\\[2pt]
+\large Detection and Overhead of ASan, Memcheck and HWASan\\[4pt]
+\normalsize CS5439 Assignment 2 Final Report, Group \groupnumber}
 \author{Cheng Zefeng \quad Wei Yuning \quad Xu Ruofan\\
 \small\texttt{bulow@u.nus.edu} \quad \texttt{weiyuning@u.nus.edu} \quad \texttt{e1536075@u.nus.edu}}
 \date{November 2026}

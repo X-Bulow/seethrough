@@ -136,6 +136,26 @@ Table~\ref{tab:expressive} condenses these results. None of the three interfaces
 and no two have the same blind spots, so the choice of tool determines which bugs inside an annotated
 CMA can be found at all.
 
+\begin{table}[t]
+\centering\small
+\setlength{\tabcolsep}{4.2pt}
+\input{tables/detect-class}
+\caption{Bugs detected out of eligible bugs by class. CMA = Arena and Free list together, without
+(CMA) and with (CMA+A) annotation; SQLite memsys5 gives the same verdict as the Free list in every
+cell.}
+\label{tab:class}
+\end{table}
+
+Table~\ref{tab:class} gives the same results by bug class. Annotation restores every underflow for
+all three tools and every use after free except case 10 for ASan and Memcheck. Overflows come back
+only in part, and each tool misses different ones: case 3 for the two address-based tools, case 4
+for ASan, the overflows into slack for HWASan. Bad frees split the tools most sharply. Memcheck's
+pools catch all five; poisoning and tagging catch only case 15, and only through its consequence:
+the second \code{free(a)} releases \code{b}'s storage, and the following read of \code{b[0]} meets
+poisoned or retagged memory (ASan reports a use after poison, HWASan a tag mismatch). Memcheck, too,
+reports that read rather than the free, because at the time of the free \code{a} names \code{b}'s
+live storage.
+
 \subsection{Leaving the pool, and precision effects}
 \label{sec:q1-precision}
 
@@ -201,9 +221,8 @@ HWASan tag collision & 1 & 4 \\
 \end{tabular}
 \end{center}
 
-None is caused by the build, by optimisation or by the harness. Two original predictions were
-corrected by the measurements and are documented with the cases: case 3 under Valgrind on
-\code{malloc} (detected, not missed) and case 4 under ASan on the pools (missed, not detected).
+None is caused by the build, by optimisation or by the harness. The six cells in which the formal
+runs contradicted a prediction, and how each was resolved, are listed in \S\ref{sec:corpus}.
 
 \subsection{HWASan on x86-64}
 \label{sec:hwasan-x86}
@@ -218,3 +237,15 @@ Free list, annotated or not. A probe explains why: the aliasing heap tags only a
 with tag 0 and their accesses are not checked. Our 1~MiB pools are invisible to it, and an
 annotation tag such as 17 no longer fits in the pointer. We therefore did not use this mode, but it
 is itself a result: on x86-64 without LAM, HWASan cannot see into a custom allocator's pool.
+
+\subsection{Answer to Q1}
+\label{sec:q1-answer}
+
+For the same bug, a custom allocator costs each detector almost everything: 12--15 of 13--15 bugs on
+\code{malloc} become one or two, and the ones left are detections of the pool, not of the object.
+The tools' annotation interfaces win most of it back (ASan 10--11 of 14--16, Memcheck 13--14,
+HWASan 9--11), and what stays missed is decided by what the interface can describe: addressability
+for ASan, ownership for Memcheck, provenance at 16-byte granularity for HWASan. A rewrite to
+\code{malloc} recovers everything \code{malloc} detects, but only for the bugs that still exist once
+the allocator's reuse and pool are gone. The verdicts are identical on two x86-64 machines, and
+every miss has one of the seven mechanisms of \S\ref{sec:audit}.
