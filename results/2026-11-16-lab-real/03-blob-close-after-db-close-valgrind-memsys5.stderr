@@ -1,0 +1,14 @@
+==112821== Memcheck, a memory error detector
+==112821== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==112821== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==112821== Command: /home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-valgrind-memsys5
+==112821== 
+==112821== 
+==112821== HEAP SUMMARY:
+==112821==     in use at exit: 0 bytes in 0 blocks
+==112821==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+==112821== 
+==112821== For a detailed leak analysis, rerun with: --leak-check=full
+==112821== 
+==112821== For lists of detected and suppressed errors, rerun with: -s
+==112821== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

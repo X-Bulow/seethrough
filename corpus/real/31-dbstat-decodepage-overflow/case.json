@@ -30,15 +30,15 @@
   "expected": {
     "asan": {
       "memsys5": "MISSED",
-      "default": "MISSED (to verify)",
+      "default": "DETECTED",
       "rewrite": "DETECTED",
-      "why": "as case 29"
+      "why": "as case 29; default arm measured 2026-11-16: as case 29, the read leaves the bulk block and lands in heap redzone or unallocated heap"
     },
     "valgrind": {
       "memsys5": "MISSED",
-      "default": "MISSED (to verify)",
+      "default": "DETECTED",
       "rewrite": "DETECTED",
-      "why": "same"
+      "why": "same; default arm measured 2026-11-16: as case 29, the read leaves the bulk block and lands in heap redzone or unallocated heap"
     },
     "lowfat": {
       "memsys5": "MISSED",
@@ -54,8 +54,22 @@
     "default",
     "rewrite"
   ],
-  "measured": {},
-  "status": "ported, not run",
+  "measured": {
+    "2026-11-16 lab server x86-64, formal (results/2026-11-16-lab-real; commit 2098f2a; Ubuntu 26.04.1, clang 21.1.8, Valgrind 3.26.0; positive controls and the asan/rewrite gate passed)": {
+      "asan": {
+        "memsys5": "DETECTED (global-buffer-overflow (left the arena: caught by the arena's redzone, not the object's))",
+        "default": "DETECTED (heap-buffer-overflow)",
+        "rewrite": "DETECTED (heap-buffer-overflow)"
+      },
+      "valgrind": {
+        "memsys5": "MISSED",
+        "default": "DETECTED (Invalid read of size 1)",
+        "rewrite": "DETECTED (Invalid read of size 1)"
+      },
+      "notes": "memsys5: Memcheck silent (the arena is a static array and Memcheck has no redzones around global data); ASan reports a global-buffer-overflow 34,968 bytes after the 256 KiB arena sqlite_heap, i.e. the arena's bound, not the page's. Default and rewrite: both report, ASan in heap redzone memory (wild pointer), Memcheck 12 KB (default) and 51 KB (rewrite) into unallocated heap: the read strides far past the page in every arm."
+    }
+  },
+  "status": "formal run 2026-11-16 on the lab server (A7.5): asan, valgrind x memsys5, default, rewrite; lowfat not run",
   "capstone": {
     "repo": "project-starch/llvm-capstone",
     "branch": "dev",

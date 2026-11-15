@@ -1,0 +1,73 @@
+=================================================================
+==112656==ERROR: AddressSanitizer: heap-use-after-free on address 0x7ce2f3de0340 at pc 0x558f59c29dbf bp 0x7fffc8b2c4d0 sp 0x7fffc8b2c4c8
+READ of size 8 at 0x7ce2f3de0340 thread T0
+    #0 0x558f59c29dbe in sqlite3DbFreeNN /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25485:13
+    #1 0x558f59bf68f3 in sqlite3DbFree /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25508:11
+    #2 0x558f59c17115 in sqlite3_blob_close /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:87652:5
+    #3 0x558f59bf419a in run_case /home/zephyr/seethrough/corpus/real/03-blob-close-after-db-close/case.c:91:8
+    #4 0x558f59bf3c66 in main /home/zephyr/seethrough/corpus/real/03-blob-close-after-db-close/case.c:99:1
+    #5 0x7f72f4a2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #6 0x7f72f4a2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #7 0x558f59b0a3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-asan-rewrite+0x453e4) (BuildId: 1194b85d17f665bc96477ac54d5cef128d72b250)
+
+0x7ce2f3de0340 is located 704 bytes inside of 712-byte region [0x7ce2f3de0080,0x7ce2f3de0348)
+freed by thread T0 here:
+    #0 0x558f59baf6ea in free (/home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-asan-rewrite+0xea6ea) (BuildId: 1194b85d17f665bc96477ac54d5cef128d72b250)
+    #1 0x558f59de18c8 in sqlite3MemFree /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:21551:3
+    #2 0x558f59bf761b in sqlite3_free /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25461:5
+    #3 0x558f59c06fcf in sqlite3LeaveMutexAndCloseZombie /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:144604:3
+    #4 0x558f59c07242 in sqlite3_finalize /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:77816:5
+    #5 0x558f59c17105 in sqlite3_blob_close /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:87651:10
+    #6 0x558f59bf419a in run_case /home/zephyr/seethrough/corpus/real/03-blob-close-after-db-close/case.c:91:8
+    #7 0x558f59bf3c66 in main /home/zephyr/seethrough/corpus/real/03-blob-close-after-db-close/case.c:99:1
+    #8 0x7f72f4a2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #9 0x7f72f4a2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #10 0x558f59b0a3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-asan-rewrite+0x453e4) (BuildId: 1194b85d17f665bc96477ac54d5cef128d72b250)
+
+previously allocated by thread T0 here:
+    #0 0x558f59baf988 in malloc (/home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-asan-rewrite+0xea988) (BuildId: 1194b85d17f665bc96477ac54d5cef128d72b250)
+    #1 0x558f59de1828 in sqlite3MemMalloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:21524:7
+    #2 0x558f59c29af0 in mallocWithAlarm /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25350:7
+    #3 0x558f59bf750e in sqlite3Malloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25380:5
+    #4 0x558f59c00db4 in sqlite3MallocZero /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25585:13
+    #5 0x558f59c241c4 in openDatabase /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:146223:8
+    #6 0x558f59c23f55 in sqlite3_open /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:146524:10
+    #7 0x558f59bf3db9 in run_case /home/zephyr/seethrough/corpus/real/03-blob-close-after-db-close/case.c:49:12
+    #8 0x558f59bf3c66 in main /home/zephyr/seethrough/corpus/real/03-blob-close-after-db-close/case.c:99:1
+    #9 0x7f72f4a2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #10 0x7f72f4a2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #11 0x558f59b0a3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-asan-rewrite+0x453e4) (BuildId: 1194b85d17f665bc96477ac54d5cef128d72b250)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25485:13 in sqlite3DbFreeNN
+Shadow bytes around the buggy address:
+  0x7ce2f3de0080: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0100: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0180: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0200: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0280: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+=>0x7ce2f3de0300: fd fd fd fd fd fd fd fd[fd]fa fa fa fa fa fa fa
+  0x7ce2f3de0380: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ce2f3de0400: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0480: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0500: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7ce2f3de0580: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==112656==ABORTING

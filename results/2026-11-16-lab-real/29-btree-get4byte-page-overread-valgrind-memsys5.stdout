@@ -1,0 +1,9 @@
+ST BEGIN case=fz02 arm=memsys5 sqlite=3.22.0
+repro allocator=memsys5 heap_bytes=262144
+ST READY
+fz02 vfs_rc=0
+fz02 image_bytes=1041 register_rc=0
+fz02 open_rc=0
+fz02 s0_rc=11
+fz02 NOTRAP done
+ST DONE

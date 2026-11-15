@@ -23,3 +23,12 @@ memsys5 arm 下的 SEGV：节点释放回 memsys5 后，块体前 8 字节被写
 
 ## 对照
 同 03：以 rewrite arm 下 ASan DETECTED 为 gate。
+
+## Formal results (2026-11-16)
+
+| tool | memsys5 | default | rewrite |
+|---|---|---|---|
+| asan | MISSED (SEGV) | DETECTED | DETECTED |
+| valgrind | DETECTED | DETECTED | DETECTED |
+
+Lab server, x86-64 (`results/2026-11-16-lab-real`, commit `2098f2a`). memsys5 hides the stale read from both tools. The read itself is silent; a pointer loaded from the stale node is then 0x2 and the program faults on the zero page. ASan's signal handler reports the SEGV (MISSED, crashed: A7.6 confirmed on the server); Memcheck reports an invalid read at address 0x2 and then SIGSEGV, which the harness records as DETECTED, but it is the same crash, not a report on the node. Default and rewrite: both tools report the read 24 bytes into the freed 496-byte node.

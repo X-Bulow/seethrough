@@ -1,0 +1,75 @@
+=================================================================
+==113275==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7d3d385e108d at pc 0x557b9328d30c bp 0x7ffea69988d0 sp 0x7ffea69988c8
+READ of size 1 at 0x7d3d385e108d thread T0
+    #0 0x557b9328d30b in statDecodePage /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:177925:16
+    #1 0x557b9328b764 in statNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:178124:10
+    #2 0x557b9328af87 in statNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:178095:35
+    #3 0x557b931426b3 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86776:8
+    #4 0x557b930b1382 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #5 0x557b930b06e8 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #6 0x557b930bc849 in sqlite3_exec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:113169:12
+    #7 0x557b93097f22 in run_case /home/zephyr/seethrough/corpus/real/29-btree-get4byte-page-overread/case.c:111:8
+    #8 0x557b93097c66 in main /home/zephyr/seethrough/corpus/real/29-btree-get4byte-page-overread/case.c:118:1
+    #9 0x7fbd3942a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #10 0x7fbd3942a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #11 0x557b92fae3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/29-btree-get4byte-page-overread-asan-rewrite+0x463e4) (BuildId: 42a3cd10c1ca3bf11c8b7cf6fe6aa035536ebc86)
+
+0x7d3d385e108d is located 253 bytes after 784-byte region [0x7d3d385e0c80,0x7d3d385e0f90)
+allocated by thread T0 here:
+    #0 0x557b93053988 in malloc (/home/zephyr/seethrough/build/2026-11-16-lab-real/29-btree-get4byte-page-overread-asan-rewrite+0xeb988) (BuildId: 42a3cd10c1ca3bf11c8b7cf6fe6aa035536ebc86)
+    #1 0x557b93283508 in sqlite3MemMalloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:21524:7
+    #2 0x557b930cd2a0 in mallocWithAlarm /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25350:7
+    #3 0x557b9309c65e in sqlite3Malloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25380:5
+    #4 0x557b930ff056 in pcache1Alloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:46391:9
+    #5 0x557b932869c5 in pcache1AllocPage /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:46487:11
+    #6 0x557b93286315 in pcache1FetchStage2 /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:46953:13
+    #7 0x557b93285c0b in pcache1FetchNoMutex /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:47056:12
+    #8 0x557b932841d0 in pcache1Fetch /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:47098:34
+    #9 0x557b930f13ab in sqlite3PcacheFetch /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:45563:10
+    #10 0x557b930f0578 in getPageNormal /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:53410:11
+    #11 0x557b930a8c00 in sqlite3PagerGet /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:53589:10
+    #12 0x557b9328a031 in statNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:178047:12
+    #13 0x557b9328af87 in statNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:178095:35
+    #14 0x557b931426b3 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86776:8
+    #15 0x557b930b1382 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #16 0x557b930b06e8 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #17 0x557b930bc849 in sqlite3_exec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:113169:12
+    #18 0x557b93097f22 in run_case /home/zephyr/seethrough/corpus/real/29-btree-get4byte-page-overread/case.c:111:8
+    #19 0x557b93097c66 in main /home/zephyr/seethrough/corpus/real/29-btree-get4byte-page-overread/case.c:118:1
+    #20 0x7fbd3942a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #21 0x7fbd3942a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #22 0x557b92fae3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/29-btree-get4byte-page-overread-asan-rewrite+0x463e4) (BuildId: 42a3cd10c1ca3bf11c8b7cf6fe6aa035536ebc86)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:177925:16 in statDecodePage
+Shadow bytes around the buggy address:
+  0x7d3d385e0e00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d3d385e0e80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d3d385e0f00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7d3d385e0f80: 00 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7d3d385e1000: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x7d3d385e1080: fa[fa]fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7d3d385e1100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7d3d385e1180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7d3d385e1200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7d3d385e1280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7d3d385e1300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==113275==ABORTING

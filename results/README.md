@@ -17,6 +17,7 @@ CSV) and the raw `.stdout` / `.stderr` of every run. Written by `harness/run-mat
 | [2026-11-13-lab-lookaside/](2026-11-13-lab-lookaside/) | Lab server, formal: SQLite 3.53.3 lookaside, unannotated | complete; 64 rows, 32 CLEAN controls |
 | [2026-11-13-lab-rewrite/](2026-11-13-lab-rewrite/) | Lab server, formal: Arena and Free-list libc rewrites | complete; 128 rows, 64 CLEAN controls |
 | [2026-11-13-lima-hwasan/](2026-11-13-lima-hwasan/) | HWASan (A5.8/A5.9): malloc, Arena and Free list; annotation off/on; aarch64 Lima VM on the M5 Mac | complete; 192 rows, 96 CLEAN controls; case 4 malloc MISSED by a tag collision (198 of 200 reruns detected, see [docs/hwasan.md](../docs/hwasan.md)) |
+| [2026-11-16-lab-real/](2026-11-16-lab-real/) | Lab server, formal (A7.5): 4 real SQLite 3.22.0 bugs (`corpus/real`) x memsys5, default, rewrite; ASan and Valgrind | complete; 24 rows; positive controls and the asan/rewrite gate passed; real bugs have no negative controls (see [corpus/real/README.md](../corpus/real/README.md)) |
 
 The five EC2 B bundles above use commit `2763402`, Ubuntu 26.04 x86-64,
 clang/ASan 21.1.8 and Valgrind 3.26.0. The four full detection bundles

@@ -54,8 +54,22 @@
     "default",
     "rewrite"
   ],
-  "measured": {},
-  "status": "ported, not run",
+  "measured": {
+    "2026-11-16 lab server x86-64, formal (results/2026-11-16-lab-real; commit 2098f2a; Ubuntu 26.04.1, clang 21.1.8, Valgrind 3.26.0; positive controls and the asan/rewrite gate passed)": {
+      "asan": {
+        "memsys5": "MISSED (crashed SEGV (tool signal handler, not a detection))",
+        "default": "DETECTED (heap-use-after-free)",
+        "rewrite": "DETECTED (heap-use-after-free)"
+      },
+      "valgrind": {
+        "memsys5": "DETECTED (Invalid read of size 1)",
+        "default": "DETECTED (Invalid read of size 4)",
+        "rewrite": "DETECTED (Invalid read of size 4)"
+      },
+      "notes": "memsys5 hides the stale read from both tools. The read itself is silent; a pointer loaded from the stale node is then 0x2 and the program faults on the zero page. ASan's signal handler reports the SEGV (MISSED, crashed: A7.6 confirmed on the server); Memcheck reports an invalid read at address 0x2 and then SIGSEGV, which the harness records as DETECTED, but it is the same crash, not a report on the node. Default and rewrite: both tools report the read 24 bytes into the freed 496-byte node."
+    }
+  },
+  "status": "formal run 2026-11-16 on the lab server (A7.5): asan, valgrind x memsys5, default, rewrite; lowfat not run",
   "capstone": {
     "repo": "project-starch/llvm-capstone",
     "branch": "dev",

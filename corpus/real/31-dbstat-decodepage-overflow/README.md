@@ -23,3 +23,12 @@ Capstone `31_fz10_dbstat_decodepage_overflow`; R2 fuzz-corpus diff image fz10, t
 
 ## 对照
 以 rewrite arm 下 ASan DETECTED 为 gate。
+
+## Formal results (2026-11-16)
+
+| tool | memsys5 | default | rewrite |
+|---|---|---|---|
+| asan | DETECTED | DETECTED | DETECTED |
+| valgrind | MISSED | DETECTED | DETECTED |
+
+Lab server, x86-64 (`results/2026-11-16-lab-real`, commit `2098f2a`). memsys5: Memcheck silent (the arena is a static array and Memcheck has no redzones around global data); ASan reports a global-buffer-overflow 34,968 bytes after the 256 KiB arena sqlite_heap, i.e. the arena's bound, not the page's. Default and rewrite: both report, ASan in heap redzone memory (wild pointer), Memcheck 12 KB (default) and 51 KB (rewrite) into unallocated heap: the read strides far past the page in every arm.

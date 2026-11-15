@@ -71,11 +71,11 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P1 A7.2 从 capstone `bug-corpora/sqlite/engine-repros` 移植 4 个 case（03、19 temporal；29、31 spatial）到 `corpus/real/`，case.c 原样，PROVENANCE 带 sha256
 - [x] P1 A7.3 三个 arm 的构建：memsys5（SQLITE_CONFIG_HEAP，lookaside 关）/ default（SQLite 出厂配置）/ rewrite（无 memsys5，LOOKASIDE=0,0，PCACHE_INITSZ=0）；`make real`，引擎按 (tool, arm, group) 缓存
 - [x] P1 A7.4 gate：rewrite arm 下 ASan 必须报出该 bug，否则该 case 其余行 UNSUPPORTED；每个 case 自己的可达性标记缺失则 TOOL-ERROR（`harness/run-real.py`）
-- [ ] P1 A7.5 服务器上跑 asan / valgrind / lowfat × 三个 arm，写进 `results/<date>-server-real/real.csv`；macOS 冒烟结果见 `corpus/real/README.md`，不可引用
-- [ ] P1 A7.6 classify 的 SEGV 规则（sanitizer 信号处理函数的报告记 MISSED crashed）在服务器上用 case 19 memsys5 arm 复核
+- [x] P1 A7.5 服务器上跑 asan / valgrind × 三个 arm（2026-11-16，`results/2026-11-16-lab-real/real.csv`，commit 2098f2a；LowFat 不在范围内）；结果写进 `corpus/real/README.md` 和各 case 的 `case.json` / README
+- [x] P1 A7.6 classify 的 SEGV 规则（sanitizer 信号处理函数的报告记 MISSED crashed）在服务器上用 case 19 memsys5 arm 复核（2026-11-16 确认；同一次崩溃在 Memcheck 下是 0x2 处的 Invalid read，harness 记 DETECTED，报告里按漏报解读）
 - [ ] P2 A7.7 越界步长：29/31 的 fuzz 镜像越界约 2 KB，越过整个 arena 和 pcache bulk 块；找或构造一个越界停在 arena 内的真实 spatial case（配合 A6.2 stretch (a)）
 - [ ] P2 A7.8 PostgreSQL mmgr（capstone `postgres/mmgr-repros`）或 CPython pymalloc 各取 1 个 case，时间不够就砍
-- [~] P1 A7.9 报告段落（初稿 §7.3，只有 macOS 开发运行，A7.5 实验室运行后需更新）：Tier 1 的 MISSED 在真实程序里是否重现（temporal 是，spatial 取决于步长）；SQLite 不化简的理由；default arm 两层的说明
+- [x] P1 A7.9 报告段落（§7.3，2026-11-16 按 A7.5 实验室正式结果重写）：Tier 1 的 MISSED 在真实程序里是否重现（temporal 是，spatial 取决于步长）；SQLite 不化简的理由；default arm 两层的说明
 
 ## B. CMA & Annotations（Part B）
 

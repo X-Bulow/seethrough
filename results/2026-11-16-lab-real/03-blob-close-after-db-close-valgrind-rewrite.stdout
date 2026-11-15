@@ -1,0 +1,9 @@
+ST BEGIN case=blobclose arm=rewrite sqlite=3.22.0
+repro allocator=malloc lookaside=off pcache_bulk=off
+ST READY
+blobclose blob_open rc=0
+blobclose lookaside status_rc=0 slots_in_use=0 high_water=0  (lookaside OFF: every allocation came straight from memsys5)
+blobclose close_v2 rc=0 (zombie path taken; plain close would give 5)
+blobclose blob_close rc=0 (the freed-db read already happened)
+blobclose NOTRAP done
+ST DONE

@@ -23,3 +23,12 @@ Capstone `03_e464802d49_blob_close_after_db_close`; upstream fix e464802d49, rel
 
 ## 对照
 没有 negative control 双胞胎。rewrite arm 下 ASan 必须 DETECTED，否则该 case 整行 UNSUPPORTED（`harness/run-real.py` 的 gate）。
+
+## Formal results (2026-11-16)
+
+| tool | memsys5 | default | rewrite |
+|---|---|---|---|
+| asan | MISSED | DETECTED | DETECTED |
+| valgrind | MISSED | DETECTED | DETECTED |
+
+Lab server, x86-64 (`results/2026-11-16-lab-real`, commit `2098f2a`). memsys5 hides the use after free from both tools (silent, exit 0). In SQLite as shipped and in the rewrite the connection is a plain malloc block, and both tools report the read 704 bytes into the freed 712-byte connection.

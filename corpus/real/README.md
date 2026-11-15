@@ -67,6 +67,37 @@ The engine is compiled once per (tool, arm, engine group) into `build/engine/`. 
 READY is printed right before the access) / `ST DONE`; each case also prints its own
 reachability line (`case.json` `reached`), without which a silent run is TOOL-ERROR, not MISSED.
 
+## Formal results (2026-11-16, lab server)
+
+`results/2026-11-16-lab-real` (A7.5): commit `2098f2a`, Ubuntu 26.04.1 x86-64, clang 21.1.8,
+Valgrind 3.26.0. Both tools passed their positive controls and every case passed the asan/rewrite
+gate. LowFat was not run (out of scope since 2026-11-14, see `docs/lowfat.md`).
+
+| case | asan memsys5 | asan default | asan rewrite | valgrind memsys5 | valgrind default | valgrind rewrite |
+|---|---|---|---|---|---|---|
+| 03 UAF | MISSED | DETECTED | DETECTED | MISSED | DETECTED | DETECTED |
+| 19 UAF | MISSED (SEGV at 0x2) | DETECTED | DETECTED | DETECTED* (read at 0x2, then SIGSEGV) | DETECTED | DETECTED |
+| 29 over-read | MISSED | DETECTED** | DETECTED | MISSED | DETECTED** | DETECTED |
+| 31 over-read | DETECTED*** | DETECTED** | DETECTED | MISSED | DETECTED** | DETECTED |
+
+\* the harness records Memcheck's invalid read at the zero page as DETECTED; it is the same crash that
+ASan's signal handler reports (MISSED, crashed), caused by a pointer loaded from the stale node, and
+not a report on the node. \*\* the read leaves the pcache bulk block; ASan reports it in heap redzone
+memory ("wild pointer"), Memcheck in a freed or unallocated block, never against the page.
+\*\*\* 34,968 bytes past the 256 KiB arena `sqlite_heap`, in the arena's own redzone (`note`: "left
+the arena").
+
+1. **The temporal cases transfer.** memsys5 hides both uses after free from both tools; where the
+   object is a plain malloc block (default, rewrite) both tools report the freed block. A7.6 is
+   confirmed: case 19's crash in ASan's signal handler is classified MISSED (crashed).
+2. **The spatial cases depend on the stride.** Inside memsys5, case 29 stays in memory the tools
+   consider valid and is missed by both; case 31 leaves the arena and ASan reports the arena's bound.
+   Memcheck has no redzones around global data and misses both. In the shipped configuration both
+   reads leave the bulk block. Every spatial detection outside the rewrite is a detection of the
+   container. Case 29's memsys5 arm was DETECTED on the macOS dev run (1.9 KB past the arena) and is
+   MISSED here: like `corpus/cases` case 4, a far stride's verdict depends on the layout.
+3. **The `default` arm is two layers**, as below: for 03 and 19 the object is a plain malloc.
+
 ## What the macOS smoke run showed (dev machine, clang 17 arm64, not citable)
 
 | case | asan memsys5 | asan default | asan rewrite |

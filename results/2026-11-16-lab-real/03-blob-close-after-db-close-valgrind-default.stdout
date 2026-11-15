@@ -1,0 +1,9 @@
+ST BEGIN case=blobclose arm=default sqlite=3.22.0
+repro allocator=malloc lookaside=default pcache_bulk=default
+ST READY
+blobclose blob_open rc=0
+blobclose lookaside status_rc=0 slots_in_use=5 high_water=41  (lookaside ACTIVE: connection-owned allocations came from slots)
+blobclose close_v2 rc=0 (zombie path taken; plain close would give 5)
+blobclose blob_close rc=0 (the freed-db read already happened)
+blobclose NOTRAP done
+ST DONE

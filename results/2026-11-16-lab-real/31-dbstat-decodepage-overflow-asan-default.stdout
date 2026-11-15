@@ -1,0 +1,6 @@
+ST BEGIN case=fz10 arm=default sqlite=3.22.0
+repro allocator=malloc lookaside=default pcache_bulk=default
+ST READY
+fz10 vfs_rc=0
+fz10 image_bytes=595 register_rc=0
+fz10 open_rc=0
