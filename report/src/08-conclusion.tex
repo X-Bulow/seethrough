@@ -1,16 +1,18 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Memory-safety detectors see exactly as far as their allocator lets them. On 16 controlled heap bugs,
-ASan, Valgrind Memcheck and HWASan each detected 12--15 on \code{malloc} and one or two inside an
-unannotated custom allocator, whether the allocator was one of ours or one of SQLite's, and the ones
-they kept were detections of the pool rather than of the object. The tools' annotation interfaces
-recover most of the loss, ASan's at almost no cost and Memcheck's at about twice its already large
-cost, but each interface leaves a characteristic set of bugs invisible, because poisoning describes
+Custom allocators determine which object boundaries and lifetimes memory-safety detectors can
+observe. On 16 controlled heap bugs,
+ASan detected 12/13 eligible cases on \code{malloc}, Valgrind Memcheck 13/13 and HWASan 13/15. Each
+tool detected only one or two eligible bugs within its tested unannotated custom layers; these
+detections concerned the pool rather than individual objects. The tools' annotation interfaces
+recover most of the loss. On our allocator microbenchmark, ASan annotations increased median runtime
+by approximately 5--10\%, while Memcheck's annotated builds took 1.8--2.2$\times$ as long. Each interface
+leaves a characteristic set of bugs invisible, because poisoning describes
 addressability, memory pools describe ownership and tags describe provenance at 16-byte granularity.
 Rewriting the allocator away restores \code{malloc}'s detection and memory cost, at the price of the
-behaviour the allocator existed for and of the bugs that depend on it. The results hold, cell for
-cell, on a second machine, and every miss has a mechanism. For testing a program with a CMA, the
+behaviour the allocator existed for and of the bugs that depend on it. The ASan and Memcheck bug
+verdicts hold, cell for cell, on a second machine, and every miss has a mechanism. For testing a program with a CMA, the
 practical advice is to annotate the allocator, to run more than one kind of detector over it, and to
 treat a clean run of an unannotated build as evidence about the code outside the pool only.
 

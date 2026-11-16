@@ -37,11 +37,11 @@ Ignore) and x86-64 does only with Linear Address Masking (LAM). Allocators can t
 with \code{\_\_hwasan\_tag\_memory} and \code{\_\_hwasan\_tag\_pointer}; this interface works on whole
 granules only.
 
-\paragraph{UBSan and LowFat.} The proposal also named UBSan's \code{bounds} and \code{object-size}
+\paragraph{UBSan and LowFat.} We also investigated UBSan's \code{bounds} and \code{object-size}
 checks and LowFat~\cite{duck2016lowfat}. UBSan inserts local checks that rely on sizes the compiler
 can see; it keeps no record of heap blocks at run time. LowFat allocates each size class from its own
 large region of virtual memory, so the bounds of an object can be computed from its address alone,
-and checks pointer arithmetic against them; it covers spatial errors only. Section~\ref{sec:limits}
+and checks pointer arithmetic against them; it covers spatial errors only. \S\ref{sec:limits}
 explains why neither entered the detection matrix.
 
 \subsection{Custom allocators and why they hide objects}

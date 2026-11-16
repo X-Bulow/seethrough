@@ -2,16 +2,16 @@
 \toprule
 workload & tool & time (s) & $\times$ & peak RSS (MiB) & $\times$ \\
 \midrule
-SQLite speedtest1, default & baseline & 2.30 & 1.00 & 77.1 & 1.00 \\
- & ASan & 6.08 & 2.64 & 611.4 & 7.94 \\
- & Valgrind & 62.04 & 26.97 & 189.7 & 2.46 \\
+SQLite speedtest1, default & baseline & \shortstack{2.30\\{\scriptsize[2.24, 2.46]}} & 1.00 & \shortstack{77.1\\{\scriptsize[77.0, 77.1]}} & 1.00 \\[3pt]
+ & ASan & \shortstack{6.08\\{\scriptsize[5.97, 6.50]}} & 2.64 & \shortstack{611.4\\{\scriptsize[590.1, 611.6]}} & 7.94 \\[3pt]
+ & Memcheck & \shortstack{62.04\\{\scriptsize[60.46, 63.17]}} & 26.97 & \shortstack{189.7\\{\scriptsize[189.6, 189.7]}} & 2.46 \\[3pt]
 \addlinespace
-SQLite speedtest1, memsys5 & baseline & 2.47 & 1.00 & 121.2 & 1.00 \\
- & ASan & 5.34 & 2.16 & 166.5 & 1.37 \\
- & Valgrind & 60.58 & 24.53 & 208.3 & 1.72 \\
+SQLite speedtest1, memsys5 & baseline & \shortstack{2.47\\{\scriptsize[2.33, 2.69]}} & 1.00 & \shortstack{121.2\\{\scriptsize[121.0, 121.3]}} & 1.00 \\[3pt]
+ & ASan & \shortstack{5.34\\{\scriptsize[5.07, 5.58]}} & 2.16 & \shortstack{166.5\\{\scriptsize[166.4, 166.7]}} & 1.37 \\[3pt]
+ & Memcheck & \shortstack{60.58\\{\scriptsize[59.31, 61.31]}} & 24.53 & \shortstack{208.3\\{\scriptsize[208.3, 208.4]}} & 1.72 \\[3pt]
 \addlinespace
-Lua 5.4.9 table/GC workload & baseline & 4.65 & 1.00 & 29.7 & 1.00 \\
- & ASan & 13.85 & 2.98 & 473.4 & 15.94 \\
- & Valgrind & 133.64 & 28.74 & 188.4 & 6.34 \\
+Lua 5.4.9 table/GC workload & baseline & \shortstack{4.65\\{\scriptsize[4.30, 4.75]}} & 1.00 & \shortstack{29.7\\{\scriptsize[29.6, 29.7]}} & 1.00 \\[3pt]
+ & ASan & \shortstack{13.85\\{\scriptsize[13.25, 15.06]}} & 2.98 & \shortstack{473.4\\{\scriptsize[473.3, 474.0]}} & 15.94 \\[3pt]
+ & Memcheck & \shortstack{133.64\\{\scriptsize[130.16, 134.60]}} & 28.74 & \shortstack{188.4\\{\scriptsize[188.3, 188.6]}} & 6.34 \\[3pt]
 \bottomrule
 \end{tabular}

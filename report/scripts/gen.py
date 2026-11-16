@@ -7,15 +7,18 @@ Inputs are only committed files: the formal detection bundles listed below and t
 summaries in report/tables/*.csv (made by benchmarks/plot.py). Outputs are never hand-edited.
 """
 import csv
+import math
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
+from statistics import median
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "report" / "tables"
 LAB = [ROOT / "results" / f"2026-11-13-lab-{s}" for s in ("core", "memsys5", "lookaside", "rewrite")]
 HW = ROOT / "results" / "2026-11-13-lima-hwasan"
 TOOLS = ["asan", "valgrind", "hwasan"]
-TOOL_NAME = {"asan": "ASan", "valgrind": "Valgrind", "hwasan": "HWASan"}
+TOOL_NAME = {"asan": "ASan", "valgrind": "Memcheck", "hwasan": "HWASan"}
 CASE_NAME = {0: "overflow, write +1", 1: "overflow, read +1", 2: "overflow into slack",
              3: "overflow into live obj.", 4: "read past the pool", 5: "underflow, write -1",
              6: "underflow, read -1", 7: "underflow into header", 8: "UAF write", 9: "UAF read",
@@ -59,9 +62,9 @@ def summary(bug, ctl):
     layers = [("malloc baseline", "malloc", None), ("Arena (ours)", "arena", "arena+annot"),
               ("Free list (ours)", "freelist", "freelist+annot"),
               ("SQLite memsys5", "memsys5", "memsys5+annot"), ("SQLite lookaside", "lookaside", None),
-              ("Arena rewrite", "arena-rewrite", None), ("Free-list rewrite", "freelist-rewrite", None)]
+              ("Arena rewrite", "arena-rewrite", None), ("Free list rewrite", "freelist-rewrite", None)]
     lines = [r"\begin{tabular}{l*{3}{cc}}", r"\toprule",
-             r" & \multicolumn{2}{c}{ASan} & \multicolumn{2}{c}{Valgrind} & \multicolumn{2}{c}{HWASan} \\",
+             r" & \multicolumn{2}{c}{ASan} & \multicolumn{2}{c}{Memcheck} & \multicolumn{2}{c}{HWASan} \\",
              r"\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}",
              r"allocator layer & plain & annotated & plain & annotated & plain & annotated \\", r"\midrule"]
     dat = ["tool layer plain annotated"]  # rows: tool layer plain% annotated%
@@ -113,7 +116,67 @@ def matrix(bug, tools, arms, labels, name):
 def perf():
     def rows(f):
         return list(csv.DictReader(open(OUT / f)))
-    name = {"none": "baseline", "asan": "ASan", "valgrind": "Valgrind"}
+    stats = {}
+    evidence = []
+    for source in ("benchmark-summary.csv", "lua-summary.csv", "part-b-churn-summary.csv"):
+        for s in rows(source):
+            key = tuple(s[k] for k in ("bundle", "benchmark", "config", "annot", "tool"))
+            bundle = ROOT / "results" / s["bundle"]
+            with (bundle / "benchmark.csv").open() as stream:
+                raw = [r for r in csv.DictReader(stream)
+                       if tuple(r[k] for k in ("bundle", "benchmark", "config", "annot", "tool")) == key]
+            if sorted(int(r["run"]) for r in raw) != [1, 2, 3, 4, 5]:
+                raise ValueError(f"{key}: expected exactly runs 1 through 5")
+            times, rss = [], []
+            for r in raw:
+                t, m = float(r["seconds"]), float(r["peak_rss_kb"])
+                if not all(math.isfinite(v) and v > 0 for v in (t, m)):
+                    raise ValueError(f"{key}: invalid measurement")
+                stem = (f"{r['config']}-{r['tool']}-a{r['annot']}-{r['run']}"
+                        if r["benchmark"] == "allocator-churn" else f"{r['tool']}-{r['run']}")
+                wall, peak = (bundle / f"{stem}.time").read_text().strip().split(",")
+                stdout = (bundle / f"{stem}.stdout").read_text()
+                recorded = (re.search(r"elapsed_seconds=([0-9.]+)", stdout).group(1)
+                            if r["benchmark"] == "allocator-churn" else wall)
+                if abs(float(recorded) - t) > 1e-7 or float(peak) != m:
+                    raise ValueError(f"{key}: CSV differs from raw log {stem}")
+                if (bundle / f"{stem}.exit").read_text().strip() != "0":
+                    raise ValueError(f"{key}: failed run {stem}")
+                if r["benchmark"] == "lua" and "rounds=20 objects=100000 checksum=6666766818777900" not in stdout:
+                    raise ValueError(f"{key}: Lua checksum differs in {stem}")
+                times.append(t)
+                rss.append(m / 1024)
+            values = dict(runs=5, median_seconds=median(times), min_seconds=min(times), max_seconds=max(times),
+                          median_rss_mib=median(rss), min_rss_mib=min(rss), max_rss_mib=max(rss))
+            for field in ("median_seconds", "median_rss_mib"):
+                if abs(values[field] - float(s[field])) > 1e-6:
+                    raise ValueError(f"{key}: summary {field} differs from raw measurements")
+            stats[key] = values
+            evidence.append(dict(zip(("bundle", "benchmark", "config", "annot", "tool"), key), **values))
+    for s in evidence:
+        baseline = stats[(s["bundle"], s["benchmark"], s["config"], s["annot"], "none")]
+        s["time_ratio"] = s["median_seconds"] / baseline["median_seconds"]
+        s["rss_ratio"] = s["median_rss_mib"] / baseline["median_rss_mib"]
+    for source in ("benchmark-summary.csv", "lua-summary.csv", "part-b-churn-summary.csv"):
+        for s in rows(source):
+            baseline = stats[(s["bundle"], s["benchmark"], s["config"], s["annot"], "none")]
+            values = stats[tuple(s[k] for k in ("bundle", "benchmark", "config", "annot", "tool"))]
+            for field, metric in (("time_ratio", "median_seconds"), ("rss_ratio", "median_rss_mib")):
+                if abs(float(s[field]) - values[metric] / baseline[metric]) > 1e-6:
+                    raise ValueError(f"{source}: {field} differs from raw measurements")
+    with (OUT / "perf-variability.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(evidence[0]))
+        writer.writeheader()
+        writer.writerows(evidence)
+    print(f"Performance: {sum(s['runs'] for s in evidence)} raw runs checked; {len(evidence)} groups; medians, ratios, exits and logs agree")
+
+    def value(s, metric, digits):
+        v = stats[tuple(s[k] for k in ("bundle", "benchmark", "config", "annot", "tool"))]
+        suffix = "seconds" if metric == "time" else "rss_mib"
+        return (r"\shortstack{" + f"{v['median_' + suffix]:.{digits}f}" + r"\\{\scriptsize[" +
+                f"{v['min_' + suffix]:.{digits}f}, {v['max_' + suffix]:.{digits}f}" + r"]}}")
+
+    name = {"none": "baseline", "asan": "ASan", "valgrind": "Memcheck"}
     order = {"none": 0, "asan": 1, "valgrind": 2}
     lines = [r"\begin{tabular}{llrrrr}", r"\toprule",
              r"workload & tool & time (s) & $\times$ & peak RSS (MiB) & $\times$ \\", r"\midrule"]
@@ -124,8 +187,8 @@ def perf():
         rs = sorted((r for r in rows(f) if r["config"] == cfg), key=lambda r: order[r["tool"]])
         for i, r in enumerate(rs):
             lines.append(" & ".join([label if i == 0 else "", name[r["tool"]],
-                                     f"{float(r['median_seconds']):.2f}", f"{float(r['time_ratio']):.2f}",
-                                     f"{float(r['median_rss_mib']):.1f}", f"{float(r['rss_ratio']):.2f}"]) + r" \\")
+                                     value(r, "time", 2), f"{float(r['time_ratio']):.2f}",
+                                     value(r, "rss", 1), f"{float(r['rss_ratio']):.2f}"]) + r" \\[3pt]")
         if gi < len(groups) - 1:
             lines.append(r"\addlinespace")
     lines += [r"\bottomrule", r"\end{tabular}"]
@@ -139,10 +202,10 @@ def perf():
             off, on = churn[(alloc, "0", tool)], churn[(alloc, "1", tool)]
             rw = churn[(alloc + "-rewrite", "0", tool)]
             t0, t1 = float(off["median_seconds"]), float(on["median_seconds"])
-            lines.append(" & ".join([label if tool == "asan" else "", name[tool], f"{t0:.3f}", f"{t1:.3f}",
+            lines.append(" & ".join([label if tool == "asan" else "", name[tool], value(off, "time", 3), value(on, "time", 3),
                                      f"{t1 / t0:.2f}$\\times$",
                                      f"{float(off['median_rss_mib']):.1f} / {float(on['median_rss_mib']):.1f}",
-                                     f"{float(rw['median_seconds']):.3f}, {float(rw['median_rss_mib']):.0f}"]) + r" \\")
+                                     f"{float(rw['median_seconds']):.3f}, {float(rw['median_rss_mib']):.0f}"]) + r" \\[3pt]")
     lines += [r"\bottomrule", r"\end{tabular}"]
     (OUT / "perf-churn.tex").write_text("\n".join(lines) + "\n")
 

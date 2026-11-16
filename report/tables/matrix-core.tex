@@ -1,6 +1,6 @@
 \begin{tabular}{r l|ccccc|ccccc|ccccc}
 \toprule
- & & \multicolumn{5}{c}{ASan} & \multicolumn{5}{c}{Valgrind} & \multicolumn{5}{c}{HWASan} \\
+ & & \multicolumn{5}{c}{ASan} & \multicolumn{5}{c}{Memcheck} & \multicolumn{5}{c}{HWASan} \\
  & case & \rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A} & \rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A} & \rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A} \\
 \midrule
 0 & overflow, write +1 & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cD & \cM & \cD & \cD & \cM & \cM & \cM & \cM \\

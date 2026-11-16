@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOLS = {"none": "Baseline", "asan": "ASan", "valgrind": "Valgrind"}
+TOOLS = {"none": "Baseline", "asan": "ASan", "valgrind": "Memcheck"}
 COLORS = ["#276FBF", "#E39C35", "#37866C", "#8A64AD", "#B95369", "#737C3F"]
 
 
@@ -104,8 +104,8 @@ def plot(summaries, output, normalized, environment_label):
     annotation = ("no custom annotations" if all(key[3] == "0" for key in summaries)
                   else "annotation settings shown in legend")
     fig.suptitle(f"{benchmark}: {title}\nMedian of 5 runs; {annotation}", fontsize=12)
-    fig.supxlabel("Ratios use each configuration's baseline. Valgrind RSS includes tool memory."
-                  if normalized else f"{environment_label}. Valgrind RSS includes tool memory.",
+    fig.supxlabel("Ratios use each configuration's baseline. Memcheck RSS includes tool memory."
+                  if normalized else f"{environment_label}. Memcheck RSS includes tool memory.",
                   fontsize=9)
     stem = output / ("benchmark-overhead" if normalized else "benchmark-performance")
     for extension in ("png", "pdf"):

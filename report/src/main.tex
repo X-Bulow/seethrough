@@ -18,6 +18,8 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{placeins}
+\usepackage{needspace}
 \usepackage[hidelinks]{hyperref}
 \usepackage{url}
 
@@ -27,8 +29,8 @@
 \setlength{\parindent}{0pt}
 
 % ---------------------------------------------------------------- submission details
-% Fill in before submitting (Canvas group number; video link, which the course requires in the report).
-\newcommand{\groupnumber}{\textcolor{red}{[group number]}}
+% Fill in the presentation video link before submitting.
+\newcommand{\groupnumber}{501}
 \newcommand{\videolink}{\textcolor{red}{[presentation video link]}}
 \newcommand{\repourl}{\url{https://github.com/X-Bulow/seethrough}}
 
@@ -49,7 +51,7 @@
 \title{\textbf{Do Memory-Safety Detectors See Through Custom Allocators?}\\[2pt]
 \large A Detection and Overhead Comparison of ASan, Valgrind Memcheck and HWASan\\[4pt]
 \normalsize CS5439 Assignment 2 --- Final Report (Group \groupnumber)}
-\author{Cheng Zefeng \quad Wei Yuning \quad Xu Ruofan\\
+\author{Cheng Zefeng \quad Wei Yuning \quad Xu Ruofan (\texttt{A0100965J})\\
 \small\texttt{bulow@u.nus.edu} \quad \texttt{weiyuning@u.nus.edu} \quad \texttt{e1536075@u.nus.edu}}
 \date{November 2026}
 
@@ -62,23 +64,21 @@ Presentation video: \videolink \qquad Code, corpus and raw results: \repourl
 
 \begin{abstract}
 \noindent
-Memory-safety detectors such as AddressSanitizer (ASan) and Valgrind Memcheck check every access
-against the block that \code{malloc} returned. Many C programs instead take one large block from
-\code{malloc} and carve objects out of it themselves. We measure what that costs the detectors.
-We built a corpus of 16 heap bugs (overflow, underflow, use-after-free, invalid and double free),
-each with a negative control that differs in one line, and ran every bug against seven allocator
-layers: \code{malloc}, two allocators of our own (a bump arena and a size-class free list), two of
-SQLite's allocators (memsys5 and lookaside), and libc rewrites of our two allocators. Each custom
-layer was run with and without the tool's annotation interface. Across 448 bug images and 448 controls
-there were no false positives. Without annotation, every detector found only 1--2 of 14--16 bugs
-inside a custom allocator, against 12--15 of 13--15 on \code{malloc}. Annotation recovered most of
-them: 10--11 for ASan, 13--14 for Valgrind and 9--11 for HWASan. Each annotation interface has its
-own ceiling: poisoning cannot catch an overflow into another live object or a stale pointer to
-reissued storage, and neither poisoning nor tagging can express a bad \code{free}, while memory
-tagging is only 16-byte precise. The ASan and Valgrind verdicts are identical, cell for cell, on a
-second machine. On SQLite and Lua benchmarks ASan costs 2.2--3.0$\times$ in time and Valgrind
-24--29$\times$; switching SQLite to its memsys5 allocator lowers ASan's memory overhead from
-7.9$\times$ to 1.4$\times$, which is the other side of the visibility it loses.
+Custom memory allocators manage objects within larger memory blocks, potentially hiding object
+boundaries and lifetimes from memory-safety detectors. We evaluate how this affects AddressSanitizer
+(ASan), Valgrind Memcheck, and Hardware-assisted AddressSanitizer (HWASan), and whether allocator
+annotations or rewrites restore detection. Using 16 controlled heap-bug programs with paired
+negative controls, we compare \code{malloc}, custom pools, SQLite allocators, and malloc-based
+rewrites under supported tool configurations. Unannotated custom allocators exposed only 1--2 of
+14--16 eligible bugs to the detectors. Annotations recovered most bugs, but their effectiveness
+depended on the tool's interface and the allocator's behaviour. Rewrites restored malloc-level
+detection under ASan and Memcheck while removing behaviour needed to reproduce some bugs.
+Performance measurements on SQLite, Lua, and an allocator microbenchmark show that the tools and
+their annotations impose different costs. On the microbenchmark, ASan annotations added modest
+median runtime overhead, while Memcheck annotations roughly doubled runtime. These results show
+that a clean sanitizer run provides limited evidence about objects inside an unannotated allocator.
+Annotations and rewrites improve detection, but offer different coverage, semantic, and performance
+trade-offs.
 \end{abstract}
 
 \input{src/01-introduction}
@@ -91,7 +91,11 @@ second machine. On SQLite and Lua benchmarks ASan costs 2.2--3.0$\times$ in time
 \input{src/08-conclusion}
 
 \bibliographystyle{plainurl}
+\begingroup
+\small
+\raggedright
 \bibliography{src/refs}
+\endgroup
 
 \appendix
 \input{src/appendix}

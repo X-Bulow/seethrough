@@ -1,3 +1,4 @@
+\Needspace{0.65\textheight}
 \section{The test programs}
 \label{app:cases}
 
@@ -14,7 +15,7 @@ and reasons, and a README with a layout diagram.
 \midrule
 0 & two objects; write \code{a[24]}, one byte past the requested size & write \code{a[23]} \\
 1 & read \code{a[24]} & read \code{a[23]} \\
-2 & write 4 bytes at \code{a+28}, inside the 16-byte alignment slack & write \code{a[23]} \\
+2 & write one byte at \code{a[28]}, four bytes beyond the requested boundary, inside alignment slack & write \code{a[23]} \\
 3 & allocate \code{a}, \code{b}, \code{c}; write \code{a[64]}, which is \code{c[0]} in the Arena & write \code{a[23]} \\
 4 & read \code{a[pool + 8192]}, past the end of the pool wherever \code{a} landed & read \code{a[23]} \\
 5 & \code{a} allocated after another object; write \code{a[-1]} & write \code{a[0]} \\
@@ -42,7 +43,7 @@ the harness records the row as unsupported otherwise.
 From a clean clone of the repository on Ubuntu 26.04 x86-64:
 {\small
 \begin{verbatim}
-bash tools/setup-server.sh        # pinned clang 21.1.8, Valgrind 3.26.0; SQLite sources
+bash tools/setup-server.sh        # pinned clang 21.1.8, Memcheck 3.26.0; SQLite sources
 P=results/$(date +%F)-lab
 python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena freelist \
     --annots 0 1 --cases all --out $P-core
@@ -59,9 +60,9 @@ HWASan runs the same driver with \code{--tools hwasan} inside an AArch64 Linux V
 (\code{docs/hwasan.md}). The benchmarks are under \code{benchmarks/} with their own scripts, and
 \code{make -C report tables} regenerates every table of this report from the committed bundles:
 \begin{itemize}
-\item \code{results/2026-11-13-lab-\{core,memsys5,lookaside,rewrite\}}: ASan and Valgrind, commit \code{6b54739};
+\item \code{results/2026-11-13-lab-\{core,memsys5,lookaside,rewrite\}}: ASan and Memcheck, commit \code{6b54739};
 \item \code{results/2026-11-13-lima-hwasan}: HWASan, commit \code{c214ad3};
 \item \code{results/2026-11-10-ec2-b-\{core,memsys5,lookaside,rewrite\}}: the replica, commit \code{2763402};
 \item \code{results/2026-11-05-sqlite-speedtest1-*}, \code{results/2026-11-08-lua-36YPxm}: \code{speedtest1} and Lua;
-\item \code{results/2026-11-10-allocator-churn-IkUTIU}: the allocator micro-benchmark.
+\item \code{results/2026-11-10-allocator-churn-IkUTIU}: the allocator microbenchmark.
 \end{itemize}

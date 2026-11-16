@@ -79,8 +79,8 @@ lists the seven layers. Arena and Free list are ours and model the common design
 \S\ref{sec:background}. The two SQLite layers are real CMAs, taken from the SQLite 3.53.3
 amalgamation through a thin adapter: memsys5 serves \code{st\_alloc} from a buddy heap held in one
 \code{malloc} block, and lookaside serves it from a connection's 128-byte slots (8192 of them),
-falling back to SQLite's general allocator for larger requests. The rewrites answer the lecturer's
-remark: each replaces its allocator with one libc call per operation, in 14 lines instead of 101
+falling back to SQLite's general allocator for larger requests. The rewrites provide a comparison
+with direct libc allocation: each uses one libc call per operation, in 14 lines instead of 101
 (Arena) and 164 (Free list).
 
 \begin{table}[t]
@@ -94,7 +94,7 @@ Arena (ours) & bump pointer in one 1~MiB block, 16-byte alignment; sizes and liv
 Free list (ours) & classes of 32, 64, 128 and 256 bytes carved from one 1~MiB block; next-link inside a free slot & immediate (LIFO) & A, V, H \\
 SQLite memsys5 & power-of-two buddy blocks over one heap; 24 bytes occupy a 32-byte block & possible after coalescing & A, V \\
 SQLite lookaside & 128-byte slots of a connection; larger requests fall back & immediate & -- \\
-Arena / Free-list rewrite & one libc \code{malloc} per object & up to the tool & -- \\
+Arena / Free list rewrite & one libc \code{malloc} per object & up to the tool & -- \\
 \bottomrule
 \end{tabularx}
 \caption{Allocator layers. Annotation: A = ASan poisoning, V = Memcheck memory pools, H = HWASan
@@ -145,7 +145,7 @@ result from the program's markers, its exit code and the tool's report:
 \end{center}
 
 Detection images are compiled at \code{-O0 -g} so that the compiler cannot delete or move the faulty
-access~\cite{isemann2023ub}. ASan and HWASan images are built with clang 21.1.8; Valgrind runs a
+access~\cite{isemann2023ub}. ASan and HWASan images are built with clang 21.1.8; Memcheck runs a
 \code{gcc}-built image with \code{--error-exitcode=99 --leak-check=no}. Leak checking is off for all
 tools because leaks are not a defect class here. A second script compares every cell with the
 prediction in \code{case.json}, and a third (\S\ref{sec:audit}) re-examines every miss from the raw
@@ -162,8 +162,8 @@ of every image. Bundles are committed unchanged.
 \toprule
 role & machine & software \\
 \midrule
-ASan, Valgrind (formal) & lab server: LXD container, Intel Xeon Gold 6230 (76 logical CPUs) & Ubuntu 26.04.1, host kernel 6.12.111, glibc 2.43; clang 21.1.8, gcc 15.2.0, Valgrind 3.26.0 \\
-ASan, Valgrind (replica) & AWS EC2, Intel Xeon Platinum 8259CL (2 vCPU) & Ubuntu 26.04, kernel 7.0.0; same tool versions \\
+ASan, Memcheck (formal) & lab server: LXD container, Intel Xeon Gold 6230 (76 logical CPUs) & Ubuntu 26.04.1, host kernel 6.12.111, glibc 2.43; clang 21.1.8, gcc 15.2.0, Memcheck 3.26.0 \\
+ASan, Memcheck (replica) & AWS EC2, Intel Xeon Platinum 8259CL (2 vCPU) & Ubuntu 26.04, kernel 7.0.0; same tool versions \\
 HWASan & Lima VM (Apple Virtualization) on an Apple M5, 4 vCPU, 4~GiB & Ubuntu 26.04.1 AArch64, kernel 7.0.0-43; clang 21.1.8 + lld 21.1.8 \\
 Q2: \code{speedtest1}, Lua & VirtualBox VM, AMD Ryzen 7 3700X (4 vCPU, 7.25~GiB) & Ubuntu 26.04, kernel 7.0.0-38; same tool versions \\
 Q2: allocator churn & the EC2 instance above & as above \\
@@ -173,9 +173,9 @@ Q2: allocator churn & the EC2 instance above & as above \\
 \label{tab:env}
 \end{table}
 
-Table~\ref{tab:env} lists the machines. The formal ASan and Valgrind results were produced on the lab
-server from one commit; the same matrices had been run earlier on EC2 from another commit, which
-serves as a replication. HWASan needs Top Byte Ignore or LAM, and neither x86-64 machine has LAM, so
+Table~\ref{tab:env} lists the machines. The formal ASan and Memcheck results were produced on the lab
+server. Earlier runs on EC2 produced identical verdicts across all 352 bug cells, providing a
+replication on a second machine. HWASan needs Top Byte Ignore or LAM, and neither x86-64 machine has LAM, so
 its column comes from an AArch64 virtual machine on a team member's laptop, with the same distribution
 and compiler. Linking HWASan images with GNU ld 2.46 produced a \code{SIGILL} whenever a global
 variable received a tag of \code{0x80} or above, because the linker mis-encodes the instruction that
