@@ -1,7 +1,7 @@
 \section{The test programs}
 \label{app:cases}
 
-All objects are requested with \code{st\_alloc(24)} unless stated otherwise; in the Arena and the
+All objects are requested with \code{st\_alloc(24)} unless stated otherwise. In the Arena and the
 memsys5 layer a 24-byte object occupies a 32-byte slot, and in the Free list a 32-byte class slot.
 ``Live neighbour'' means an object allocated next to the first one and not freed. Each directory
 \code{corpus/cases/caseNN-*/} contains the program, its \code{case.json} with per-tool expectations
@@ -12,29 +12,29 @@ and reasons, and a README with a layout diagram.
 \toprule
 \# & trigger & negative control \\
 \midrule
-0 & two objects; write \code{a[24]}, one byte past the requested size & write \code{a[23]} \\
+0 & two objects, then write \code{a[24]}, one byte past the requested size & write \code{a[23]} \\
 1 & read \code{a[24]} & read \code{a[23]} \\
 2 & write 4 bytes at \code{a+28}, inside the 16-byte alignment slack & write \code{a[23]} \\
-3 & allocate \code{a}, \code{b}, \code{c}; write \code{a[64]}, which is \code{c[0]} in the Arena & write \code{a[23]} \\
+3 & allocate \code{a}, \code{b} and \code{c}, then write \code{a[64]}, which is \code{c[0]} in the Arena & write \code{a[23]} \\
 4 & read \code{a[pool + 8192]}, past the end of the pool wherever \code{a} landed & read \code{a[23]} \\
-5 & \code{a} allocated after another object; write \code{a[-1]} & write \code{a[0]} \\
+5 & \code{a} allocated after another object, then write \code{a[-1]} & write \code{a[0]} \\
 6 & read \code{a[-1]} & read \code{a[0]} \\
 7 & write the 8 bytes at \code{a - 8}, where a header would be & write \code{a[0..7]} \\
 8 & free \code{a}, then write \code{a[0]} (no reuse in between) & write before the free \\
 9 & free \code{a}, then read \code{a[0]} & read before the free \\
-10 & free \code{a}; \code{b = st\_alloc(24)} receives \code{a}'s storage; write through \code{a} & write through \code{b} \\
-11 & \code{b = st\_realloc(a, 4096)} moves the object; read through \code{a} & read through \code{b} \\
-12 & destroy the whole pool (\code{st\_alloc\_fini}); read \code{a[0]} & read before the destruction \\
+10 & free \code{a}, \code{b = st\_alloc(24)} receives \code{a}'s storage, then write through \code{a} & write through \code{b} \\
+11 & \code{b = st\_realloc(a, 4096)} moves the object, then read through \code{a} & read through \code{b} \\
+12 & destroy the whole pool (\code{st\_alloc\_fini}), then read \code{a[0]} & read before the destruction \\
 13 & free \code{a} twice & free \code{a} and a second object once each \\
 14 & free \code{a + 8} & free \code{a} \\
-15 & free \code{a}; \code{b} receives its storage; free \code{a} again, releasing \code{b}'s storage & free \code{b} \\
+15 & free \code{a}, \code{b} receives its storage, then free \code{a} again, releasing \code{b}'s storage & free \code{b} \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-Cases 10 and 15 require immediate reuse, case 11 a moving \code{realloc} and case 12 a pool; the
+Cases 10 and 15 require immediate reuse, case 11 a moving \code{realloc} and case 12 a pool. The
 programs print \code{ST NOTE reuse=1}, \code{moved=1} and \code{pool=1} when the property holds, and
-the harness records the row as unsupported otherwise.
+the harness records the row as unsupported when it does not.
 
 \section{Reproducing the results}
 \label{app:repro}
@@ -42,7 +42,7 @@ the harness records the row as unsupported otherwise.
 From a clean clone of the repository on Ubuntu 26.04 x86-64:
 {\small
 \begin{verbatim}
-bash tools/setup-server.sh        # pinned clang 21.1.8, Valgrind 3.26.0; SQLite sources
+bash tools/setup-server.sh        # pinned clang 21.1.8, Valgrind 3.26.0, SQLite sources
 P=results/$(date +%F)-lab
 python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena freelist \
     --annots 0 1 --cases all --out $P-core
@@ -60,10 +60,10 @@ HWASan runs the same driver with \code{-{}-tools hwasan} inside an AArch64 Linux
 (\code{docs/hwasan.md}). The benchmarks are under \code{benchmarks/} with their own scripts, and
 \code{make -C report tables} regenerates every table of this report from the committed bundles:
 \begin{itemize}
-\item \code{results/2026-11-13-lab-\{core,memsys5,lookaside,rewrite\}}: ASan and Valgrind, commit \code{6b54739};
-\item \code{results/2026-11-13-lima-hwasan}: HWASan, commit \code{c214ad3};
-\item \code{results/2026-11-16-lab-real}: the real SQLite bugs, commit \code{2098f2a};
-\item \code{results/2026-11-10-ec2-b-\{core,memsys5,lookaside,rewrite\}}: the replica, commit \code{2763402};
-\item \code{results/2026-11-05-sqlite-speedtest1-*}, \code{results/2026-11-08-lua-36YPxm}: \code{speedtest1} and Lua;
+\item \code{results/2026-11-13-lab-\{core,memsys5,lookaside,rewrite\}}: ASan and Valgrind, commit \code{6b54739}.
+\item \code{results/2026-11-13-lima-hwasan}: HWASan, commit \code{c214ad3}.
+\item \code{results/2026-11-16-lab-real}: the real SQLite bugs, commit \code{2098f2a}.
+\item \code{results/2026-11-10-ec2-b-\{core,memsys5,lookaside,rewrite\}}: the replica, commit \code{2763402}.
+\item \code{results/2026-11-05-sqlite-speedtest1-*}, \code{results/2026-11-08-lua-36YPxm}: \code{speedtest1} and Lua.
 \item \code{results/2026-11-10-allocator-churn-IkUTIU}: the allocator micro-benchmark.
 \end{itemize}

@@ -7,8 +7,8 @@ the code is being tested and fuzzed~\cite{song2019sok}. AddressSanitizer
 (ASan)~\cite{serebryany2012asan}, Valgrind Memcheck~\cite{nethercote2007valgrind}, HWASan and
 LowFat~\cite{duck2016lowfat} differ in how they track memory, but they share one assumption: the unit
 of protection is the block returned by \code{malloc}. Each tool replaces or intercepts the libc
-allocator, learns the bounds and lifetime of every block from it, and checks each access against
-that information.
+allocator, learns from it the bounds and lifetime of every block, and checks each access against
+them.
 
 Real programs often do not let the tools see their objects. SQLite, PostgreSQL, CPython, Apache,
 many games and most compilers take a large block from \code{malloc} and divide it among their own
@@ -22,23 +22,23 @@ with a CMA therefore guarantees less than it appears to.
 
 The tools themselves offer a remedy: each exposes an interface through which an allocator can
 describe its objects. ASan has manual poisoning, Memcheck has memory-pool client requests, and
-HWASan lets an allocator tag memory and pointers. The course's lecturer also pointed out a second
-remedy in the proposal feedback: depending on the CMA, it may be easy to \emph{rewrite} it away so
-that every object comes from \code{malloc} again. We ask two questions.
+HWASan lets an allocator tag memory and pointers. A second remedy is to \emph{rewrite} the CMA away,
+so that every object comes from \code{malloc} again. For simple allocators this takes only a few
+lines. We ask two questions.
 
 \begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=*,labelsep=0.6em]
 \item \textbf{Detection.} For the same bug, how much does each tool lose when the object comes from
-  a custom allocator instead of \code{malloc}, and how much do the tool's annotation interface and a
-  rewrite to \code{malloc} win back?
-\item \textbf{Overhead.} What do the tools cost on programs that use custom allocators, and what do
-  the annotations cost?
+  a custom allocator instead of \code{malloc}, and how much do annotations or a rewrite to
+  \code{malloc} win back?
+\item \textbf{Overhead.} What do the tools and their annotations cost on programs that use custom
+  allocators?
 \end{enumerate}
 
 \paragraph{Approach.} For Q1 we wrote a corpus of 16 small programs, one per heap-bug variant, each
 with a negative control that has the same allocation traffic and differs only in the faulty line
 (\S\ref{sec:method}). Every program calls one allocator interface, so the same source runs on seven
-allocator layers: \code{malloc}; an arena and a free list we implemented; SQLite's memsys5 buddy
-allocator and its lookaside cache; and 14-line rewrites of our two allocators that hand every
+allocator layers: \code{malloc}, an arena and a free list we implemented, SQLite's memsys5 buddy
+allocator and its lookaside cache, and 14-line rewrites of our two allocators that hand every
 object to libc. The custom layers run with annotation off and on. A harness builds and runs each of
 the resulting 896 images under ASan, Valgrind and HWASan, gated by positive controls, and classifies
 the outcome from the program's own markers and the tool's report. For Q2 we measured the tools on
@@ -51,11 +51,11 @@ micro-benchmark with annotation off and on (\S\ref{sec:perf}).
   eligible bugs in every custom layer, and the bugs it did find are the ones that leave the pool.
   On \code{malloc} the same programs are detected 12--15 times out of 13--15 (\S\ref{sec:q1}).
 \item Annotation recovers most, but not all: ASan 10--11, Valgrind 13--14 and HWASan 9--11 of the
-  same bugs. What remains missed is set by what each interface can express, not by the allocator:
-  poisoning describes addressability, so it cannot catch an overflow that lands in another live
-  object or a stale pointer into reissued storage; Memcheck's pools describe ownership and so
-  catch bad frees; tags tell stale pointers from new ones but are only 16-byte precise and also
-  cannot see a bad \code{free}.
+  same bugs. What remains missed is set by what each interface can express, not by the allocator.
+  Poisoning describes addressability, so it cannot catch an overflow that lands in another live
+  object or a stale pointer into reissued storage. Memcheck's pools describe ownership and so
+  catch bad frees. Tags tell stale pointers from new ones, but they are only 16-byte precise and
+  cannot see a bad \code{free} either.
 \item Rewriting to \code{malloc} restores \code{malloc}-level detection, but it removes the reuse
   and bulk-free behaviour that three of the bugs depend on, so those bugs no longer exist.
 \item The mechanisms transfer to real bugs. On four SQLite bugs, memsys5 hid both uses after free
@@ -67,7 +67,7 @@ micro-benchmark with annotation off and on (\S\ref{sec:perf}).
 \item ASan costs 2.2--3.0$\times$ in time and Valgrind 24--29$\times$ on the benchmarks. ASan's
   annotations cost 5--10\%, Memcheck's 1.8--2.2$\times$ on an allocation-heavy loop.
 \item HWASan cannot run on our x86-64 lab machines, which lack Linear Address Masking. Its column
-  comes from an AArch64 virtual machine; clang's x86-64 aliasing mode runs but does not check
+  comes from an AArch64 virtual machine. Clang's x86-64 aliasing mode runs but does not check
   allocations above 64~KiB, so it cannot see into any of our pools.
 \end{itemize}
 

@@ -4,7 +4,7 @@
 The formal matrices contain 448 bug images, each paired with its negative control: 352 for ASan and
 Valgrind over all seven layers, and 96 for HWASan over \code{malloc}, Arena and Free list. All
 positive controls were detected, all 448 negative controls were clean, and no image ended in a tool
-error. Table~\ref{tab:summary} and Figure~\ref{fig:summary} summarise the verdicts;
+error. Table~\ref{tab:summary} and Figure~\ref{fig:summary} summarise the verdicts, and
 Tables~\ref{tab:matrix-core} and~\ref{tab:matrix-sqlite} give every cell. A fraction counts
 \textsc{detected} over eligible images, i.e.\ excluding \textsc{unsupported} ones.
 
@@ -12,9 +12,9 @@ Tables~\ref{tab:matrix-core} and~\ref{tab:matrix-sqlite} give every cell. A frac
 \centering\small
 \input{tables/detect-summary}
 \caption{Bugs detected out of eligible bugs, per allocator layer, without (plain) and with the tool's
-annotation. ``n/a'': the layer has no annotated variant; ``--'': not run. The \code{malloc} layer was
-also built with annotation on and gave identical results for ASan and Valgrind; HWASan detected case
-4 on that build (\S\ref{sec:q1-precision}).}
+annotation. ``n/a'': the layer has no annotated variant. ``--'': not run. The \code{malloc} layer was
+also built with annotation on and gave identical results for ASan and Valgrind, while HWASan detected
+case 4 on that build (\S\ref{sec:q1-precision}).}
 \label{tab:summary}
 \end{table}
 
@@ -50,7 +50,7 @@ also built with annotation on and gave identical results for ASan and Valgrind; 
 \end{groupplot}
 \end{tikzpicture}
 \caption{Share of eligible bugs detected per allocator layer (data of Table~\ref{tab:summary}).
-\code{malloc}, lookaside and the rewrites have no annotated variant; ``rewrite'' is the Free-list
+\code{malloc}, lookaside and the rewrites have no annotated variant. ``rewrite'' is the Free-list
 rewrite (the Arena rewrite has the same verdicts).}
 \label{fig:summary}
 \end{figure}
@@ -61,8 +61,8 @@ rewrite (the Arena rewrite has the same verdicts).}
 \renewcommand{\arraystretch}{1.08}
 \input{tables/matrix-core}
 \caption{Detection matrix for the core layers (D = detected, M = missed, M$^{*}$ = missed, the
-program crashed inside the tool's signal handler, U = unsupported, +A = annotated). ASan and Valgrind:
-lab server; HWASan: AArch64 VM. The \code{malloc}+A column is omitted (identical to \code{malloc},
+program crashed inside the tool's signal handler, U = unsupported, +A = annotated). ASan and Valgrind ran on
+the lab server, HWASan in the AArch64 VM. The \code{malloc}+A column is omitted (identical to \code{malloc},
 except HWASan case 4).}
 \label{tab:matrix-core}
 \vspace{1.2em}
@@ -87,17 +87,17 @@ largest class in the review of \S\ref{sec:audit}.
 \subsection{Annotation recovers most bugs, up to a ceiling set by the interface}
 \label{sec:q1-annot}
 
-With annotation, ASan detected 10 of 14 bugs on Arena and 11 of 16 on Free list and memsys5;
-Valgrind 13 of 14 and 14 of 16; HWASan 9 of 14 and 11 of 16. The bugs that remain show that each
+With annotation, ASan detected 10 of 14 bugs on Arena and 11 of 16 on Free list and memsys5,
+Valgrind 13 of 14 and 14 of 16, and HWASan 9 of 14 and 11 of 16. The bugs that remain show that each
 interface describes a different thing about memory, and that is what bounds it.
 
 \paragraph{Poisoning describes addressability (ASan).} An annotated allocator can poison slack and
 freed objects, so overflows by one byte, underflows and uses after free are caught. Three things
 cannot be expressed. An overflow that lands in another \emph{live} object (case 3) touches bytes that
-must stay unpoisoned; ASan missed case 3 on every layer, including \code{malloc}, where offset 64 clears
+must stay unpoisoned. ASan missed case 3 on every layer, including \code{malloc}, where offset 64 clears
 its 16-byte redzone and lands in the next block. Once the Free list reissues a slot (case 10), the
 stale pointer and the new owner's pointer hold one address, and that address is legitimately
-addressable. And a bad \code{free} (cases 13, 14) is a call that accesses no byte at all; there is no
+addressable. And a bad \code{free} (cases 13, 14) is a call that accesses no byte at all. There is no
 poisoning event for it, so ASan missed both on every annotated layer although its own \code{malloc}
 reports them.
 
@@ -106,7 +106,7 @@ set of live pool objects, so Memcheck reports double and interior frees inside a
 poisoning scheme can. It is still address-based, so it shares case 10 and case 3 with ASan: on
 annotated Free list and memsys5 it missed exactly those two. On \code{malloc} it does detect case 3,
 because its own allocator places a redzone on each side of every block and offset 64 falls between
-blocks; our original prediction (missed) was wrong.
+blocks. Our original prediction (missed) was wrong.
 
 \paragraph{Tags describe provenance (HWASan).} A tag records which allocation a pointer belongs to,
 so annotated HWASan detects what poisoning cannot: case 3, where the neighbour carries a different
@@ -141,7 +141,7 @@ CMA can be found at all.
 \setlength{\tabcolsep}{4.2pt}
 \input{tables/detect-class}
 \caption{Bugs detected out of eligible bugs by class. CMA = Arena and Free list together, without
-(CMA) and with (CMA+A) annotation; SQLite memsys5 gives the same verdict as the Free list in every
+(CMA) and with (CMA+A) annotation. SQLite memsys5 gives the same verdict as the Free list in every
 cell.}
 \label{tab:class}
 \end{table}
@@ -150,7 +150,7 @@ Table~\ref{tab:class} gives the same results by bug class. Annotation restores e
 all three tools and every use after free except case 10 for ASan and Memcheck. Overflows come back
 only in part, and each tool misses different ones: case 3 for the two address-based tools, case 4
 for ASan, the overflows into slack for HWASan. Bad frees split the tools most sharply. Memcheck's
-pools catch all five; poisoning and tagging catch only case 15, and only through its consequence:
+pools catch all five, while poisoning and tagging catch only case 15, and only through its consequence:
 the second \code{free(a)} releases \code{b}'s storage, and the following read of \code{b[0]} meets
 poisoned or retagged memory (ASan reports a use after poison, HWASan a tag mismatch). Memcheck, too,
 reports that read rather than the free, because at the time of the free \code{a} names \code{b}'s
@@ -173,7 +173,7 @@ over-reads in \S\ref{sec:tier2}.
 HWASan's case 4 on \code{malloc} was missed in the formal run although the case reduces to a one-byte
 overflow there. Re-running that image 200 times gave 198 detections: in the formal run the random
 pointer tag happened to equal the short-granule value of the last granule, so the check passed. We
-kept the verdict; it is the probabilistic nature of tagging in one cell.
+kept the verdict, which shows the probabilistic nature of tagging in one cell.
 
 \subsection{Rewriting the CMA away}
 \label{sec:q1-rewrite}
@@ -192,17 +192,17 @@ the positive control of the real-bug check below.
 \label{sec:audit}
 
 The ASan and Valgrind matrices were first produced on EC2 from an earlier commit and then on the lab
-server; all 352 bug verdicts are identical. The HWASan formal run agrees with an earlier development
+server, and all 352 bug verdicts are identical. The HWASan formal run agrees with an earlier development
 run in 95 of 96 cells, the exception being the tag collision above.
 
 We then examined every one of the 174 misses from the raw output. In each, the program printed
-\code{ST READY}, so the faulty line ran; 170 ended with \code{ST DONE} and exit 0, and the other four
+\code{ST READY}, so the faulty line ran. 170 ended with \code{ST DONE} and exit 0, and the other four
 are the case-4 crashes. No miss carries a report of any kind in its standard error --- we searched for
 every ASan and HWASan report type, Memcheck's invalid accesses and frees, uninitialised uses, and the
 UBSan and LowFat messages --- and every Valgrind miss ends with ``\code{ERROR SUMMARY: 0 errors}''.
 In 140 of the 174, the same program is detected by the same tool on \code{malloc}, which shows that
-the access is instrumented and executed; the rest are explained by case semantics (cases 10, 15 are
-unsupported on \code{malloc}; case 3 under ASan and case 14 under HWASan are missed everywhere) or by
+the access is instrumented and executed. The rest are explained by case semantics (cases 10 and 15 are
+unsupported on \code{malloc}, and case 3 under ASan and case 14 under HWASan are missed everywhere) or by
 the tag collision. All misses fall into seven mechanisms:
 
 \begin{center}\small
@@ -228,12 +228,12 @@ runs contradicted a prediction, and how each was resolved, are listed in \S\ref{
 \label{sec:hwasan-x86}
 
 HWASan on x86-64 normally needs LAM, which neither our lab VM nor the lab server's Xeon Gold 6230
-provides; the default mode aborts at start-up. We also tried clang's experimental aliasing mode
-(\code{-fsanitize-hwaddress-}\allowbreak\code{experimental-aliasing}), which maps the heap at several virtual addresses
-so that a tagged pointer is still valid. It runs and detects both positive controls. Over the full
+provides, and the default mode aborts at start-up. We also tried clang's experimental aliasing mode, enabled with
+\code{-fsanitize-hwaddress-}\allowbreak\code{experimental-aliasing}. It maps the heap at several virtual
+addresses so that a tagged pointer is still valid, and it runs and detects both positive controls. Over the full
 HWASan matrix it detected 25 bugs against 51 for the AArch64 run, and nothing at all inside Arena or
 Free list, annotated or not. A probe explains why: the aliasing heap tags only allocations up to
-64~KiB, with three-bit pointer tags; blocks of 256~KiB and more are mapped outside the alias region
+64~KiB, with three-bit pointer tags. Blocks of 256~KiB and more are mapped outside the alias region
 with tag 0 and their accesses are not checked. Our 1~MiB pools are invisible to it, and an
 annotation tag such as 17 no longer fits in the pointer. We therefore did not use this mode, but it
 is itself a result: on x86-64 without LAM, HWASan cannot see into a custom allocator's pool.

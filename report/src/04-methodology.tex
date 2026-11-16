@@ -14,16 +14,16 @@ must know about an object to report a given access, and which of the four CMA pr
 could hide a gap in one of them. Every other case keeps a class and changes one property of the
 allocator:
 \begin{itemize}
-\item \emph{adjacency without redzones}: an overflow by one byte (0), into the alignment slack (2)
-  and into a live third object (3); an underflow by one byte (5) and over the place of a header (7);
+\item \emph{adjacency without redzones}: overflows by one byte (0), into the alignment slack (2)
+  and into a live third object (3), and underflows by one byte (5) and over the place of a header (7).
 \item \emph{a freed object stays addressable}: uses after free without reuse (8, 9) and the free
-  hidden inside a moving \code{realloc} (11);
+  hidden inside a moving \code{realloc} (11).
 \item \emph{immediate reuse}: a write through a stale pointer into reissued storage (10) and a second
-  free that releases the new owner's storage (15);
-\item \emph{bulk release}: a read after the whole pool is destroyed (12);
-\item \emph{the pool's outer boundary}: a read 8192 bytes past the end of the pool (4);
-\item \emph{ownership at \code{free}}: a double free (13) and a pointer into the middle of an
-  object (14), two calls that access no byte.
+  free that releases the new owner's storage (15).
+\item \emph{bulk release}: a read after the whole pool is destroyed (12).
+\item \emph{the pool's outer boundary}: a read 8192 bytes past the end of the pool (4).
+\item \emph{ownership at \code{free}}: a double free (13) and a free through a pointer into the
+  middle of an object (14), two calls that access no memory at all.
 \end{itemize}
 
 \begin{table}[t]
@@ -61,7 +61,7 @@ is the control, calls the case, destroys the pool and prints \code{ST DONE}. A c
 through the \code{st\_*} interface and never reads an allocator's internals, so one source builds
 against every layer. Objects are filled with a known pattern so that a stale access has data to see
 (lines 3, 6). Line 7 states the case's precondition, here whether \code{b} received \code{a}'s
-address; the comparison masks HWASan's tag byte, which differs between two pointers to one address.
+address. The comparison masks HWASan's tag byte, which differs between two pointers to one address.
 Line 8 marks the access, and the bug and the control differ in one statement (lines 10 and 12). A
 value the case reads goes to \code{st\_sink}, a store to a \code{volatile} global, so that the
 compiler cannot delete the read. At line 12 the address belongs to \code{b}, which is live: to
@@ -126,10 +126,10 @@ every case under each allocator, and Appendix~\ref{app:cases} lists each trigger
 \draw[-latex] (64.5,-0.5) node[below] {3: \code{a[64]} $=$ \code{c[0]}, live} -- (64.5,-0.02);
 \draw[-latex] (142,-0.5) node[below] {4: \code{a[pool+8192]}} -- (142,0.15);
 \end{tikzpicture}
-\caption{Where the spatial cases' accesses land in the Arena, as offsets from \code{a}; each case
+\caption{Where the spatial cases' accesses land in the Arena, as offsets from \code{a}. Each case
 allocates only the objects it needs. White: live objects. Grey: alignment slack, addressable in the
-plain build, poisoned (ASan) or \code{NOACCESS} (Memcheck) in the annotated build; under HWASan
-annotation it keeps its object's tag. Only case 3 touches a live byte; only case 4 leaves the pool.}
+plain build, poisoned (ASan) or \code{NOACCESS} (Memcheck) in the annotated build. Under HWASan
+annotation it keeps its object's tag. Only case 3 touches a live byte, and only case 4 leaves the pool.}
 \label{fig:offsets}
 \end{figure}
 
@@ -148,8 +148,8 @@ detection.
 \item \textbf{Negative controls.} Building with \code{-DST\_NEGATIVE\_CONTROL} replaces only the
   faulty line with a legal access to the same object (for case 13, both images perform exactly two
   frees). The allocation calls are identical in both images. Every bug image is paired with its
-  control under the same tool and allocator; a report on the control turns the bug's verdict into a
-  false positive.
+  control under the same tool and allocator, and a report on the control turns the bug's verdict into
+  a false positive.
 \item \textbf{Markers.} \code{ST READY} is printed immediately before the faulty access. A report
   without it is an infrastructure failure, not a detection. Offsets are computed rather than
   assumed: case 4 asks the allocator for the size of its pool (\code{st\_alloc\_pool\_bytes()}) so
@@ -165,13 +165,13 @@ detection.
 \label{sec:allocators}
 
 Every program calls one interface, \code{st\_alloc}, \code{st\_free}, \code{st\_realloc},
-\code{st\_alloc\_init} and \code{st\_alloc\_fini}; the build selects the implementation. Table~\ref{tab:alloc}
+\code{st\_alloc\_init} and \code{st\_alloc\_fini}, and the build selects the implementation. Table~\ref{tab:alloc}
 lists the seven layers. Arena and Free list are ours and model the common designs of
 \S\ref{sec:background}. The two SQLite layers are real CMAs, taken from the SQLite 3.53.3
 amalgamation through a thin adapter: memsys5 serves \code{st\_alloc} from a buddy heap held in one
 \code{malloc} block, and lookaside serves it from a connection's 128-byte slots (8192 of them),
-falling back to SQLite's general allocator for larger requests. The rewrites answer the lecturer's
-remark: each replaces its allocator with one libc call per operation, in 14 lines instead of 101
+falling back to SQLite's general allocator for larger requests. The rewrites remove the CMA
+altogether: each replaces its allocator with one libc call per operation, in 14 lines instead of 101
 (Arena) and 164 (Free list).
 
 \begin{table}[t]
@@ -181,10 +181,10 @@ remark: each replaces its allocator with one libc call per operation, in 14 line
 layer & layout & reuse of a freed object & annotation \\
 \midrule
 \code{malloc} & libc (each tool's own allocator) & up to the tool & -- \\
-Arena (ours) & bump pointer in one 1~MiB block, 16-byte alignment; sizes and liveness in an external side table & never, until the pool is destroyed & A, V, H \\
-Free list (ours) & classes of 32, 64, 128 and 256 bytes carved from one 1~MiB block; next-link inside a free slot & immediate (LIFO) & A, V, H \\
-SQLite memsys5 & power-of-two buddy blocks over one heap; 24 bytes occupy a 32-byte block & possible after coalescing & A, V \\
-SQLite lookaside & 128-byte slots of a connection; larger requests fall back & immediate & -- \\
+Arena (ours) & bump pointer in one 1~MiB block, 16-byte alignment, sizes and liveness in an external side table & never, until the pool is destroyed & A, V, H \\
+Free list (ours) & classes of 32, 64, 128 and 256 bytes carved from one 1~MiB block, next-link inside a free slot & immediate (LIFO) & A, V, H \\
+SQLite memsys5 & power-of-two buddy blocks over one heap (24 bytes occupy a 32-byte block) & possible after coalescing & A, V \\
+SQLite lookaside & 128-byte slots of a connection, with larger requests falling back & immediate & -- \\
 Arena / Free-list rewrite & one libc \code{malloc} per object & up to the tool & -- \\
 \bottomrule
 \end{tabularx}
@@ -198,20 +198,20 @@ header defines macros that expand to nothing when \code{ST\_ANNOT=0} and to the 
 being built for when \code{ST\_ANNOT=1}. Any difference between the two columns of a layer is
 therefore caused by the tool requests alone.
 \begin{itemize}
-\item \emph{ASan}: the pool is poisoned at creation; \code{st\_alloc(n)} unpoisons exactly $n$
-  bytes, so the alignment slack stays poisoned; \code{st\_free} poisons the object again.
+\item \emph{ASan}: the pool is poisoned at creation. \code{st\_alloc(n)} unpoisons exactly $n$
+  bytes, so the alignment slack stays poisoned, and \code{st\_free} poisons the object again.
 \item \emph{Memcheck}: the pool is declared with \code{CREATE\_MEMPOOL} and marked
-  \code{NOACCESS}; each object is announced with \code{MEMPOOL\_ALLOC}($n$) and retired with
+  \code{NOACCESS}. Each object is announced with \code{MEMPOOL\_ALLOC}($n$) and retired with
   \code{MEMPOOL\_FREE}, which Memcheck checks against its record of live objects.
 \item \emph{HWASan}: \code{st\_alloc} gives each object's granules a fresh tag and returns a pointer
-  carrying it; \code{st\_free} returns the granules to the pool's own tag. A stale pointer keeps the
+  carrying it, and \code{st\_free} returns the granules to the pool's own tag. A stale pointer keeps the
   old tag and mismatches even after the storage is reissued.
 \end{itemize}
 Annotation has costs inside the allocator. To re-poison an object on free, the Arena must know its
 size, so it keeps a side table (present in both builds, so the comparison stays fair). The Free list
 stores its next-link inside a free slot and must open that word around its own reads and writes, or
 the tool reports the allocator itself. For memsys5 the same scheme is applied as a generated patch to
-a copy of SQLite's source, which also opens SQLite's in-block free-list links; lookaside has no
+a copy of SQLite's source, which also opens SQLite's in-block free-list links. Lookaside has no
 verified annotation. HWASan annotations exist for Arena and Free list only.
 
 \subsection{Harness and verdicts}
@@ -250,7 +250,7 @@ with annotation on included) and 192 for HWASan (six arms).
 
 Detection images are compiled at \code{-O0 -g} so that the compiler cannot delete or move the faulty
 access~\cite{isemann2023ub}. ASan and HWASan images are built with clang 21.1.8 and run with
-\code{detect\_leaks=0:abort\_on\_error=0}; Valgrind runs a \code{gcc}-built image with
+\code{detect\_leaks=0:abort\_on\_error=0}. Valgrind runs a \code{gcc}-built image with
 \code{-{}-error-exitcode=99 -{}-leak-check=no}. Leak checking is off for all tools because leaks are not
 a defect class here. Each run writes a bundle with an environment record (CPU, kernel, tool versions,
 compiler flags and the commit, which must be clean), the verdict CSV and every image's output.
@@ -264,26 +264,28 @@ generates every table and plot of \S\ref{sec:q1} from the bundles.
 
 \begin{table}[t]
 \centering\small
-\begin{tabularx}{\textwidth}{lXX}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 role & machine & software \\
 \midrule
-ASan, Valgrind (formal; corpus and real bugs) & lab server: LXD container, Intel Xeon Gold 6230 (76 logical CPUs) & Ubuntu 26.04.1, host kernel 6.12.111, glibc 2.43; clang 21.1.8, gcc 15.2.0, Valgrind 3.26.0 \\
-ASan, Valgrind (replica) & AWS EC2, Intel Xeon Platinum 8259CL (2 vCPU) & Ubuntu 26.04, kernel 7.0.0; same tool versions \\
-HWASan & Lima VM (Apple Virtualization) on an Apple M5, 4 vCPU, 4~GiB & Ubuntu 26.04.1 AArch64, kernel 7.0.0-43; clang 21.1.8 + lld 21.1.8 \\
-Q2: \code{speedtest1}, Lua & VirtualBox VM, AMD Ryzen 7 3700X (4 vCPU, 7.25~GiB) & Ubuntu 26.04, kernel 7.0.0-38; same tool versions \\
+ASan, Valgrind (formal) & lab server: LXD container, Intel Xeon Gold 6230 (76 logical CPUs) & Ubuntu 26.04.1, glibc 2.43, host kernel 6.12.111, clang 21.1.8, gcc 15.2.0 and Valgrind 3.26.0 \\
+ASan, Valgrind (replica) & AWS EC2 instance: Intel Xeon Platinum 8259CL, 2~vCPU & Ubuntu 26.04, kernel 7.0.0, same tools \\
+HWASan & Lima VM (Apple Virtualization) on an Apple M5, 4 vCPU, 4~GiB & Ubuntu 26.04.1 AArch64, kernel 7.0.0-43, clang 21.1.8 + lld 21.1.8 \\
+Q2: \code{speedtest1}, Lua & VirtualBox VM, AMD Ryzen 7 3700X (4 vCPU, 7.25~GiB) & Ubuntu 26.04, kernel 7.0.0-38, same tools \\
 Q2: allocator churn & the EC2 instance above & as above \\
 \bottomrule
 \end{tabularx}
-\caption{Where each result comes from. The tool versions are pinned and identical everywhere.}
+\caption{Where each result comes from. The real SQLite bugs (\S\ref{sec:tier2}) also ran on the lab server,
+and the tool versions are pinned and identical everywhere.}
 \label{tab:env}
 \end{table}
 
 Table~\ref{tab:env} lists the machines. The formal ASan and Valgrind results were produced on the lab
-server from one commit; the same matrices had been run earlier on EC2 from another commit, which
+server from one commit. The same matrices had been run earlier on EC2 from another commit, which
 serves as a replication. HWASan needs Top Byte Ignore or LAM, and neither x86-64 machine has LAM, so
 its column comes from an AArch64 virtual machine on a team member's laptop, with the same distribution
-and compiler. Linking HWASan images with GNU ld 2.46 produced a \code{SIGILL} whenever a global
+and compiler. An earlier attempt with user-mode QEMU on an AArch64 cross build failed with an illegal
+instruction, most likely because of the following linker problem. Linking HWASan images with GNU ld 2.46 produced a \code{SIGILL} whenever a global
 variable received a tag of \code{0x80} or above, because the linker mis-encodes the instruction that
-places the tag in the address; all HWASan images are linked with lld. The performance measurements
+places the tag in the address. All HWASan images are therefore linked with lld. The performance measurements
 come from two other machines (Table~\ref{tab:env}) and are only compared within a machine.

@@ -5,45 +5,25 @@
 
 A sanitizer run of a program whose objects come from an unannotated pool says almost nothing about
 bugs inside the pool: in our corpus it caught only the bugs that destroy or leave the pool. Fuzzing
-such a program under ASan explores the code but not the memory errors inside the allocator's blocks.
-Three practical consequences follow.
+such a program under ASan explores its code but not the memory errors inside the pool. Three
+consequences follow.
 \begin{itemize}
 \item \emph{Annotate, and choose the tool by the bug class.} Fourteen (Arena) to 21 (Free list)
   annotation calls in the allocator recover most bugs. ASan's poisoning is nearly free but cannot catch bad
-  frees, overflows into live neighbours or stale pointers after reuse; Memcheck's pools add bad frees
-  at a large cost; tags add neighbour overflows and stale pointers but lose byte precision. Running
+  frees, overflows into live neighbours or stale pointers after reuse. Memcheck's pools add bad frees
+  at a large cost. Tags add neighbour overflows and stale pointers but lose byte precision. Running
   more than one tool covers more than annotating harder for one.
 \item \emph{Annotation needs the allocator's cooperation.} An allocator can only re-poison an object
-  on free if it knows the object's size; our Arena needed a side table for that, and a pure bump
+  on free if it knows the object's size. Our Arena needed a side table for that, and a pure bump
   allocator without one would miss every use after free even with annotation. The Free list had to
   open its own link words. Annotation is a small design change to the allocator, not only a set of
   macro calls.
 \item \emph{A test build without the CMA is cheap where the CMA is configurable.} SQLite can be
   built without memsys5 and lookaside, which makes every object a \code{malloc} block again. This is
-  the lecturer's rewrite at zero cost and gives \code{malloc}-level detection, but it tests a
-  different program: bugs that depend on immediate reuse or on bulk deallocation disappear.
+  a rewrite at zero cost and gives \code{malloc}-level detection, but it tests a different program:
+  bugs that depend on immediate reuse or on bulk deallocation disappear. Where the allocator's own
+  behaviour is part of what is being tested, only annotation keeps such bugs reproducible.
 \end{itemize}
-
-\subsection{Response to the proposal feedback}
-
-The feedback on our proposal made three points, and each shaped the study.
-\textbf{(1) ``Depending on the CMA, it may be easy to rewrite it to undo the CMA.''} We implemented
-14-line rewrites of both our allocators and used SQLite's configuration switches as the rewrite of a
-real CMA. The rewrite restores \code{malloc}'s detection (\S\ref{sec:q1-rewrite}) and is the cheaper
-answer whenever the CMA's semantics are not part of what is being tested; where they are, only
-annotation keeps the bug reproducible. We kept the rewrite as a separate column rather than a
-replacement, so both answers are measured on the same bugs.
-\textbf{(2) ``The test programs will need to be explained.''} Section~\ref{sec:corpus} explains
-why each case exists, walks through one program line by line (Listing~\ref{lst:case10}) and shows
-where the spatial cases land in memory (Figure~\ref{fig:offsets}); Appendix~\ref{app:cases} lists
-every trigger and control. In the repository every case has a README with the trigger, the memory
-layout under each allocator and the expected verdict per tool with its reason, and a
-\code{case.json} that the harness checks results against.
-\textbf{(3) ``Please check early if you are able to run HWASan.''} We checked in the first week: the
-lab VM has no LAM, user-mode QEMU on an AArch64 cross build failed with an illegal instruction, most
-likely the GNU linker problem we found later (\S\ref{sec:env}), and an AArch64 virtual machine on Apple silicon works with lld. In
-the last week we also tried x86-64's aliasing mode on the lab server and rejected it
-(\S\ref{sec:hwasan-x86}).
 
 \subsection{Do the results transfer to real bugs?}
 \label{sec:tier2}
@@ -52,11 +32,11 @@ To see whether the corpus's verdicts transfer to real defects, we ported four bu
 SQLite corpus~\cite{capstone} that are live in SQLite 3.22.0: two uses after free (a connection read
 after \code{sqlite3\_close}, a stale R-tree node) and two fuzzer-found over-reads of page buffers. The
 drivers are Capstone's, unchanged, and SQLite itself is not simplified, since cutting the engine
-would move the objects. Each bug runs in three configurations: memsys5 serving every allocation from
-a 256~KiB static arena; SQLite as shipped, where the connection and the R-tree node are plain
-\code{malloc} blocks and pages come from the page cache's bulk block; and the rewrite (no memsys5,
-lookaside and bulk block off), which makes every object a \code{malloc} block and is each bug's
-positive control. A real bug has no negative twin, so the tools' positive controls and the rewrite
+would move the objects. Each bug runs in three configurations. In the first, memsys5 serves every allocation from a 256~KiB
+static arena. The second is SQLite as shipped, where the connection and the R-tree node are plain
+\code{malloc} blocks and pages come from the page cache's bulk block. The third is the rewrite (no
+memsys5, lookaside and bulk block off), which makes every object a \code{malloc} block and is each
+bug's positive control. A real bug has no negative twin, so the tools' positive controls and the rewrite
 gate the run. Table~\ref{tab:real} gives the formal run on the lab server.
 
 \begin{table}[t]
@@ -66,7 +46,7 @@ gate the run. Table~\ref{tab:real} gives the formal run on the lab server.
 \caption{Four real SQLite 3.22.0 bugs on the lab server (\code{results/2026-11-16-lab-real}). Shipped
 = SQLite's default configuration. $\dagger$: Memcheck's report is an invalid read at address
 \code{0x2} just before the process dies of \code{SIGSEGV}, the same crash that ASan records as
-M$^{*}$; it does not concern the stale node. $\ddagger$: the over-read left its container (the arena
+M$^{*}$, and it does not concern the stale node. $\ddagger$: the over-read left its container (the arena
 or the page cache's bulk block) and is reported against a redzone, a freed block or unallocated
 heap, never against the page.}
 \label{tab:real}
@@ -75,7 +55,7 @@ heap, never against the page.}
 \paragraph{The temporal results transfer directly.} memsys5 hides both uses after free from both
 tools, while in the shipped configuration and the rewrite, where the freed objects are
 \code{malloc} blocks, both tools report the read and name the freed block. In the R-tree case the
-stale read itself is silent; a pointer loaded from the stale node is \code{0x2}, and the program
+stale read itself is silent. A pointer loaded from the stale node is \code{0x2}, and the program
 then faults on the zero page. ASan's signal handler reports the fault (missed, crashed), and Memcheck
 reports an invalid read at \code{0x2} that the harness counts as detected. Neither report concerns
 the node, and we read both as misses.
@@ -98,22 +78,22 @@ depends on the address-space layout.
 \begin{itemize}
 \item \textbf{UBSan and LowFat are not in the matrix.} At \code{-O0} clang's \code{object-size}
   check has no effect (the compiler warns so), and \code{bounds} needs a statically known array
-  length, which a pointer returned by an allocator does not have; neither positive control is
+  length, which a pointer returned by an allocator does not have. Neither positive control is
   detected at \code{-O0}, and at \code{-O2} only the overflow is. UBSan is not a heap detector, and
   inside a CMA it would see nothing even optimised, since \code{st\_alloc} declares no allocation
   size. LowFat's runtime depends on a fixed offset inside glibc's private thread structure, so it
-  builds only against glibc 2.27 (Ubuntu 18.04) with its own LLVM 4.0, which we did in a container;
-  there it missed both positive controls (a 64-byte block's one-byte overflow falls inside its size
+  builds only against glibc 2.27 (Ubuntu 18.04) with its own LLVM 4.0, which we did in a container.
+  There it missed both positive controls (a 64-byte block's one-byte overflow falls inside its size
   class, and it has no temporal checks) while catching an overflow that crosses the size-class bound.
   Both tools would need different positive controls to enter the harness.
-\item \textbf{Synthetic corpus.} Sixteen single-threaded programs isolate mechanisms; they do not
+\item \textbf{Synthetic corpus.} Sixteen single-threaded programs isolate mechanisms, but they do not
   estimate how often each mechanism occurs in real code. The real-bug check covers four SQLite bugs
   and tests whether the mechanisms transfer, not how common they are.
 \item \textbf{One configuration per tool.} Default options, \code{-O0} for detection, one run per cell.
-  HWASan is probabilistic, and one cell was affected; case 4 under ASan depends on the address-space
+  HWASan is probabilistic, and one cell was affected. Case 4 under ASan depends on the address-space
   layout.
 \item \textbf{Different machines.} HWASan ran on another architecture, and the performance numbers
-  come from two machines different from the detection server; we never combine numbers across
+  come from two machines different from the detection server. We never combine numbers across
   machines. The three SQLite versions (3.53.3 in the corpus, 3.50.4 in \code{speedtest1}, 3.22.0 in
   the real bugs) are reported separately.
 \item \textbf{Deviations from the proposal.} We ran natively on pinned tool versions instead of in

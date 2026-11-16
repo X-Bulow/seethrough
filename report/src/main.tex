@@ -23,6 +23,10 @@
 \usepackage[section,above]{placeins}
 \usepackage[hidelinks]{hyperref}
 \usepackage{url}
+\usepackage{xurl}
+\usepackage{etoolbox}
+% A reference's last line is never just its year (set after the list resets \parfillskip).
+\apptocmd{\thebibliography}{\setlength{\parfillskip}{0pt plus 0.6\linewidth}}{}{}
 
 \setlist{nosep,leftmargin=1.4em}
 \lstset{basicstyle=\ttfamily\footnotesize, columns=fullflexible, keepspaces=true,
@@ -87,7 +91,7 @@ reissued storage, and neither poisoning nor tagging can express a bad \code{free
 tagging is only 16-byte precise. The ASan and Valgrind verdicts are identical, cell for cell, on a
 second machine. On four real SQLite bugs, memsys5 hid both uses after free from both tools, and
 outside the rewrite the two over-reads were reported only where they left their container. On SQLite and Lua benchmarks ASan costs 2.2--3.0$\times$ in time and Valgrind
-24--29$\times$; switching SQLite to its memsys5 allocator lowers ASan's memory overhead from
+24--29$\times$. Switching SQLite to its memsys5 allocator lowers ASan's memory overhead from
 7.9$\times$ to 1.4$\times$, which is the other side of the visibility it loses.
 \end{abstract}
 
@@ -100,7 +104,7 @@ outside the rewrite the two over-reads were reported only where they left their 
 \input{src/07-discussion}
 \input{src/08-conclusion}
 
-\bibliographystyle{plainurl}
+\bibliographystyle{plain}
 \bibliography{src/refs}
 
 \appendix
