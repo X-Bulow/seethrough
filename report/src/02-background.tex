@@ -66,7 +66,7 @@ immediate reuse a stale pointer and the pointer of the new owner hold the same a
 whole pool is released, the detector sees one large \code{free}, whatever objects were inside.
 Figure~\ref{fig:layout} contrasts the two views for three 24-byte objects.
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering\footnotesize
 \begin{verbatim}
  malloc + ASan    [rz][ a: 24 |8][rz] ... [rz][ b: 24 |8][rz] ... [rz][ c: 24 |8][rz]

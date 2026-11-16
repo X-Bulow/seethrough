@@ -26,7 +26,7 @@ allocator:
   middle of an object (14), two calls that access no memory at all.
 \end{itemize}
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \begin{tabular}{rlll}
 \toprule
@@ -68,7 +68,7 @@ compiler cannot delete the read. At line 12 the address belongs to \code{b}, whi
 report the write a tool has to know that the \emph{pointer} \code{a} is stale, since the memory is
 legitimately in use.
 
-\begin{lstlisting}[float=t, caption={Case 10, use after free into reissued storage
+\begin{lstlisting}[float=htbp, caption={Case 10, use after free into reissued storage
 (\code{corpus/cases/case10-use-after-free-reuse-write/case.c}, header comment omitted).},
 label=lst:case10]
 ST_CASE(10) {
@@ -101,7 +101,7 @@ meet redzones instead: bytes 24--31 already belong to \code{a}'s redzone and are
 offset 64 lies beyond \code{a}'s redzone, in the next block. The per-case READMEs draw the layout of
 every case under each allocator, and Appendix~\ref{app:cases} lists each trigger with its control.
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \begin{tikzpicture}[x=0.08cm, y=1cm, font=\scriptsize,
   live/.style={draw=black!55, fill=white}, slack/.style={draw=black!55, fill=black!18}]
@@ -174,7 +174,7 @@ falling back to SQLite's general allocator for larger requests. The rewrites rem
 altogether: each replaces its allocator with one libc call per operation, in 14 lines instead of 104
 (Arena) and 173 (Free list) in the current source.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \begin{tabularx}{\textwidth}{lXXc}
 \toprule
@@ -262,7 +262,7 @@ generates every table and plot of \S\ref{sec:q1} from the bundles.
 \subsection{Environments}
 \label{sec:env}
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule

@@ -5,7 +5,8 @@
     MISSED          ST DONE printed, exit 0, no report
     FALSE-POSITIVE  (decided by the caller) the control image got DETECTED
     TOOL-ERROR      no ST READY, or a crash with no report, or a report before READY
-    UNSUPPORTED     (decided by the caller) the build failed for this tool x allocator
+    UNSUPPORTED     (decided by the caller) the build failed for this tool x allocator, or the
+                    case's precondition marker from case.json "requires" is absent (run-matrix.py)
 
 Each tool's report signature is one regex. Add tools here only. Checked against real output:
 Valgrind on the four EC2 x86-64 bundles of 2026-11-10 (every error Memcheck printed is an

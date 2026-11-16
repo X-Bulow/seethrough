@@ -8,7 +8,7 @@ error. Table~\ref{tab:summary} and Figure~\ref{fig:summary} summarise the verdic
 Tables~\ref{tab:matrix-core} and~\ref{tab:matrix-sqlite} give every cell. A fraction counts
 \textsc{detected} over eligible images, i.e.\ excluding \textsc{unsupported} ones.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \input{tables/detect-summary}
 \caption{Bugs detected out of eligible bugs, per allocator layer, without (plain) and with the tool's
@@ -18,7 +18,7 @@ case 4 on that build (\S\ref{sec:q1-precision}).}
 \label{tab:summary}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -55,7 +55,7 @@ rewrite (the Arena rewrite has the same verdicts).}
 \label{fig:summary}
 \end{figure}
 
-\begin{table}[p]
+\begin{table}[!htbp]
 \centering\footnotesize
 \setlength{\tabcolsep}{3.4pt}
 \renewcommand{\arraystretch}{1.08}
@@ -116,7 +116,7 @@ limits are different. The tagging interface works on whole 16-byte granules and,
 and the one-byte overflows of cases 0--2 are missed. Like poisoning, tags have no event for a bad
 \code{free} (cases 13, 14).
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \begin{tabular}{lccc}
 \toprule
@@ -136,7 +136,7 @@ Table~\ref{tab:expressive} condenses these results. None of the three interfaces
 and no two have the same blind spots, so the choice of tool determines which bugs inside an annotated
 CMA can be found at all.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \setlength{\tabcolsep}{4.2pt}
 \input{tables/detect-class}

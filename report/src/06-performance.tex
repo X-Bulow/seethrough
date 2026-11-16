@@ -16,7 +16,7 @@ off and on, and on their rewrites. The first two ran on the VirtualBox VM and th
 (Table~\ref{tab:env}), and numbers are compared only within one machine. HWASan was not measured, because its only host is a
 laptop VM whose timings cannot be compared with the others.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \input{tables/perf-tools}
 \caption{Tool overhead on real programs (VirtualBox VM, median of five runs, $\times$ = ratio to the
@@ -24,7 +24,7 @@ baseline of the same configuration). No custom annotations.}
 \label{tab:perf-tools}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/benchmark-overhead.pdf}
 \caption{SQLite \code{speedtest1} overhead in time and peak RSS, default allocator versus memsys5.}
@@ -42,7 +42,7 @@ objects carry no redzones and their frees enter no quarantine. The lower overhea
 the lost visibility measured in \S\ref{sec:q1-blind} --- a sanitizer run that is cheaper under a CMA
 is also checking less. Valgrind's overhead is dominated by binary translation and changes little.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \input{tables/perf-churn}
 \caption{Annotation overhead on the allocator micro-benchmark (EC2, median of five runs). ``off'' and
@@ -60,7 +60,7 @@ under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB ag
 per-object redzones and quarantine that make them detectable. They change the allocation algorithm
 and lifetimes, so their numbers are a different trade-off, not an annotation cost.
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/part-b-churn-performance.pdf}
 \caption{Allocator micro-benchmark on EC2: wall time and peak RSS per allocator, annotation setting

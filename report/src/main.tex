@@ -81,8 +81,7 @@ against the block that \code{malloc} returned. Many C programs instead take one 
 We built a corpus of 16 heap bugs (overflow, underflow, use-after-free, invalid and double free),
 each with a negative control that differs in one line, and ran every bug against seven allocator
 layers: \code{malloc}, two allocators of our own (a bump arena and a size-class free list), two of
-SQLite's allocators (memsys5 and lookaside), and libc rewrites of our two allocators. Each custom
-layer was run with and without the tool's annotation interface. Across 448 bug images and 448 controls
+SQLite's allocators (memsys5 and lookaside), and libc rewrites of our two allocators. Our two allocators and memsys5 also ran with the tool's annotation interface. Across 448 bug images and 448 controls
 there were no false positives. Without annotation, every detector found only 1--2 of 14--16 bugs
 inside a custom allocator, against 12--15 of 13--15 on \code{malloc}. Annotation recovered most of
 them: 10--11 for ASan, 13--14 for Valgrind and 9--11 for HWASan. Each annotation interface has its

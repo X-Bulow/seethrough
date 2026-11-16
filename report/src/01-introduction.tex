@@ -39,7 +39,7 @@ with a negative control that has the same allocation traffic and differs only in
 (\S\ref{sec:method}). Every program calls one allocator interface, so the same source runs on seven
 allocator layers: \code{malloc}, an arena and a free list we implemented, SQLite's memsys5 buddy
 allocator and its lookaside cache, and 14-line rewrites of our two allocators that hand every
-object to libc. The custom layers run with annotation off and on. A harness builds and runs each of
+object to libc. Our two allocators and memsys5 also run with annotation on. A harness builds and runs each of
 the resulting 896 images under ASan, Valgrind and HWASan, gated by positive controls, and classifies
 the outcome from the program's own markers and the tool's report. For Q2 we measured the tools on
 SQLite's \code{speedtest1} with and without memsys5, on a Lua workload, and on an allocator
