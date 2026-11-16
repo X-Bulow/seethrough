@@ -30,7 +30,7 @@ def main():
     hw = "2026-11-13-lima-hwasan"
     sqlite = ["2026-11-05-sqlite-speedtest1-A3VkNv", "2026-11-05-sqlite-speedtest1-memsys5-LGSfcu"]
     lua, churn = "2026-11-08-lua-36YPxm", "2026-11-10-allocator-churn-IkUTIU"
-    for bundle in lab + replicas + [hw] + sqlite + [lua, churn]:
+    for bundle in lab + replicas + [hw, "2026-11-16-lab-real"] + sqlite + [lua, churn]:
         shutil.copytree(ROOT / "results" / bundle, target / "results" / bundle)
     (target / "report/tables").mkdir()
     print(f"Isolated artifact check: {target}", flush=True)

@@ -22,7 +22,7 @@ numbers are compared only within one machine. HWASan performance was not measure
 host differs in architecture and virtualization environment, so the controlled performance
 comparison covers ASan and Memcheck only.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \setlength{\tabcolsep}{4pt}
 \input{tables/perf-tools}
@@ -32,7 +32,7 @@ baseline. No custom annotations.}
 \label{tab:perf-tools}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/benchmark-overhead.pdf}
 \caption{SQLite \code{speedtest1} overhead in time and peak RSS, default allocator versus memsys5.}
@@ -71,7 +71,7 @@ under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB ag
 per-object redzones and quarantine that make them detectable. They change the allocation algorithm
 and lifetimes, so their numbers are a different trade-off, not an annotation cost.
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/part-b-churn-performance.pdf}
 \caption{Allocator microbenchmark on EC2: wall time and peak RSS per allocator, annotation setting

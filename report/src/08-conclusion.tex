@@ -12,13 +12,15 @@ leaves a characteristic set of bugs invisible, because poisoning describes
 addressability, memory pools describe ownership and tags describe provenance at 16-byte granularity.
 Rewriting the allocator away restores \code{malloc}'s detection and memory cost, at the price of the
 behaviour the allocator existed for and of the bugs that depend on it. The ASan and Memcheck bug
-verdicts hold, cell for cell, on a second machine, and every miss has a mechanism. For testing a program with a CMA, the
+verdicts hold, cell for cell, on a second machine, and every miss has a mechanism. Formal runs on
+four real SQLite defects also show temporal errors hidden by memsys5 and spatial detections
+dependent on the container boundary. For testing a program with a CMA, the
 practical advice is to annotate the allocator, to run more than one kind of detector over it, and to
 treat a clean run of an unannotated build as evidence about the code outside the pool only.
 
 \paragraph{Team contributions.} Cheng Zefeng (Part A) designed the corpus, negative and positive
 controls and the harness, ran the formal detection matrices and the HWASan study, and reviewed every
-miss. Wei Yuning (Part B) implemented the allocators, their annotations and rewrites, the SQLite
+miss. Wei Yuning (Part B) implemented the allocators, their ASan and Memcheck annotations and rewrites, the SQLite
 allocator layers, and the EC2 matrices and allocator benchmark. Xu Ruofan (Part C) set up and pinned
 the tools, investigated HWASan and LowFat feasibility, and ran the SQLite and Lua benchmarks. All
 three wrote the report.

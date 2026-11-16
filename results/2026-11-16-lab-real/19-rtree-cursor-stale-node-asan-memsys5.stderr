@@ -1,0 +1,25 @@
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==113011==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000002 (pc 0x561a04b97ac1 bp 0x7ffd1a8dd450 sp 0x7ffd1a8dd420 T0)
+==113011==The signal is caused by a READ memory access.
+==113011==Hint: address points to the zero page.
+    #0 0x561a04b97ac1 in readInt16 /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:167466:11
+    #1 0x561a04ba1a80 in rtreeStepToLeaf /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168547:13
+    #2 0x561a04b9c32c in rtreeNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168608:8
+    #3 0x561a04a50173 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86776:8
+    #4 0x561a049be512 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #5 0x561a049bd878 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #6 0x561a049a6110 in run_case /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:84:9
+    #7 0x561a049a5c66 in main /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:107:1
+    #8 0x7f672cc2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #9 0x7f672cc2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #10 0x561a048bc3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/19-rtree-cursor-stale-node-asan-memsys5+0x473e4) (BuildId: 509c46ca53da93e5a87b58fd5282986a20bfefe4)
+
+==113011==Register values:
+rax = 0x0000000000000002  rbx = 0x00007ffd1a8dd460  rcx = 0x0000561a055b88a0  rdx = 0x0000561a055c12a0  
+rdi = 0x0000000000000002  rsi = 0x00007b672ac234b0  rbp = 0x00007ffd1a8dd450  rsp = 0x00007ffd1a8dd420  
+ r8 = 0x0000000000000000   r9 = 0x00007fffffffff01  r10 = 0x00007fffffffff01  r11 = 0x0000000000000201  
+r12 = 0x00007ffd1a8e38f8  r13 = 0x0000000000000001  r14 = 0x00007f672d0ce000  r15 = 0x0000561a04c16a90  
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:167466:11 in readInt16
+==113011==ABORTING

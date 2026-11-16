@@ -4,11 +4,11 @@
 The formal matrices contain 448 bug images, each paired with its negative control: 352 for ASan and
 Memcheck over all seven layers, and 96 for HWASan over \code{malloc}, Arena and Free list. All
 positive controls were detected, all 448 negative controls were clean, and no image ended in a tool
-error. Table~\ref{tab:summary} and Figure~\ref{fig:summary} summarise the verdicts;
+error. Table~\ref{tab:summary} and Figure~\ref{fig:summary} summarise the verdicts, and
 Tables~\ref{tab:matrix-core} and~\ref{tab:matrix-sqlite} give every cell. A fraction counts
 \textsc{detected} over eligible images, i.e.\ excluding \textsc{unsupported} ones.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \input{tables/detect-summary}
 \caption{Bugs detected out of eligible bugs, per allocator layer, without (plain) and with the tool's
@@ -18,7 +18,7 @@ also built with annotation on and gave identical results for ASan and Memcheck; 
 \label{tab:summary}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[
@@ -55,7 +55,7 @@ rewrite (the Arena rewrite has the same verdicts).}
 \label{fig:summary}
 \end{figure}
 
-\begin{table}[p]
+\begin{table}[!htbp]
 \centering\footnotesize
 \setlength{\tabcolsep}{3.4pt}
 \renewcommand{\arraystretch}{1.08}
@@ -94,7 +94,7 @@ interface describes a different thing about memory, and that is what bounds it.
 \paragraph{Poisoning describes addressability (ASan).} An annotated allocator can poison slack and
 freed objects, so overflows by one byte, underflows and uses after free are caught. Three things
 cannot be expressed. An overflow that lands in another \emph{live} object (case 3) touches bytes that
-must stay unpoisoned; ASan missed case 3 on every layer, including \code{malloc}, where offset 64 clears
+must stay unpoisoned. ASan missed case 3 on every layer, including \code{malloc}, where offset 64 clears
 its 16-byte redzone and lands in the next block. Once the Free list reissues a slot (case 10), the
 stale pointer and the new owner's pointer hold one address, and that address is legitimately
 addressable. An invalid or double \code{free} (cases 13, 14) need not cause an invalid memory access,
@@ -106,7 +106,7 @@ set of live pool objects, so Memcheck reports double and interior frees inside a
 poisoning alone does not identify. It is still address-based, so it shares case 10 and case 3 with ASan: on
 annotated Free list and memsys5 it missed exactly those two. On \code{malloc} it does detect case 3,
 because its own allocator places a redzone on each side of every block and offset 64 falls between
-blocks; our original prediction (missed) was wrong.
+blocks. Our original prediction (missed) was wrong.
 
 \paragraph{Tags describe provenance (HWASan).} A tag records which allocation a pointer belongs to,
 so annotated HWASan detects what poisoning cannot: case 3, where the neighbour carries a different
@@ -116,7 +116,7 @@ limits are different. The tagging interface works on whole 16-byte granules and,
 and the one-byte overflows of cases 0--2 are missed. Like poisoning, tags have no event for a bad
 \code{free} (cases 13, 14).
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \begin{tabular}{lccc}
 \toprule
@@ -135,6 +135,27 @@ ownership at \code{free} (13, 14) & no & yes & no \\
 Table~\ref{tab:expressive} condenses these results. None of the three interfaces covers every case,
 and no two have the same blind spots, so the choice of tool determines which bugs inside an annotated
 CMA can be found at all.
+
+\begin{table}[!htbp]
+\centering\small
+\setlength{\tabcolsep}{4.2pt}
+\input{tables/detect-class}
+\caption{Bugs detected out of eligible bugs by class. CMA = Arena and Free list together, without
+(CMA) and with (CMA+A) annotation. SQLite memsys5 gives the same verdict as the Free list in every
+cell.}
+\label{tab:class}
+\end{table}
+
+Table~\ref{tab:class} gives the same results by bug class. Annotation restores every underflow for
+all three tools and every use after free except case 10 for ASan and Memcheck. Overflows come back
+only in part, and each tool misses different ones: case 3 for the two address-based tools, case 4
+for ASan, the overflows into slack for HWASan. Bad frees split the tools most sharply. Across Arena
+and Free list there are five eligible bad-free cells; Memcheck's pools catch all five, while
+poisoning and tagging catch only case 15, and only through its consequence:
+the second \code{free(a)} releases \code{b}'s storage, and the following read of \code{b[0]} meets
+poisoned or retagged memory (ASan reports a use after poison, HWASan a tag mismatch). Memcheck, too,
+reports that read rather than the free, because at the time of the free \code{a} names \code{b}'s
+live storage.
 
 \subsection{Leaving the pool, and precision effects}
 \label{sec:q1-precision}
@@ -178,13 +199,14 @@ server; all 352 bug verdicts are identical. The HWASan formal run agrees with an
 run in 95 of 96 cells, the exception being the tag collision above.
 
 We then examined every one of the 174 misses from the raw output. In each, the program printed
-\code{ST READY}, so the faulty line ran; 170 ended with \code{ST DONE} and exit 0, and the other four
-are the case-4 crashes. No miss carries a report of any kind in its standard error --- we searched for
-every ASan and HWASan report type, Memcheck's invalid accesses and frees, uninitialised uses, and the
-UBSan and LowFat messages --- and every Memcheck miss ends with ``\code{ERROR SUMMARY: 0 errors}''.
+\code{ST READY}, so the faulty line ran. 170 ended with \code{ST DONE} and exit 0, and the other four
+are the case-4 crashes. No miss carries a valid defect diagnosis in its standard error: we searched
+for ASan and HWASan memory-error reports, Memcheck's invalid accesses and frees, uninitialised uses,
+and UBSan and LowFat messages. The four crashes have only ASan signal-handler SEGV diagnostics; every
+Memcheck miss ends with ``\code{ERROR SUMMARY: 0 errors}''.
 In 140 of the 174, the same program is detected by the same tool on \code{malloc}, which shows that
-the access is instrumented and executed; the rest are explained by case semantics (cases 10, 15 are
-unsupported on \code{malloc}; case 3 under ASan and case 14 under HWASan are missed everywhere) or by
+the access is instrumented and executed. The rest are explained by case semantics (cases 10 and 15 are
+unsupported on \code{malloc}, and case 3 under ASan and case 14 under HWASan are missed everywhere) or by
 the tag collision. All misses fall into seven mechanisms:
 
 \begin{center}\small
@@ -203,21 +225,29 @@ HWASan tag collision & 1 & 4 \\
 \end{tabular}
 \end{center}
 
-None is caused by the build, by optimisation or by the harness. Two original predictions were
-corrected by the measurements and are documented with the cases: case 3 under Memcheck on
-\code{malloc} (detected, not missed) and case 4 under ASan on the pools (missed, not detected).
+None is caused by the build, by optimisation or by the harness. The six cells in which the formal
+runs contradicted a prediction, and how each was resolved, are listed in \S\ref{sec:corpus}.
 
 \subsection{HWASan on x86-64}
 \label{sec:hwasan-x86}
 
 HWASan on x86-64 normally needs LAM, which neither our lab VM nor the lab server's Xeon Gold 6230
-provides; the default mode aborts at start-up. We also tried clang's experimental aliasing mode
-(\code{-fsanitize-hwaddress-}\allowbreak\code{experimental-aliasing}), which maps the heap at several virtual addresses
-so that a tagged pointer is still valid. It runs and detects both positive controls. Over the full
+provides, and the default mode aborts at start-up. We also tried clang's experimental aliasing mode, enabled with
+\code{-fsanitize-hwaddress-}\allowbreak\code{experimental-aliasing}. It maps the heap at several virtual
+addresses so that a tagged pointer is still valid, and it runs and detects both positive controls. Over the full
 HWASan matrix it detected 25 bugs against 51 for the AArch64 run, and nothing at all inside Arena or
 Free list, annotated or not. A probe explains why: the aliasing heap tags only allocations up to
-64~KiB, with three-bit pointer tags; blocks of 256~KiB and more are mapped outside the alias region
+64~KiB, with three-bit pointer tags. Blocks of 256~KiB and more are mapped outside the alias region
 with tag 0 and their accesses are not checked. Our 1~MiB pools are invisible to it, and an
 annotation tag such as 17 no longer fits in the pointer. We therefore did not use this mode: the
 tested x86-64 aliasing implementation cannot check accesses within our 1~MiB pools, even with
 annotations. This result does not establish the same limitation for smaller pools or other modes.
+
+\subsection{Answer to Q1}
+\label{sec:q1-answer}
+
+On \code{malloc}, ASan detected 12/13 eligible bugs, Memcheck 13/13 and HWASan 13/15; each tool
+detected only one or two within its tested unannotated custom layers. Annotations recovered most
+bugs, with the remaining gaps reflecting the interface's limits and allocator behaviour.
+Rewriting recovers \code{malloc}-level detection only for bugs that remain reproducible after reuse
+and pool semantics change. All 352 ASan and Memcheck bug verdicts agree across the two x86-64 machines.

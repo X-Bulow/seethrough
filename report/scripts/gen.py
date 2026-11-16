@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "report" / "tables"
 LAB = [ROOT / "results" / f"2026-11-13-lab-{s}" for s in ("core", "memsys5", "lookaside", "rewrite")]
 HW = ROOT / "results" / "2026-11-13-lima-hwasan"
+REAL = ROOT / "results" / "2026-11-16-lab-real"
 TOOLS = ["asan", "valgrind", "hwasan"]
 TOOL_NAME = {"asan": "ASan", "valgrind": "Memcheck", "hwasan": "HWASan"}
 CASE_NAME = {0: "overflow, write +1", 1: "overflow, read +1", 2: "overflow into slack",
@@ -88,6 +89,56 @@ def summary(bug, ctl):
     clean = sum(n for (t, a, v), n in ctl.items() if v == "CLEAN")
     total = sum(ctl.values())
     return clean, total
+
+
+def by_class(bug):
+    """Detected / eligible per bug class, pooled over Arena and Free list (the layers all three
+    tools ran with and without annotation); memsys5 has the same per-case verdicts as Free list."""
+    classes = [("overflow (0--4)", range(0, 5)), ("underflow (5--7)", range(5, 8)),
+               ("use after free (8--12)", range(8, 13)), ("invalid / double free (13--15)", range(13, 16))]
+    groups = [["malloc"], ["arena", "freelist"], ["arena+annot", "freelist+annot"]]
+    lines = [r"\begin{tabular}{l*{3}{ccc}}", r"\toprule",
+             r" & \multicolumn{3}{c}{ASan} & \multicolumn{3}{c}{Memcheck} & \multicolumn{3}{c}{HWASan} \\",
+             r"\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}",
+             r"bug class & \code{malloc} & CMA & CMA+A & \code{malloc} & CMA & CMA+A & \code{malloc} & CMA & CMA+A \\",
+             r"\midrule"]
+    for label, cases in classes:
+        row = [label]
+        for tool in TOOLS:
+            for arms in groups:
+                vs = [bug[(c, tool, a)][0] for c in cases for a in arms if (c, tool, a) in bug]
+                el = [v for v in vs if v != "UNSUPPORTED"]
+                row.append(f"{sum(v == 'DETECTED' for v in el)}/{len(el)}")
+        lines.append(" & ".join(row) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    (OUT / "detect-class.tex").write_text("\n".join(lines) + "\n")
+
+
+def real():
+    """The four real SQLite bugs (corpus/real) on the lab server. Marks: dagger = the tool's report is
+    an invalid access immediately before the process died of a signal; double dagger = an over-read
+    reported outside the rewrite, i.e. after it left its container (arena or page-cache bulk block)."""
+    rows = list(csv.DictReader(open(REAL / "real.csv")))
+    desc = {"03": "use after free: connection read after close", "19": "use after free: stale R-tree node",
+            "29": "over-read of a page (\\code{sqlite3Get4byte})", "31": "over-read of a page (\\code{statDecodePage})"}
+    lines = [r"\begin{tabular}{rl*{6}{c}}", r"\toprule",
+             r" & & \multicolumn{3}{c}{ASan} & \multicolumn{3}{c}{Memcheck} \\",
+             r"\cmidrule(lr){3-5}\cmidrule(lr){6-8}",
+             r"\# & bug & memsys5 & shipped & rewrite & memsys5 & shipped & rewrite \\", r"\midrule"]
+    for case in sorted({r["case"] for r in rows}):
+        row = [case[:2], desc[case[:2]]]
+        for tool in ("asan", "valgrind"):
+            for arm in ("memsys5", "default", "rewrite"):
+                r = next(x for x in rows if x["case"] == case and x["tool"] == tool and x["arm"] == arm)
+                c = cell((r["verdict"], r["note"]))
+                if r["verdict"] == "DETECTED" and int(r["exit_code"]) < 0:
+                    c += r"$^{\dagger}$"
+                elif r["verdict"] == "DETECTED" and r["class"] == "heap-overflow" and arm != "rewrite":
+                    c += r"$^{\ddagger}$"
+                row.append(c)
+        lines.append(" & ".join(row) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    (OUT / "real.tex").write_text("\n".join(lines) + "\n")
 
 
 def matrix(bug, tools, arms, labels, name):
@@ -213,12 +264,14 @@ def perf():
 def main():
     bug, ctl = load()
     clean, total = summary(bug, ctl)
+    by_class(bug)
     matrix(bug, TOOLS, ["malloc", "arena", "arena+annot", "freelist", "freelist+annot"],
            r"\rot{malloc} & \rot{Arena} & \rot{Arena+A} & \rot{Free list} & \rot{Free list+A}", "matrix-core.tex")
     matrix(bug, ["asan", "valgrind"], ["memsys5", "memsys5+annot", "lookaside", "arena-rewrite", "freelist-rewrite"],
            r"\rot{memsys5} & \rot{memsys5+A} & \rot{lookaside} & \rot{Arena rewr.} & \rot{Free-list rewr.}",
            "matrix-sqlite.tex")
     perf()
+    real()
     v = Counter(x[0] for x in bug.values())
     print(f"bug cells {len(bug)} {dict(v)}; controls CLEAN {clean}/{total}")
 

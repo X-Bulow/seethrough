@@ -1,0 +1,84 @@
+=================================================================
+==112964==ERROR: AddressSanitizer: heap-use-after-free on address 0x7c9e161f2518 at pc 0x56325ba6e8db bp 0x7ffd3174e470 sp 0x7ffd3174e468
+READ of size 4 at 0x7c9e161f2518 thread T0
+    #0 0x56325ba6e8da in nodeRelease /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:167849:16
+    #1 0x56325ba731a5 in rtreeSearchPointPop /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168488:5
+    #2 0x56325ba6b223 in rtreeNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168607:3
+    #3 0x56325b91fea3 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86776:8
+    #4 0x56325b88e4a2 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #5 0x56325b88d808 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #6 0x56325b876110 in run_case /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:84:9
+    #7 0x56325b875c66 in main /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:107:1
+    #8 0x7f4e16e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #9 0x7f4e16e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #10 0x56325b78c3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/19-rtree-cursor-stale-node-asan-rewrite+0x473e4) (BuildId: 25b65803ba5ff8db5e35b0e0762aa060169b8f7b)
+
+0x7c9e161f2518 is located 24 bytes inside of 496-byte region [0x7c9e161f2500,0x7c9e161f26f0)
+freed by thread T0 here:
+    #0 0x56325b8316ea in free (/home/zephyr/seethrough/build/2026-11-16-lab-real/19-rtree-cursor-stale-node-asan-rewrite+0xec6ea) (BuildId: 25b65803ba5ff8db5e35b0e0762aa060169b8f7b)
+    #1 0x56325ba60d98 in sqlite3MemFree /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:21551:3
+    #2 0x56325b87988b in sqlite3_free /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25461:5
+    #3 0x56325ba7439d in rtreeDeleteRowid /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:169966:5
+    #4 0x56325ba6bf2b in rtreeUpdate /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:170151:10
+    #5 0x56325b9206c2 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86880:10
+    #6 0x56325b88e4a2 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #7 0x56325b88d808 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #8 0x56325b899969 in sqlite3_exec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:113169:12
+    #9 0x56325b876156 in run_case /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:88:15
+    #10 0x56325b875c66 in main /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:107:1
+    #11 0x7f4e16e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #12 0x7f4e16e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #13 0x56325b78c3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/19-rtree-cursor-stale-node-asan-rewrite+0x473e4) (BuildId: 25b65803ba5ff8db5e35b0e0762aa060169b8f7b)
+
+previously allocated by thread T0 here:
+    #0 0x56325b831988 in malloc (/home/zephyr/seethrough/build/2026-11-16-lab-real/19-rtree-cursor-stale-node-asan-rewrite+0xec988) (BuildId: 25b65803ba5ff8db5e35b0e0762aa060169b8f7b)
+    #1 0x56325ba60cf8 in sqlite3MemMalloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:21524:7
+    #2 0x56325b8aaa90 in mallocWithAlarm /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25350:7
+    #3 0x56325b87977e in sqlite3Malloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25380:5
+    #4 0x56325b879675 in sqlite3_malloc /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:25398:21
+    #5 0x56325ba6fc1d in nodeAcquire /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:167706:26
+    #6 0x56325ba71e4b in rtreeNodeOfFirstSearchPoint /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168373:12
+    #7 0x56325ba7090e in rtreeStepToLeaf /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168545:13
+    #8 0x56325ba6b0fc in rtreeFilter /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:168811:12
+    #9 0x56325b91f4f4 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86678:8
+    #10 0x56325b88e4a2 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #11 0x56325b88d808 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #12 0x56325b876110 in run_case /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:84:9
+    #13 0x56325b875c66 in main /home/zephyr/seethrough/corpus/real/19-rtree-cursor-stale-node/case.c:107:1
+    #14 0x7f4e16e2a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #15 0x7f4e16e2a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #16 0x56325b78c3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/19-rtree-cursor-stale-node-asan-rewrite+0x473e4) (BuildId: 25b65803ba5ff8db5e35b0e0762aa060169b8f7b)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:167849:16 in nodeRelease
+Shadow bytes around the buggy address:
+  0x7c9e161f2280: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c9e161f2300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c9e161f2380: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7c9e161f2400: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 fa fa
+  0x7c9e161f2480: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x7c9e161f2500: fd fd fd[fd]fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7c9e161f2580: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7c9e161f2600: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+  0x7c9e161f2680: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fa fa
+  0x7c9e161f2700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7c9e161f2780: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==112964==ABORTING

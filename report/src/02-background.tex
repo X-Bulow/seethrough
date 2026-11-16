@@ -12,7 +12,7 @@ served by a separate path that maps each block on its own. ASan therefore knows 
 requested size and whether it is live, but only for blocks it allocated itself. For memory it did
 not allocate, a program can describe addressability through \emph{manual poisoning},
 \code{ASAN\_POISON\_MEMORY\_REGION} and \code{ASAN\_UNPOISON\_MEMORY\_REGION}~\cite{asanpoison}.
-The interface describes bytes, not objects: there is no event for ``this object was freed''.
+The interface describes bytes, not objects: nothing in it can say that an object was freed.
 
 \paragraph{Valgrind Memcheck.} Memcheck~\cite{nethercote2007valgrind} runs an unmodified binary on a
 synthetic CPU and shadows every byte with an addressability bit and definedness bits. Its own
@@ -27,19 +27,19 @@ never allocated or was already freed.
 \paragraph{HWASan.} Hardware-assisted ASan follows the memory-tagging idea behind Arm
 MTE~\cite{serebryany2018mte,hwasandesign}. Memory is divided into 16-byte granules and each granule
 carries an 8-bit tag in shadow memory. \code{malloc} gives each new block a random tag, writes it to
-the block's granules and returns a pointer that carries the same tag in its top byte; \code{free}
+the block's granules and returns a pointer that carries the same tag in its top byte, and \code{free}
 retags the granules. Every access compares the pointer's tag with the granule's tag. An overflow into
 a neighbour or a use after free meets a different tag, without redzones or a quarantine. A block
 whose size is not a multiple of 16 ends in a \emph{short granule} whose shadow value records how many
 bytes are valid. Detection is probabilistic: two tags coincide with probability about 1/256. The
 hardware must ignore the tag bits when it dereferences a pointer, which AArch64 does (Top Byte
 Ignore) and x86-64 does only with Linear Address Masking (LAM). Allocators can tag their own memory
-with \code{\_\_hwasan\_tag\_memory} and \code{\_\_hwasan\_tag\_pointer}; this interface works on whole
-granules only.
+with \code{\_\_hwasan\_tag\_memory} and \code{\_\_hwasan\_tag\_pointer}, an interface that works on
+whole granules only.
 
 \paragraph{UBSan and LowFat.} We also investigated UBSan's \code{bounds} and \code{object-size}
 checks and LowFat~\cite{duck2016lowfat}. UBSan inserts local checks that rely on sizes the compiler
-can see; it keeps no record of heap blocks at run time. LowFat allocates each size class from its own
+can see and keeps no record of heap blocks at run time. LowFat allocates each size class from its own
 large region of virtual memory, so the bounds of an object can be computed from its address alone,
 and checks pointer arithmetic against them; it covers spatial errors only. \S\ref{sec:limits}
 explains why neither entered the detection matrix.
@@ -49,9 +49,9 @@ explains why neither entered the detection matrix.
 A CMA takes a block from \code{malloc} (or a static array) and manages its interior itself. The
 allocators we study cover the common designs:
 \begin{itemize}
-\item \textbf{Arena (bump) allocator.} Objects are carved one after another from the block; freeing
+\item \textbf{Arena (bump) allocator.} Objects are carved one after another from the block. Freeing
   one object does not make its memory reusable, and the whole arena is released at once.
-\item \textbf{Size-class free list.} Each size class keeps a list of free slots; \code{free} pushes a
+\item \textbf{Size-class free list.} Each size class keeps a list of free slots: \code{free} pushes a
   slot and the next request of that class pops it, so reuse is immediate. The link to the next free
   slot is stored inside the free slot.
 \item \textbf{Buddy allocator} (SQLite memsys5~\cite{sqlitemalloc}). A fixed heap is split into
@@ -66,20 +66,20 @@ immediate reuse a stale pointer and the pointer of the new owner hold the same a
 whole pool is released, the detector sees one large \code{free}, whatever objects were inside.
 Figure~\ref{fig:layout} contrasts the two views for three 24-byte objects.
 
-\begin{figure}[t]
+\begin{figure}[!htbp]
 \centering\footnotesize
 \begin{verbatim}
  malloc + ASan    [rz][ a: 24 |8][rz] ... [rz][ b: 24 |8][rz] ... [rz][ c: 24 |8][rz]
-                   every gap is poisoned; a freed block is poisoned and quarantined
+                   every gap is poisoned, a freed block is poisoned and quarantined
 
  Arena            [ a: 24 |8][ b: 24 |8][ c: 24 |8][ ...                    pool ... ]
  (one malloc)      a+24 is slack, a+32 is b[0], a+64 is c[0]: all addressable to the tool
 
  Arena, annotated [ a: 24 |##][ b: 24 |##][ c: 24 |##][ ##################### ]
-                   ## poisoned: the slack and the unused pool; b[0] and c[0] stay live
+                   ## poisoned: the slack and the unused pool (b[0] and c[0] stay live)
 \end{verbatim}
 \vspace{-1em}
-\caption{Three \code{st\_alloc(24)} objects. ASan's own \code{malloc} separates them with redzones;
+\caption{Three \code{st\_alloc(24)} objects. ASan's own \code{malloc} separates them with redzones, while
 an arena packs them into one block that the tool sees as a single live allocation. Annotation
 poisons the slack and the rest of the pool, but cannot poison a live neighbour.}
 \label{fig:layout}

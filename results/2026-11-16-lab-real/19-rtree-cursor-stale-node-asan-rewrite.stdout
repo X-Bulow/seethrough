@@ -1,0 +1,11 @@
+ST BEGIN case=rtreecursor arm=rewrite sqlite=3.22.0
+repro allocator=malloc lookaside=off pcache_bulk=off
+ST READY
+rtreecursor open rc=0
+rtreecursor pagesize rc=0
+rtreecursor create rc=0
+rtreecursor inserted=30
+rtreecursor rows=30
+rtreecursor nodes=3
+rtreecursor before nested DELETE (cursor open)
+rtreecursor nested delete rc=0

@@ -4,7 +4,7 @@
 \paragraph{Custom allocators and sanitizers.} CMASan~\cite{hong2025cmasan} is the work closest to
 ours. It extends ASan to recognise a program's custom allocator functions and to give the objects they
 return ASan-style protection, and it reports 19 previously missed bugs. CMASan
-changes the tool; we keep the tools as shipped and measure how much their \emph{existing} annotation
+changes the tool. We keep the tools as shipped and measure how much their \emph{existing} annotation
 interfaces and a rewrite recover, on bugs whose ground truth we control, and we include Memcheck and
 HWASan, whose interfaces model memory differently from ASan's. Our results give a per-mechanism
 account of the gap that CMASan closes: which misses come from missing per-object bounds (which
@@ -15,7 +15,7 @@ annotation fixes) and which come from the interface itself (which it does not).
 sanitizers systematically with a large set of test programs, and Jung et al.~\cite{jung2025practice}
 compare memory-safety instrumentations for usability, performance and the guarantees they actually
 provide. Test suites such as Juliet~\cite{nist2017juliet} and the cross-platform suite of Song et
-al.~\cite{song2021testsuite} enumerate defect classes. These works vary the defect and the tool; the
+al.~\cite{song2021testsuite} enumerate defect classes. These works vary the defect and the tool, but the
 allocator the faulty object comes from is not a dimension of their evaluations. It is the one
 dimension we vary. Our corpus follows the conventions of the bug corpora of the capability-hardware project
 \emph{Capstone}~\cite{capstone} (one directory per defect, a negative control per bug,

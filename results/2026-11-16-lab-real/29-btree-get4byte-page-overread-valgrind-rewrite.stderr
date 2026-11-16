@@ -1,0 +1,238 @@
+==113546== Memcheck, a memory error detector
+==113546== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==113546== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==113546== Command: /home/zephyr/seethrough/build/2026-11-16-lab-real/29-btree-get4byte-page-overread-valgrind-rewrite
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3E1D: statDecodePage (sqlite3.c:177925)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4ba32ad is 109 bytes inside an unallocated block of size 4,099,488 in arena "client"
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3E38: statDecodePage (sqlite3.c:177925)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4ba32ae is 110 bytes inside an unallocated block of size 4,099,488 in arena "client"
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3E50: statDecodePage (sqlite3.c:177926)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4ba32ab is 107 bytes inside an unallocated block of size 4,099,488 in arena "client"
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3E6B: statDecodePage (sqlite3.c:177926)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4ba32ac is 108 bytes inside an unallocated block of size 4,099,488 in arena "client"
+==113546== 
+==113546== Conditional jump or move depends on uninitialised value(s)
+==113546==    at 0x40B3FF7: statDecodePage (sqlite3.c:177956)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Conditional jump or move depends on uninitialised value(s)
+==113546==    at 0x40B4074: statDecodePage (sqlite3.c:177961)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Conditional jump or move depends on uninitialised value(s)
+==113546==    at 0x40B3C98: getLocalPayload (sqlite3.c:177900)
+==113546==    by 0x40B40A4: statDecodePage (sqlite3.c:177962)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Conditional jump or move depends on uninitialised value(s)
+==113546==    at 0x40B40B6: statDecodePage (sqlite3.c:177967)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Invalid read of size 4
+==113546==    at 0x4011F30: sqlite3Get4byte (sqlite3.c:29655)
+==113546==    by 0x40B3FC9: statDecodePage (sqlite3.c:177948)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4bad6d6 is 17,382 bytes inside an unallocated block of size 4,074,736 in arena "client"
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3FF2: statDecodePage (sqlite3.c:177956)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4bad6da is 17,386 bytes inside an unallocated block of size 4,074,736 in arena "client"
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B4006: statDecodePage (sqlite3.c:177956)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4bad6da is 17,386 bytes inside an unallocated block of size 4,074,736 in arena "client"
+==113546== 
+==113546== Use of uninitialised value of size 8
+==113546==    at 0x4011F30: sqlite3Get4byte (sqlite3.c:29655)
+==113546==    by 0x40B3FC9: statDecodePage (sqlite3.c:177948)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Use of uninitialised value of size 8
+==113546==    at 0x40B3FF2: statDecodePage (sqlite3.c:177956)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Use of uninitialised value of size 8
+==113546==    at 0x40B4006: statDecodePage (sqlite3.c:177956)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3F81: statDecodePage (sqlite3.c:177946)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4ba31b0 is 0 bytes after a block of size 784 alloc'd
+==113546==    at 0x4949858: malloc (vg_replace_malloc.c:447)
+==113546==    by 0x400B223: sqlite3MemMalloc (sqlite3.c:21524)
+==113546==    by 0x400B704: mallocWithAlarm (sqlite3.c:25350)
+==113546==    by 0x400B7A2: sqlite3Malloc (sqlite3.c:25380)
+==113546==    by 0x4019DAD: pcache1Alloc (sqlite3.c:46391)
+==113546==    by 0x4019F43: pcache1AllocPage (sqlite3.c:46487)
+==113546==    by 0x401A988: pcache1FetchStage2 (sqlite3.c:46953)
+==113546==    by 0x401AB01: pcache1FetchNoMutex (sqlite3.c:47056)
+==113546==    by 0x401AB34: pcache1Fetch (sqlite3.c:47098)
+==113546==    by 0x4018ED5: sqlite3PcacheFetch (sqlite3.c:45563)
+==113546==    by 0x40206F0: getPageNormal (sqlite3.c:53410)
+==113546==    by 0x4020B93: sqlite3PagerGet (sqlite3.c:53589)
+==113546== 
+==113546== Invalid read of size 1
+==113546==    at 0x40B3FA4: statDecodePage (sqlite3.c:177946)
+==113546==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113546==    by 0x40B474E: statNext (sqlite3.c:178095)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546==  Address 0x4ba31b1 is 1 bytes after a block of size 784 alloc'd
+==113546==    at 0x4949858: malloc (vg_replace_malloc.c:447)
+==113546==    by 0x400B223: sqlite3MemMalloc (sqlite3.c:21524)
+==113546==    by 0x400B704: mallocWithAlarm (sqlite3.c:25350)
+==113546==    by 0x400B7A2: sqlite3Malloc (sqlite3.c:25380)
+==113546==    by 0x4019DAD: pcache1Alloc (sqlite3.c:46391)
+==113546==    by 0x4019F43: pcache1AllocPage (sqlite3.c:46487)
+==113546==    by 0x401A988: pcache1FetchStage2 (sqlite3.c:46953)
+==113546==    by 0x401AB01: pcache1FetchNoMutex (sqlite3.c:47056)
+==113546==    by 0x401AB34: pcache1Fetch (sqlite3.c:47098)
+==113546==    by 0x4018ED5: sqlite3PcacheFetch (sqlite3.c:45563)
+==113546==    by 0x40206F0: getPageNormal (sqlite3.c:53410)
+==113546==    by 0x4020B93: sqlite3PagerGet (sqlite3.c:53589)
+==113546== 
+==113546== Conditional jump or move depends on uninitialised value(s)
+==113546==    at 0x40206C3: getPageNormal (sqlite3.c:53409)
+==113546==    by 0x4020B93: sqlite3PagerGet (sqlite3.c:53589)
+==113546==    by 0x40B47F7: statNext (sqlite3.c:178107)
+==113546==    by 0x404DA20: sqlite3VdbeExec (sqlite3.c:86776)
+==113546==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113546==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113546==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113546==    by 0x4006780: run_case (case.c:111)
+==113546==    by 0x40068D1: main (case.c:118)
+==113546== 
+==113546== 
+==113546== HEAP SUMMARY:
+==113546==     in use at exit: 0 bytes in 0 blocks
+==113546==   total heap usage: 374 allocs, 374 frees, 94,488 bytes allocated
+==113546== 
+==113546== For a detailed leak analysis, rerun with: --leak-check=full
+==113546== 
+==113546== Use --track-origins=yes to see where uninitialised values come from
+==113546== For lists of detected and suppressed errors, rerun with: -s
+==113546== ERROR SUMMARY: 477 errors from 17 contexts (suppressed: 0 from 0)

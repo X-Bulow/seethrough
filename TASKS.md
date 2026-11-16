@@ -71,11 +71,11 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P1 A7.2 从 capstone `bug-corpora/sqlite/engine-repros` 移植 4 个 case（03、19 temporal；29、31 spatial）到 `corpus/real/`，case.c 原样，PROVENANCE 带 sha256
 - [x] P1 A7.3 三个 arm 的构建：memsys5（SQLITE_CONFIG_HEAP，lookaside 关）/ default（SQLite 出厂配置）/ rewrite（无 memsys5，LOOKASIDE=0,0，PCACHE_INITSZ=0）；`make real`，引擎按 (tool, arm, group) 缓存
 - [x] P1 A7.4 gate：rewrite arm 下 ASan 必须报出该 bug，否则该 case 其余行 UNSUPPORTED；每个 case 自己的可达性标记缺失则 TOOL-ERROR（`harness/run-real.py`）
-- [ ] P1 A7.5 服务器上跑 asan / valgrind / lowfat × 三个 arm，写进 `results/<date>-server-real/real.csv`；macOS 冒烟结果见 `corpus/real/README.md`，不可引用
-- [ ] P1 A7.6 classify 的 SEGV 规则（sanitizer 信号处理函数的报告记 MISSED crashed）在服务器上用 case 19 memsys5 arm 复核
+- [x] P1 A7.5 服务器上跑 asan / valgrind × 三个 arm（2026-11-16，`results/2026-11-16-lab-real/real.csv`，commit 2098f2a；LowFat 不在范围内）；结果写进 `corpus/real/README.md` 和各 case 的 `case.json` / README
+- [x] P1 A7.6 classify 的 SEGV 规则（sanitizer 信号处理函数的报告记 MISSED crashed）在服务器上用 case 19 memsys5 arm 复核（2026-11-16 确认；同一次崩溃在 Memcheck 下是 0x2 处的 Invalid read，harness 记 DETECTED，报告里按漏报解读）
 - [ ] P2 A7.7 越界步长：29/31 的 fuzz 镜像越界约 2 KB，越过整个 arena 和 pcache bulk 块；找或构造一个越界停在 arena 内的真实 spatial case（配合 A6.2 stretch (a)）
 - [ ] P2 A7.8 PostgreSQL mmgr（capstone `postgres/mmgr-repros`）或 CPython pymalloc 各取 1 个 case，时间不够就砍
-- [~] P1 A7.9 报告段落（初稿 §7.3，只有 macOS 开发运行，A7.5 实验室运行后需更新）：Tier 1 的 MISSED 在真实程序里是否重现（temporal 是，spatial 取决于步长）；SQLite 不化简的理由；default arm 两层的说明
+- [x] P1 A7.9 报告段落（§7.3，2026-11-16 按 A7.5 实验室正式结果重写）：Tier 1 的 MISSED 在真实程序里是否重现（temporal 是，spatial 取决于步长）；SQLite 不化简的理由；default arm 两层的说明
 
 ## B. CMA & Annotations（Part B）
 
@@ -124,8 +124,8 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 ## D. 报告与提交（Week 2–3，三人）
 
 - [x] P0 D1 Introduction、Related Work（CMASan、MSET、Jung CGO'25）（初稿，`report/src/01-*`、`03-*`）
-- [x] P0 D2 回应教授三点：CMA rewrite、测试程序解释、HWASan 结论（报告 §7.2）
+- [x] P0 D2 CMA rewrite、测试程序解释、HWASan 结论已纳入 §4–5 和附录，不再单列反馈回复。
 - [x] P0 D3 Discussion / Limitations / Conclusion（初稿，`report/src/07-*`、`08-*`）
 - [~] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图（C 部分已复现，见 `docs/reproducibility.md`；Detection Matrix 待完成）
-- [~] P0 D5 15 页报告定稿，11 月 19 日前提交（2026-11-14 初稿 15 页：`make -C report`；待填组号和视频链接、三人审阅）
+- [~] P0 D5 15 页报告定稿，11 月 19 日前提交：2026-11-16 已合并 A 的方法说明、分类汇总及 §7.2 正式 SQLite 结果，与 C 的事实修正、摘要、性能范围和版式改进；组号 501、C 学号已填。合并后 17 页，仍需压至 15 页、填视频链接及三人审阅。
 - [ ] P1 D6 演示视频（如果课程要求）

@@ -1,0 +1,12 @@
+\begin{tabular}{rl*{6}{c}}
+\toprule
+ & & \multicolumn{3}{c}{ASan} & \multicolumn{3}{c}{Memcheck} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+\# & bug & memsys5 & shipped & rewrite & memsys5 & shipped & rewrite \\
+\midrule
+03 & use after free: connection read after close & \cM & \cD & \cD & \cM & \cD & \cD \\
+19 & use after free: stale R-tree node & \cMs & \cD & \cD & \cD$^{\dagger}$ & \cD & \cD \\
+29 & over-read of a page (\code{sqlite3Get4byte}) & \cM & \cD$^{\ddagger}$ & \cD & \cM & \cD$^{\ddagger}$ & \cD \\
+31 & over-read of a page (\code{statDecodePage}) & \cD$^{\ddagger}$ & \cD$^{\ddagger}$ & \cD & \cM & \cD$^{\ddagger}$ & \cD \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,94 @@
+==112919== Memcheck, a memory error detector
+==112919== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==112919== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==112919== Command: /home/zephyr/seethrough/build/2026-11-16-lab-real/03-blob-close-after-db-close-valgrind-rewrite
+==112919== 
+==112919== Invalid read of size 8
+==112919==    at 0x400B2AD: sqlite3DbFreeNN (sqlite3.c:25485)
+==112919==    by 0x400B34B: sqlite3DbFree (sqlite3.c:25508)
+==112919==    by 0x404F856: sqlite3_blob_close (sqlite3.c:87652)
+==112919==    by 0x400692A: run_case (case.c:91)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919==  Address 0x4b62360 is 704 bytes inside a block of size 712 free'd
+==112919==    at 0x49228BF: free (vg_replace_malloc.c:990)
+==112919==    by 0x400AB37: sqlite3MemFree (sqlite3.c:21551)
+==112919==    by 0x400B22E: sqlite3_free (sqlite3.c:25461)
+==112919==    by 0x40B089E: sqlite3LeaveMutexAndCloseZombie (sqlite3.c:144604)
+==112919==    by 0x40408A0: sqlite3_finalize (sqlite3.c:77816)
+==112919==    by 0x404F840: sqlite3_blob_close (sqlite3.c:87651)
+==112919==    by 0x400692A: run_case (case.c:91)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919==  Block was alloc'd at
+==112919==    at 0x491F858: malloc (vg_replace_malloc.c:447)
+==112919==    by 0x400AACB: sqlite3MemMalloc (sqlite3.c:21524)
+==112919==    by 0x400AFAC: mallocWithAlarm (sqlite3.c:25350)
+==112919==    by 0x400B04A: sqlite3Malloc (sqlite3.c:25380)
+==112919==    by 0x400B56C: sqlite3MallocZero (sqlite3.c:25585)
+==112919==    by 0x40B2558: openDatabase (sqlite3.c:146223)
+==112919==    by 0x40B2ABF: sqlite3_open (sqlite3.c:146524)
+==112919==    by 0x4006631: run_case (case.c:49)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919== 
+==112919== Invalid read of size 8
+==112919==    at 0x400B0F7: isLookaside (sqlite3.c:25412)
+==112919==    by 0x400B2E0: sqlite3DbFreeNN (sqlite3.c:25489)
+==112919==    by 0x400B34B: sqlite3DbFree (sqlite3.c:25508)
+==112919==    by 0x404F856: sqlite3_blob_close (sqlite3.c:87652)
+==112919==    by 0x400692A: run_case (case.c:91)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919==  Address 0x4b62248 is 424 bytes inside a block of size 712 free'd
+==112919==    at 0x49228BF: free (vg_replace_malloc.c:990)
+==112919==    by 0x400AB37: sqlite3MemFree (sqlite3.c:21551)
+==112919==    by 0x400B22E: sqlite3_free (sqlite3.c:25461)
+==112919==    by 0x40B089E: sqlite3LeaveMutexAndCloseZombie (sqlite3.c:144604)
+==112919==    by 0x40408A0: sqlite3_finalize (sqlite3.c:77816)
+==112919==    by 0x404F840: sqlite3_blob_close (sqlite3.c:87651)
+==112919==    by 0x400692A: run_case (case.c:91)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919==  Block was alloc'd at
+==112919==    at 0x491F858: malloc (vg_replace_malloc.c:447)
+==112919==    by 0x400AACB: sqlite3MemMalloc (sqlite3.c:21524)
+==112919==    by 0x400AFAC: mallocWithAlarm (sqlite3.c:25350)
+==112919==    by 0x400B04A: sqlite3Malloc (sqlite3.c:25380)
+==112919==    by 0x400B56C: sqlite3MallocZero (sqlite3.c:25585)
+==112919==    by 0x40B2558: openDatabase (sqlite3.c:146223)
+==112919==    by 0x40B2ABF: sqlite3_open (sqlite3.c:146524)
+==112919==    by 0x4006631: run_case (case.c:49)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919== 
+==112919== Invalid read of size 8
+==112919==    at 0x400B10E: isLookaside (sqlite3.c:25412)
+==112919==    by 0x400B2E0: sqlite3DbFreeNN (sqlite3.c:25489)
+==112919==    by 0x400B34B: sqlite3DbFree (sqlite3.c:25508)
+==112919==    by 0x404F856: sqlite3_blob_close (sqlite3.c:87652)
+==112919==    by 0x400692A: run_case (case.c:91)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919==  Address 0x4b62250 is 432 bytes inside a block of size 712 free'd
+==112919==    at 0x49228BF: free (vg_replace_malloc.c:990)
+==112919==    by 0x400AB37: sqlite3MemFree (sqlite3.c:21551)
+==112919==    by 0x400B22E: sqlite3_free (sqlite3.c:25461)
+==112919==    by 0x40B089E: sqlite3LeaveMutexAndCloseZombie (sqlite3.c:144604)
+==112919==    by 0x40408A0: sqlite3_finalize (sqlite3.c:77816)
+==112919==    by 0x404F840: sqlite3_blob_close (sqlite3.c:87651)
+==112919==    by 0x400692A: run_case (case.c:91)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919==  Block was alloc'd at
+==112919==    at 0x491F858: malloc (vg_replace_malloc.c:447)
+==112919==    by 0x400AACB: sqlite3MemMalloc (sqlite3.c:21524)
+==112919==    by 0x400AFAC: mallocWithAlarm (sqlite3.c:25350)
+==112919==    by 0x400B04A: sqlite3Malloc (sqlite3.c:25380)
+==112919==    by 0x400B56C: sqlite3MallocZero (sqlite3.c:25585)
+==112919==    by 0x40B2558: openDatabase (sqlite3.c:146223)
+==112919==    by 0x40B2ABF: sqlite3_open (sqlite3.c:146524)
+==112919==    by 0x4006631: run_case (case.c:49)
+==112919==    by 0x4006A88: main (case.c:99)
+==112919== 
+==112919== 
+==112919== HEAP SUMMARY:
+==112919==     in use at exit: 0 bytes in 0 blocks
+==112919==   total heap usage: 219 allocs, 219 frees, 57,416 bytes allocated
+==112919== 
+==112919== For a detailed leak analysis, rerun with: --leak-check=full
+==112919== 
+==112919== For lists of detected and suppressed errors, rerun with: -s
+==112919== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)

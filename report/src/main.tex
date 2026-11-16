@@ -14,6 +14,8 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepgfplotslibrary{groupplots}
+\usetikzlibrary{decorations.pathreplacing,patterns}
+\usepackage{listings}
 \usepackage{enumitem}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -22,8 +24,18 @@
 \usepackage{needspace}
 \usepackage[hidelinks]{hyperref}
 \usepackage{url}
+\usepackage{xurl}
+\usepackage{etoolbox}
+% A reference's last line is never just its year (set after the list resets \parfillskip).
+\apptocmd{\thebibliography}{\setlength{\parfillskip}{0pt plus 0.6\linewidth}}{}{}
 
 \setlist{nosep,leftmargin=1.4em}
+\lstset{basicstyle=\ttfamily\footnotesize, columns=fullflexible, keepspaces=true,
+  numbers=left, numberstyle=\tiny\color{black!50}, numbersep=6pt, xleftmargin=1.6em,
+  frame=tb, framerule=0.4pt, aboveskip=6pt, belowskip=2pt, showstringspaces=false,
+  commentstyle=\color{black!60}\itshape, keywordstyle=\bfseries, language=C,
+  morekeywords={ST_CASE,ST_READY}}
+\captionsetup[lstlisting]{skip=2pt}
 \captionsetup{font=small,labelfont=bf}
 \setlength{\parskip}{3pt}
 \setlength{\parindent}{0pt}
@@ -73,6 +85,7 @@ rewrites under supported tool configurations. Unannotated custom allocators expo
 14--16 eligible bugs to the detectors. Annotations recovered most bugs, but their effectiveness
 depended on the tool's interface and the allocator's behaviour. Rewrites restored malloc-level
 detection under ASan and Memcheck while removing behaviour needed to reproduce some bugs.
+Formal runs on four real SQLite defects showed the same allocator-related blind spots.
 Performance measurements on SQLite, Lua, and an allocator microbenchmark show that the tools and
 their annotations impose different costs. On the microbenchmark, ASan annotations added modest
 median runtime overhead, while Memcheck annotations roughly doubled runtime. These results show

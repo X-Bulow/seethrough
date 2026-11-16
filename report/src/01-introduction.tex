@@ -7,8 +7,8 @@ the code is being tested and fuzzed~\cite{song2019sok}. AddressSanitizer
 (ASan)~\cite{serebryany2012asan}, Valgrind Memcheck~\cite{nethercote2007valgrind}, HWASan and
 LowFat~\cite{duck2016lowfat} differ in how they track memory, but they share one assumption: the unit
 of protection is the block returned by \code{malloc}. Each tool replaces or intercepts the libc
-allocator, learns the bounds and lifetime of every block from it, and checks each access against
-that information.
+allocator, learns from it the bounds and lifetime of every block, and checks each access against
+them.
 
 Real programs often do not let the tools see their objects. SQLite, PostgreSQL, CPython, Apache,
 many games and most compilers take a large block from \code{malloc} and divide it among their own
@@ -29,10 +29,10 @@ We ask two questions.
 
 \begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=*,labelsep=0.6em]
 \item \textbf{Detection.} For the same bug, how much does each tool lose when the object comes from
-  a custom allocator instead of \code{malloc}, and how much do the tool's annotation interface and a
-  rewrite to \code{malloc} win back?
-\item \textbf{Overhead.} What do the tools cost on programs that use custom allocators, and what do
-  the annotations cost?
+  a custom allocator instead of \code{malloc}, and how much do annotations or a rewrite to
+  \code{malloc} win back?
+\item \textbf{Overhead.} What do the tools and their annotations cost on programs that use custom
+  allocators?
 \end{enumerate}
 \end{samepage}
 
@@ -59,7 +59,9 @@ microbenchmark with annotation off and on (\S\ref{sec:perf}).
   interface and the allocator's behaviour. Overflows into live neighbouring objects, stale pointers
   after reuse, and invalid frees exposed different limits across the tools. Rewriting the allocator
   to use \code{malloc} restored baseline detection, but removed the immediate-reuse and bulk-free
-  behaviour needed to reproduce some bugs.
+  behaviour needed to reproduce some bugs. Formal runs on four real SQLite defects also showed
+  temporal errors hidden by memsys5 and spatial detections dependent on leaving the container
+  (\S\ref{sec:tier2}).
 \item \textbf{Detection gains come with different performance costs.} On the SQLite and Lua
   workloads, ASan increased runtime by 2.2--3.0$\times$ and Memcheck by 24--29$\times$ relative to
   their respective baselines. On the allocator microbenchmark, annotations increased median runtime

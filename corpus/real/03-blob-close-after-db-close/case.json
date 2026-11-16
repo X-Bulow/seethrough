@@ -53,8 +53,22 @@
     "default",
     "rewrite"
   ],
-  "measured": {},
-  "status": "ported, not run",
+  "measured": {
+    "2026-11-16 lab server x86-64, formal (results/2026-11-16-lab-real; commit 2098f2a; Ubuntu 26.04.1, clang 21.1.8, Valgrind 3.26.0; positive controls and the asan/rewrite gate passed)": {
+      "asan": {
+        "memsys5": "MISSED",
+        "default": "DETECTED (heap-use-after-free)",
+        "rewrite": "DETECTED (heap-use-after-free)"
+      },
+      "valgrind": {
+        "memsys5": "MISSED",
+        "default": "DETECTED (Invalid read of size 8)",
+        "rewrite": "DETECTED (Invalid read of size 8)"
+      },
+      "notes": "memsys5 hides the use after free from both tools (silent, exit 0). In SQLite as shipped and in the rewrite the connection is a plain malloc block, and both tools report the read 704 bytes into the freed 712-byte connection."
+    }
+  },
+  "status": "formal run 2026-11-16 on the lab server (A7.5): asan, valgrind x memsys5, default, rewrite; lowfat not run",
   "capstone": {
     "repo": "project-starch/llvm-capstone",
     "branch": "dev",

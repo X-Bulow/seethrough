@@ -1,0 +1,16 @@
+ST BEGIN case=rtreecursor arm=default sqlite=3.22.0
+repro allocator=malloc lookaside=default pcache_bulk=default
+ST READY
+rtreecursor open rc=0
+rtreecursor pagesize rc=0
+rtreecursor create rc=0
+rtreecursor inserted=30
+rtreecursor rows=30
+rtreecursor nodes=3
+rtreecursor before nested DELETE (cursor open)
+rtreecursor nested delete rc=0
+rtreecursor stepped=3
+rtreecursor scan end rc=11
+rtreecursor rows after=3
+rtreecursor NOTRAP done
+ST DONE

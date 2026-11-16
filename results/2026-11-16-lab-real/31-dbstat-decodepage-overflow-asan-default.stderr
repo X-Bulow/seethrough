@@ -1,0 +1,50 @@
+=================================================================
+==113634==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x7ddd65bf0698 at pc 0x55e9d562b130 bp 0x7ffed02a0ad0 sp 0x7ffed02a0ac8
+READ of size 1 at 0x7ddd65bf0698 thread T0
+    #0 0x55e9d562b12f in statDecodePage /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:177956:17
+    #1 0x55e9d5628e14 in statNext /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:178124:10
+    #2 0x55e9d5627246 in statFilter /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:178202:10
+    #3 0x55e9d54df1f4 in sqlite3VdbeExec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:86678:8
+    #4 0x55e9d544e382 in sqlite3Step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78338:10
+    #5 0x55e9d544d6e8 in sqlite3_step /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:78401:16
+    #6 0x55e9d5459849 in sqlite3_exec /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:113169:12
+    #7 0x55e9d5434f22 in run_case /home/zephyr/seethrough/corpus/real/31-dbstat-decodepage-overflow/case.c:83:8
+    #8 0x55e9d5434c66 in main /home/zephyr/seethrough/corpus/real/31-dbstat-decodepage-overflow/case.c:90:1
+    #9 0x7f5d6682a600 in __libc_start_call_main csu/../sysdeps/nptl/libc_start_call_main.h:59:16
+    #10 0x7f5d6682a717 in __libc_start_main csu/../csu/libc-start.c:360:3
+    #11 0x55e9d534b3e4 in _start (/home/zephyr/seethrough/build/2026-11-16-lab-real/31-dbstat-decodepage-overflow-asan-default+0x463e4) (BuildId: a813f1fdcddebe8762e2cf5d9e4fc486e24f0cd0)
+
+Address 0x7ddd65bf0698 is a wild pointer inside of access range of size 0x000000000001.
+SUMMARY: AddressSanitizer: heap-buffer-overflow /home/zephyr/seethrough/vendor/sqlite-amalgamation-3220000/sqlite3.c:177956:17 in statDecodePage
+Shadow bytes around the buggy address:
+  0x7ddd65bf0400: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0480: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0500: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x7ddd65bf0680: fa fa fa[fa]fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0700: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0780: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0800: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0880: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x7ddd65bf0900: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==113634==ABORTING

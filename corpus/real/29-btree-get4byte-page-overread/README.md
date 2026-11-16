@@ -23,3 +23,12 @@ Capstone `29_fz02_btree_get4byte_page_overread`; R2 fuzz-corpus diff image fz02,
 
 ## 对照
 以 rewrite arm 下 ASan DETECTED 为 gate。
+
+## Formal results (2026-11-16)
+
+| tool | memsys5 | default | rewrite |
+|---|---|---|---|
+| asan | MISSED | DETECTED | DETECTED |
+| valgrind | MISSED | DETECTED | DETECTED |
+
+Lab server, x86-64 (`results/2026-11-16-lab-real`, commit `2098f2a`). memsys5: both tools silent, exit 0; the over-read stays in memory they consider valid. Default: both report, but not against the page: ASan finds the read in heap redzone memory (wild pointer), Memcheck 296 bytes inside a freed 1,016-byte block; the read leaves the pcache bulk block. Rewrite: ASan reports 253 bytes after a 784-byte page block. The macOS development run had ASan detect the memsys5 arm 1.9 KB past the arena: whether this stride leaves the arena depends on the layout.

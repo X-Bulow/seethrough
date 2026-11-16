@@ -1,0 +1,51 @@
+==113729== Memcheck, a memory error detector
+==113729== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==113729== Using Valgrind-3.26.0 and LibVEX; rerun with -h for copyright info
+==113729== Command: /home/zephyr/seethrough/build/2026-11-16-lab-real/31-dbstat-decodepage-overflow-valgrind-rewrite
+==113729== 
+==113729== Invalid read of size 1
+==113729==    at 0x40B3FF2: statDecodePage (sqlite3.c:177956)
+==113729==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113729==    by 0x40B4C10: statFilter (sqlite3.c:178202)
+==113729==    by 0x404D784: sqlite3VdbeExec (sqlite3.c:86678)
+==113729==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113729==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113729==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113729==    by 0x4006780: run_case (case.c:83)
+==113729==    by 0x40068D1: main (case.c:90)
+==113729==  Address 0x4baf778 is 51,544 bytes inside an unallocated block of size 4,100,544 in arena "client"
+==113729== 
+==113729== Invalid read of size 1
+==113729==    at 0x40B4006: statDecodePage (sqlite3.c:177956)
+==113729==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113729==    by 0x40B4C10: statFilter (sqlite3.c:178202)
+==113729==    by 0x404D784: sqlite3VdbeExec (sqlite3.c:86678)
+==113729==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113729==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113729==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113729==    by 0x4006780: run_case (case.c:83)
+==113729==    by 0x40068D1: main (case.c:90)
+==113729==  Address 0x4baf778 is 51,544 bytes inside an unallocated block of size 4,100,544 in arena "client"
+==113729== 
+==113729== Invalid read of size 1
+==113729==    at 0x4011AEF: sqlite3GetVarint (sqlite3.c:29347)
+==113729==    by 0x40B405F: statDecodePage (sqlite3.c:177959)
+==113729==    by 0x40B48D2: statNext (sqlite3.c:178124)
+==113729==    by 0x40B4C10: statFilter (sqlite3.c:178202)
+==113729==    by 0x404D784: sqlite3VdbeExec (sqlite3.c:86678)
+==113729==    by 0x4041A9B: sqlite3Step (sqlite3.c:78338)
+==113729==    by 0x4041CDB: sqlite3_step (sqlite3.c:78401)
+==113729==    by 0x407A699: sqlite3_exec (sqlite3.c:113169)
+==113729==    by 0x4006780: run_case (case.c:83)
+==113729==    by 0x40068D1: main (case.c:90)
+==113729==  Address 0x4baf779 is 51,545 bytes inside an unallocated block of size 4,100,544 in arena "client"
+==113729== 
+==113729== 
+==113729== HEAP SUMMARY:
+==113729==     in use at exit: 0 bytes in 0 blocks
+==113729==   total heap usage: 368 allocs, 368 frees, 69,952 bytes allocated
+==113729== 
+==113729== For a detailed leak analysis, rerun with: --leak-check=full
+==113729== 
+==113729== For lists of detected and suppressed errors, rerun with: -s
+==113729== ERROR SUMMARY: 6 errors from 3 contexts (suppressed: 0 from 0)
