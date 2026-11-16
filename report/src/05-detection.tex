@@ -50,7 +50,7 @@ case 4 on that build (\S\ref{sec:q1-precision}).}
 \end{groupplot}
 \end{tikzpicture}
 \caption{Share of eligible bugs detected per allocator layer (data of Table~\ref{tab:summary}).
-\code{malloc}, lookaside and the rewrites have no annotated variant. ``rewrite'' is the Free-list
+\code{malloc}, lookaside and the rewrites have no effective annotated variant. ``rewrite'' is the Free-list
 rewrite (the Arena rewrite has the same verdicts).}
 \label{fig:summary}
 \end{figure}
@@ -75,7 +75,7 @@ except HWASan case 4).}
 \label{sec:q1-blind}
 
 On \code{malloc} ASan detected 12 of 13 eligible bugs, Valgrind 13 of 13 and HWASan 13 of 15. In
-every unannotated custom layer each tool detected one or two. The cells it kept are telling: case 12
+each unannotated custom layer it tested, each tool detected one or two. The cells it kept are telling: case 12
 (the pool itself is freed, so the one block the tool knows ends) for all three tools, and case 4 (the
 read leaves the pool) for Valgrind and HWASan. Both are detections of the \emph{pool}, not of the
 object, and should not be credited as allocator awareness. Everything that stays inside the pool ---
@@ -149,8 +149,9 @@ cell.}
 Table~\ref{tab:class} gives the same results by bug class. Annotation restores every underflow for
 all three tools and every use after free except case 10 for ASan and Memcheck. Overflows come back
 only in part, and each tool misses different ones: case 3 for the two address-based tools, case 4
-for ASan, the overflows into slack for HWASan. Bad frees split the tools most sharply. Memcheck's
-pools catch all five, while poisoning and tagging catch only case 15, and only through its consequence:
+for ASan, the overflows into slack for HWASan. Bad frees split the tools most sharply. Across Arena
+and Free list there are five eligible bad-free cells; Memcheck's pools catch all five, while
+poisoning and tagging catch only case 15, and only through its consequence:
 the second \code{free(a)} releases \code{b}'s storage, and the following read of \code{b[0]} meets
 poisoned or retagged memory (ASan reports a use after poison, HWASan a tag mismatch). Memcheck, too,
 reports that read rather than the free, because at the time of the free \code{a} names \code{b}'s
@@ -160,7 +161,8 @@ live storage.
 \label{sec:q1-precision}
 
 Case 4 reads 8192 bytes past the end of the 1~MiB pool. We expected every tool to see it, since the
-access leaves the only block the tool knows. Valgrind and HWASan do, on every layer. ASan does not, on
+access leaves the only block the tool knows. Valgrind reports it on every layer, and HWASan on the
+tested custom layers; its \code{malloc} miss is discussed below. ASan does not, on
 any custom layer, with or without annotation: a request of 1~MiB is served by ASan's large-allocation
 path as a separate mapping whose redzone ends with its last page, so 8192 bytes further on lies
 outside anything ASan has poisoned. The read is then either silent, if another mapping happens to be
@@ -197,9 +199,10 @@ run in 95 of 96 cells, the exception being the tag collision above.
 
 We then examined every one of the 174 misses from the raw output. In each, the program printed
 \code{ST READY}, so the faulty line ran. 170 ended with \code{ST DONE} and exit 0, and the other four
-are the case-4 crashes. No miss carries a report of any kind in its standard error --- we searched for
-every ASan and HWASan report type, Memcheck's invalid accesses and frees, uninitialised uses, and the
-UBSan and LowFat messages --- and every Valgrind miss ends with ``\code{ERROR SUMMARY: 0 errors}''.
+are the case-4 crashes. No miss carries a valid defect diagnosis in its standard error: we searched
+for ASan and HWASan memory-error reports, Memcheck's invalid accesses and frees, uninitialised uses,
+and UBSan and LowFat messages. The four crashes have only ASan signal-handler SEGV diagnostics; every
+Valgrind miss ends with ``\code{ERROR SUMMARY: 0 errors}''.
 In 140 of the 174, the same program is detected by the same tool on \code{malloc}, which shows that
 the access is instrumented and executed. The rest are explained by case semantics (cases 10 and 15 are
 unsupported on \code{malloc}, and case 3 under ASan and case 14 under HWASan are missed everywhere) or by

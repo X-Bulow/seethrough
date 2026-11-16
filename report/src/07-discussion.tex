@@ -8,8 +8,9 @@ bugs inside the pool: in our corpus it caught only the bugs that destroy or leav
 such a program under ASan explores its code but not the memory errors inside the pool. Three
 consequences follow.
 \begin{itemize}
-\item \emph{Annotate, and choose the tool by the bug class.} Fourteen (Arena) to 21 (Free list)
-  annotation calls in the allocator recover most bugs. ASan's poisoning is nearly free but cannot catch bad
+\item \emph{Annotate, and choose the tool by the bug class.} A small set of annotation calls in
+  Arena and Free list recovers most bugs in this corpus. ASan's poisoning adds 5--10\% to our
+  allocator micro-benchmark but cannot catch bad
   frees, overflows into live neighbours or stale pointers after reuse. Memcheck's pools add bad frees
   at a large cost. Tags add neighbour overflows and stale pointers but lose byte precision. Running
   more than one tool covers more than annotating harder for one.
@@ -19,8 +20,9 @@ consequences follow.
   open its own link words. Annotation is a small design change to the allocator, not only a set of
   macro calls.
 \item \emph{A test build without the CMA is cheap where the CMA is configurable.} SQLite can be
-  built without memsys5 and lookaside, which makes every object a \code{malloc} block again. This is
-  a rewrite at zero cost and gives \code{malloc}-level detection, but it tests a different program:
+  built without memsys5 and lookaside, which makes the objects relevant to these cases separate
+  \code{malloc} blocks again. This
+  requires no source rewrite and gives \code{malloc}-level detection, but it tests a different program:
   bugs that depend on immediate reuse or on bulk deallocation disappear. Where the allocator's own
   behaviour is part of what is being tested, only annotation keeps such bugs reproducible.
 \end{itemize}

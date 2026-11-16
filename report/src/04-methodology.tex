@@ -171,8 +171,8 @@ lists the seven layers. Arena and Free list are ours and model the common design
 amalgamation through a thin adapter: memsys5 serves \code{st\_alloc} from a buddy heap held in one
 \code{malloc} block, and lookaside serves it from a connection's 128-byte slots (8192 of them),
 falling back to SQLite's general allocator for larger requests. The rewrites remove the CMA
-altogether: each replaces its allocator with one libc call per operation, in 14 lines instead of 101
-(Arena) and 164 (Free list).
+altogether: each replaces its allocator with one libc call per operation, in 14 lines instead of 104
+(Arena) and 173 (Free list) in the current source.
 
 \begin{table}[t]
 \centering\small
