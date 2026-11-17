@@ -1,26 +1,20 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Custom allocators determine which object boundaries and lifetimes memory-safety detectors can
-observe. On 16 controlled heap bugs,
-ASan detected 12/13 eligible cases on \code{malloc}, Valgrind Memcheck 13/13 and HWASan 13/15. Each
-tool detected only one or two eligible bugs within its tested unannotated custom layers; these
-detections concerned the pool rather than individual objects. The tools' annotation interfaces
-recover most of the loss. On our allocator microbenchmark, ASan annotations increased median runtime
-by approximately 5--10\%, while Memcheck's annotated builds took 1.8--2.2$\times$ as long. Each interface
-leaves a characteristic set of bugs invisible, because poisoning describes
-addressability, memory pools describe ownership and tags describe provenance at 16-byte granularity.
-Rewriting the allocator away restores \code{malloc}'s detection and memory cost, at the price of the
-behaviour the allocator existed for and of the bugs that depend on it. The ASan and Memcheck bug
-verdicts hold, cell for cell, on a second machine, and every miss has a mechanism. Formal runs on
-four real SQLite defects also show temporal errors hidden by memsys5 and spatial detections
-dependent on the container boundary. For testing a program with a CMA, the
-practical advice is to annotate the allocator, to run more than one kind of detector over it, and to
-treat a clean run of an unannotated build as evidence about the code outside the pool only.
+Custom allocators hide most object-level errors from unannotated ASan, Memcheck and HWASan runs.
+Annotations recover much of this detection, but poisoning, ownership tracking and tagging leave
+different gaps. Rewrites restore \code{malloc}-level detection while changing the allocator
+behaviour needed to reproduce some bugs. The ASan and Memcheck verdicts replicate across two
+machines, and four real SQLite defects demonstrate the same distinction between object-level
+errors and diagnostics at a container boundary or a later symptom.
 
-\paragraph{Team contributions.} Cheng Zefeng (Part A) designed the corpus, negative and positive
-controls and the harness, ran the formal detection matrices and the HWASan study, and reviewed every
-miss. Wei Yuning (Part B) implemented the allocators, their ASan and Memcheck annotations and rewrites, the SQLite
-allocator layers, and the EC2 matrices and allocator benchmark. Xu Ruofan (Part C) set up and pinned
-the tools, investigated HWASan and LowFat feasibility, and ran the SQLite and Lua benchmarks. All
-three wrote the report.
+Performance depends on the remedy: ASan annotations added modest median overhead on our allocator
+microbenchmark, while Memcheck annotations roughly doubled runtime. These measurements support
+combining complementary detectors and choosing between annotation and rewriting according to the
+allocator semantics that testing must preserve. A clean run of an unannotated pool does not
+establish the safety of its individual objects.
+
+\paragraph{Team contributions.} Cheng Zefeng (A): corpus, controls, harness, formal detection,
+HWASan and miss audit. Wei Yuning (B): allocators, ASan/Memcheck annotations, rewrites, SQLite
+layers, EC2 matrices and allocator benchmark. Xu Ruofan (C): tool setup, feasibility checks, SQLite
+and Lua benchmarks. All three wrote the report.

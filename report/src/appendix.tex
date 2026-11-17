@@ -40,31 +40,21 @@ the harness records the row as unsupported when it does not.
 \section{Reproducing the results}
 \label{app:repro}
 
-From a clean clone of the repository on Ubuntu 26.04 x86-64:
+From a clean clone on Ubuntu 26.04 x86-64, the server runner builds the four ASan/Memcheck
+matrices and the allocator microbenchmark:
 {\small
 \begin{verbatim}
-bash tools/setup-server.sh        # pinned clang 21.1.8, Memcheck 3.26.0; SQLite sources
+bash tools/setup-server.sh
 P=results/$(date +%F)-lab
-python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena freelist \
-    --annots 0 1 --cases all --out $P-core
-python3 harness/run-matrix.py --tools asan valgrind --allocs memsys5 --annots 0 1 \
-    --cases all --out $P-memsys5
-python3 harness/run-matrix.py --tools asan valgrind --allocs lookaside --annots 0 \
-    --cases all --out $P-lookaside
-python3 harness/run-matrix.py --tools asan valgrind \
-    --allocs arena-rewrite freelist-rewrite --annots 0 --cases all --out $P-rewrite
-python3 harness/render-matrix.py $P-* --check     # matrix, diff against case.json
-python3 harness/audit-missed.py $P-* --list       # the review of every miss
-python3 harness/run-real.py --tools asan valgrind --out $P-real   # the real SQLite bugs
+bash tools/run-part-b-server.sh "$P"
+python3 harness/render-matrix.py $P-* --check
+python3 harness/audit-missed.py $P-* --list
+python3 harness/run-real.py --tools asan valgrind --out $P-real
 \end{verbatim}}
-HWASan runs the same driver with \code{-{}-tools hwasan} inside an AArch64 Linux VM
-(\code{docs/hwasan.md}). The benchmarks are under \code{benchmarks/} with their own scripts, and
-\code{make -C report tables} regenerates every table of this report from the committed bundles:
-\begin{itemize}
-\item \code{results/2026-11-13-lab-\{core,memsys5,lookaside,rewrite\}}: ASan and Memcheck, commit \code{6b54739};
-\item \code{results/2026-11-13-lima-hwasan}: HWASan, commit \code{c214ad3};
-\item \code{results/2026-11-16-lab-real}: the real SQLite bugs, commit \code{2098f2a};
-\item \code{results/2026-11-10-ec2-b-\{core,memsys5,lookaside,rewrite\}}: the replica, commit \code{2763402};
-\item \code{results/2026-11-05-sqlite-speedtest1-*}, \code{results/2026-11-08-lua-36YPxm}: \code{speedtest1} and Lua;
-\item \code{results/2026-11-10-allocator-churn-IkUTIU}: the allocator microbenchmark.
-\end{itemize}
+HWASan uses \code{-{}-tools hwasan} in the AArch64 VM described in \code{docs/hwasan.md}.
+SQLite and Lua have separate benchmark scripts under \code{benchmarks/}. Archived input bundles,
+tool environments and source revisions are indexed in \code{results/README.md}; the benchmark
+summary CSVs identify each performance bundle. \code{make -C report tables} regenerates report
+tables, and \code{python report/scripts/check-repro.py} verifies regeneration of tables and figures
+from archived results in an isolated copy. This artifact check does not rerun the experimental
+programs or replace a full clean-clone execution.

@@ -64,23 +64,4 @@ decide what it can still see. Objects are adjacent, with at most alignment slack
 redzones. A freed object is still inside a live block, so its memory stays addressable. Under
 immediate reuse a stale pointer and the pointer of the new owner hold the same address. And when the
 whole pool is released, the detector sees one large \code{free}, whatever objects were inside.
-Figure~\ref{fig:layout} contrasts the two views for three 24-byte objects.
-
-\begin{figure}[!htbp]
-\centering\footnotesize
-\begin{verbatim}
- malloc + ASan    [rz][ a: 24 |8][rz] ... [rz][ b: 24 |8][rz] ... [rz][ c: 24 |8][rz]
-                   every gap is poisoned, a freed block is poisoned and quarantined
-
- Arena            [ a: 24 |8][ b: 24 |8][ c: 24 |8][ ...                    pool ... ]
- (one malloc)      a+24 is slack, a+32 is b[0], a+64 is c[0]: all addressable to the tool
-
- Arena, annotated [ a: 24 |##][ b: 24 |##][ c: 24 |##][ ##################### ]
-                   ## poisoned: the slack and the unused pool (b[0] and c[0] stay live)
-\end{verbatim}
-\vspace{-1em}
-\caption{Three \code{st\_alloc(24)} objects. ASan's own \code{malloc} separates them with redzones, while
-an arena packs them into one block that the tool sees as a single live allocation. Annotation
-poisons the slack and the rest of the pool, but cannot poison a live neighbour.}
-\label{fig:layout}
-\end{figure}
+Figure~\ref{fig:offsets} in \S\ref{sec:corpus} illustrates the resulting layout and fault sites.

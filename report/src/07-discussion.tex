@@ -5,33 +5,20 @@
 
 \subsection{What a clean sanitizer run means for a program with a CMA}
 
-A clean sanitizer run provides limited evidence about the safety of objects inside an unannotated
-pool. In our corpus, the tools detected errors only when an access crossed the pool's boundary or
-occurred after the backing pool had been freed. Fuzzing under ASan may therefore execute invalid
-accesses within a pool without reporting them.
-Three practical consequences follow.
+A clean run provides limited evidence about objects inside an unannotated pool. In our corpus,
+the retained detections concerned the backing pool's bounds or lifetime. This has three practical
+implications:
 \begin{itemize}
-\item \emph{Annotate, and choose the tool by the bug class.} Adding annotation macros at 14 call
-  sites in Arena and 24 in Free list recovers most bugs in our corpus. ASan's annotations increased
-  median runtime by approximately 5--10\% on our allocator microbenchmark, but poisoning cannot
-  detect invalid or double frees, overflows into live neighbours, or stale-pointer accesses after
-  storage reuse. Memcheck's memory-pool interface also detects invalid and double frees, with
-  annotated median runtimes 1.8--2.2$\times$ those of the unannotated builds. HWASan's tags detected
-  neighbour overflows and stale-pointer accesses after reuse in our tested cases, but its annotation
-  interface has 16-byte precision and does not detect invalid or double frees. The tools therefore
-  provide complementary coverage (\S\ref{sec:q1}, \S\ref{sec:perf}).
-\item \emph{Annotation needs the allocator's cooperation.} To re-poison an object on free, an
-  allocator must know which bytes belong to it. Our Arena uses a side table to track object sizes
-  and lifetimes; a bump allocator without equivalent tracking cannot reliably mark individually
-  freed objects as inaccessible. Free list must temporarily make the link words inside freed slots
-  accessible while reading or updating them. Annotation therefore requires changes to allocator
-  bookkeeping as well as calls to the tool's interface.
-\item \emph{A configurable CMA can be disabled in a test build.} In our SQLite rewrite configuration,
-  disabling memsys5, lookaside and the page-cache bulk pool exposes the tested objects as individual
-  \code{malloc} allocations. This requires no changes to SQLite's allocator implementation and
-  restores \code{malloc}-level detection, but it can change performance and allocation behaviour.
-  In our corpus, bugs that require immediate reuse or bulk deallocation become unreproducible when
-  those behaviours are removed (\S\ref{sec:q1-rewrite}).
+\item \emph{Choose complementary tools.} Poisoning, ownership tracking and tagging leave different
+  gaps (\S\ref{sec:q1-annot}). Combining tools covers more bug classes; additional annotation calls
+  cannot overcome an interface's limits. Their costs also differ (\S\ref{sec:perf}).
+\item \emph{Include allocator bookkeeping.} Arena needs object sizes and lifetimes to poison freed
+  objects; Free list must temporarily expose its internal link words. Annotation therefore requires
+  allocator cooperation, beyond inserting API calls.
+\item \emph{Use a configurable test allocator where appropriate.} Disabling memsys5, lookaside and
+  SQLite's page-cache bulk pool exposes the tested objects as individual \code{malloc} allocations.
+  This restores baseline detection, but changes allocation behaviour and may remove bugs dependent
+  on immediate reuse or bulk release (\S\ref{sec:q1-rewrite}).
 \end{itemize}
 
 \subsection{Do the results transfer to real bugs?}
@@ -52,7 +39,7 @@ gate the run. Table~\ref{tab:real} gives the formal run on the lab server.
 \centering\small
 \setlength{\tabcolsep}{4.5pt}
 \input{tables/real}
-\caption{Four real SQLite 3.22.0 bugs on the lab server (\code{results/2026-11-16-lab-real}). Shipped
+\caption{Raw harness verdicts for four real SQLite 3.22.0 bugs on the lab server (\code{results/2026-11-16-lab-real}). Shipped
 = SQLite's default configuration. $\dagger$: Memcheck's report is an invalid read at address
 \code{0x2} just before the process dies of \code{SIGSEGV}, the same crash that ASan records as
 M$^{*}$, and it does not concern the stale node. $\ddagger$: the over-read left its container (the arena
@@ -61,13 +48,15 @@ heap, never against the page.}
 \label{tab:real}
 \end{table}
 
-\paragraph{The temporal results transfer directly.} memsys5 hides both uses after free from both
+\paragraph{Object-level temporal errors remain hidden.} memsys5 hides both uses after free from both
 tools, while in the shipped configuration and the rewrite, where the freed objects are
 \code{malloc} blocks, both tools report the read and name the freed block. In the R-tree case the
 stale read itself is silent. A pointer loaded from the stale node is \code{0x2}, and the program
 then faults on the zero page. ASan's signal handler reports the fault (missed, crashed), and Memcheck
 reports an invalid read at \code{0x2} that the harness counts as detected. Neither report concerns
-the node, and we read both as misses.
+the stale node. Thus the raw D$^{\dagger}$ records a downstream diagnostic, while our object-level
+interpretation is that the use after free was missed. We retain both distinctions rather than
+changing the archived verdict.
 
 \paragraph{The spatial results depend on the stride, as in cases 3 and 4.} Both over-reads go far:
 under the rewrite, ASan reports case 29's first bad read 253 bytes past a 784-byte page block,

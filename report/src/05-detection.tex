@@ -65,7 +65,12 @@ program crashed inside the tool's signal handler, U = unsupported, +A = annotate
 lab server; HWASan: AArch64 VM. The \code{malloc}+A column is omitted (identical to \code{malloc},
 except HWASan case 4).}
 \label{tab:matrix-core}
-\vspace{1.2em}
+\end{table}
+
+\begin{table}[!htb]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.4pt}
+\renewcommand{\arraystretch}{1.08}
 \input{tables/matrix-sqlite}
 \caption{Detection matrix for SQLite's allocators and the two rewrites (lab server).}
 \label{tab:matrix-sqlite}
@@ -242,12 +247,3 @@ with tag 0 and their accesses are not checked. Our 1~MiB pools are invisible to 
 annotation tag such as 17 no longer fits in the pointer. We therefore did not use this mode: the
 tested x86-64 aliasing implementation cannot check accesses within our 1~MiB pools, even with
 annotations. This result does not establish the same limitation for smaller pools or other modes.
-
-\subsection{Answer to Q1}
-\label{sec:q1-answer}
-
-On \code{malloc}, ASan detected 12/13 eligible bugs, Memcheck 13/13 and HWASan 13/15; each tool
-detected only one or two within its tested unannotated custom layers. Annotations recovered most
-bugs, with the remaining gaps reflecting the interface's limits and allocator behaviour.
-Rewriting recovers \code{malloc}-level detection only for bugs that remain reproducible after reuse
-and pool semantics change. All 352 ASan and Memcheck bug verdicts agree across the two x86-64 machines.

@@ -127,5 +127,5 @@ P0 = 没有它就回答不了 Q1/Q2；P1 = 报告需要；P2 = 时间允许；P3
 - [x] P0 D2 CMA rewrite、测试程序解释、HWASan 结论已纳入 §4–5 和附录，不再单列反馈回复。
 - [x] P0 D3 Discussion / Limitations / Conclusion（初稿，`report/src/07-*`、`08-*`）
 - [~] P0 D4 复现检查：在服务器上从干净 clone 跑 `tools/setup-server.sh` + `harness/run-matrix.py` 重新生成 Detection Matrix 和性能图（C 部分已复现，见 `docs/reproducibility.md`；Detection Matrix 待完成）
-- [~] P0 D5 15 页报告定稿，11 月 19 日前提交：2026-11-16 已合并 A 的方法说明、分类汇总及 §7.2 正式 SQLite 结果，与 C 的事实修正、摘要、性能范围和版式改进；组号 501、C 学号已填。合并后 17 页，仍需压至 15 页、填视频链接及三人审阅。
+- [~] P0 D5 15 页报告定稿，11 月 19 日前提交：已合并双方内容；2026-11-17 完成连贯性修订，明确控制实验与真实漏洞验证、原始 verdict 与对象级诊断的区别，去掉重复呈现并从 17 页收紧到 15 页，无排版或引用警告。组号 501、C 学号已填，待视频链接及三人审阅。
 - [ ] P1 D6 演示视频（如果课程要求）

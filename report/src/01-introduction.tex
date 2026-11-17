@@ -5,10 +5,9 @@ Memory-safety errors remain the largest source of exploitable vulnerabilities in
 C++~\cite{szekeres2013sok}, and dynamic detectors are the main practical defence against them while
 the code is being tested and fuzzed~\cite{song2019sok}. AddressSanitizer
 (ASan)~\cite{serebryany2012asan}, Valgrind Memcheck~\cite{nethercote2007valgrind}, HWASan and
-LowFat~\cite{duck2016lowfat} differ in how they track memory, but they share one assumption: the unit
-of protection is the block returned by \code{malloc}. Each tool replaces or intercepts the libc
-allocator, learns from it the bounds and lifetime of every block, and checks each access against
-them.
+LowFat~\cite{duck2016lowfat} use different checking mechanisms, but all depend on allocation
+boundaries exposed by the allocator. ASan, Memcheck and HWASan also track allocation lifetimes;
+LowFat provides spatial checks only.
 
 Real programs often do not let the tools see their objects. SQLite, PostgreSQL, CPython, Apache,
 many games and most compilers take a large block from \code{malloc} and divide it among their own
@@ -46,7 +45,9 @@ HWASan covers only \code{malloc}, Arena and Free list. A harness builds and runs
 896 images under the applicable tools, gated by positive controls, and classifies
 the outcome from the program's own markers and the tool's report. For Q2 we measured the tools on
 SQLite's \code{speedtest1} with and without memsys5, on a Lua workload, and on an allocator
-microbenchmark with annotation off and on (\S\ref{sec:perf}).
+microbenchmark with annotation off and on (\S\ref{sec:perf}). We also tested four real SQLite
+defects across three allocator configurations under ASan and Memcheck: 24 configurations that
+validate the controlled corpus's mechanisms (\S\ref{sec:tier2}).
 
 \paragraph{Main findings.}
 \begin{itemize}

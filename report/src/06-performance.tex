@@ -60,32 +60,18 @@ medians. Complete time and RSS ranges are in \code{report/tables/perf-variabilit
 \label{tab:perf-churn}
 \end{table}
 
-\paragraph{Annotation overhead.} On the allocation-heavy loop (Table~\ref{tab:perf-churn},
-Figure~\ref{fig:churn}), ASan's annotations increased median runtime by approximately 5--10\%:
+\paragraph{Annotation overhead.} On the allocation-heavy loop (Table~\ref{tab:perf-churn}), ASan's annotations increased median runtime by approximately 5--10\%:
 poisoning and unpoisoning a region are plain
 shadow-memory writes. Memcheck's annotations cost
 1.78$\times$ on Arena and 2.16$\times$ on Free list, because every pool request is a client request
 that Memcheck must process and record; the Free list issues more of them, since it also opens and
-closes its in-slot link. Median peak RSS remained approximately unchanged for both tools. The rewrites are faster
-under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB against 46~MiB), the
-per-object redzones and quarantine that make them detectable. They change the allocation algorithm
-and lifetimes, so their numbers are a different trade-off, not an annotation cost.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.92\textwidth]{figures/part-b-churn-performance.pdf}
-\caption{Allocator microbenchmark on EC2: wall time and peak RSS per allocator, annotation setting
-and tool.}
-\label{fig:churn}
-\end{figure}
-
-For a project deciding how to test a program with a CMA, the two questions meet here. ASan annotations
-added modest overhead on our allocator microbenchmark and recovered most corpus bugs; Memcheck
-annotations roughly doubled runtime on that workload but also caught bad frees; and a rewrite gives
-\code{malloc}-level detection at \code{malloc}-level
-memory cost, while giving up whatever behaviour the CMA provided.
+closes its in-slot link. Median peak RSS remained approximately unchanged for both tools.
 
 The ranges describe run-to-run variation, not confidence intervals. In particular, the ASan
 annotation-time ranges overlap, so the 5--10\% median increases are descriptive results from this
 workload rather than evidence of a precise general overhead. The runs support a more consistent
 increase for Memcheck.
+
+The rewrites are faster under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB against 46~MiB), the
+per-object redzones and quarantine that make them detectable. They change the allocation algorithm
+and lifetimes, so their numbers are a different trade-off, not an annotation cost.
