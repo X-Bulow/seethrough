@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Week-1 HWASan feasibility probe (TASKS C3.2). Run on the server; paste the output into docs/hwasan.md.
+# Probe native and fallback HWASan support.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$ROOT/corpus/controls/positive-uaf.c"

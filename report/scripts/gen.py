@@ -169,7 +169,7 @@ def perf():
         return list(csv.DictReader(open(OUT / f)))
     stats = {}
     evidence = []
-    for source in ("benchmark-summary.csv", "lua-summary.csv", "part-b-churn-summary.csv"):
+    for source in ("benchmark-summary.csv", "lua-summary.csv", "allocator-churn-summary.csv"):
         for s in rows(source):
             key = tuple(s[k] for k in ("bundle", "benchmark", "config", "annot", "tool"))
             bundle = ROOT / "results" / s["bundle"]
@@ -208,7 +208,7 @@ def perf():
         baseline = stats[(s["bundle"], s["benchmark"], s["config"], s["annot"], "none")]
         s["time_ratio"] = s["median_seconds"] / baseline["median_seconds"]
         s["rss_ratio"] = s["median_rss_mib"] / baseline["median_rss_mib"]
-    for source in ("benchmark-summary.csv", "lua-summary.csv", "part-b-churn-summary.csv"):
+    for source in ("benchmark-summary.csv", "lua-summary.csv", "allocator-churn-summary.csv"):
         for s in rows(source):
             baseline = stats[(s["bundle"], s["benchmark"], s["config"], s["annot"], "none")]
             values = stats[tuple(s[k] for k in ("bundle", "benchmark", "config", "annot", "tool"))]
@@ -245,7 +245,7 @@ def perf():
     lines += [r"\bottomrule", r"\end{tabular}"]
     (OUT / "perf-tools.tex").write_text("\n".join(lines) + "\n")
 
-    churn = {(r["config"], r["annot"], r["tool"]): r for r in rows("part-b-churn-summary.csv")}
+    churn = {(r["config"], r["annot"], r["tool"]): r for r in rows("allocator-churn-summary.csv")}
     lines = [r"\begin{tabular}{llrrrrr}", r"\toprule",
              r"allocator & tool & off (s) & on (s) & on/off & RSS off / on (MiB) & rewrite (s, MiB) \\", r"\midrule"]
     for alloc, label in (("arena", "Arena"), ("freelist", "Free list")):

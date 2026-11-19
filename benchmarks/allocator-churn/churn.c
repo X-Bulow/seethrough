@@ -1,4 +1,4 @@
-/* Fixed allocation/reuse workload for B2 annotation overhead (C5.3). */
+/* Fixed allocation/reuse workload for measuring annotation overhead. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

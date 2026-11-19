@@ -73,7 +73,7 @@ control-image:
 	@mkdir -p $(dir $(OUT))
 	$(CC) $(OPT) $(CFLAGS_$(TOOL)) $(SRC) -o $(OUT) $(LDFLAGS)
 
-# ---------------------------------------------------------------- corpus/real (A7)
+# ---------------------------------------------------------------- corpus/real
 # Real SQLite 3.22.0 defects from capstone's engine-repros. The engine is compiled once per
 # (tool, arm, engine group) into $(BUILD)/engine/ and linked with the case. SQLITE322 is the
 # amalgamation directory from tools/fetch-sqlite.sh (lazy: only evaluated by these targets).

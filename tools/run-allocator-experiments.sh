@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Full Part B detection and performance run on C's x86-64 Ubuntu lab VM.
+# Full allocator detection and performance run on an x86-64 Ubuntu VM.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-PREFIX="${1:-results/$(date +%F)-server-b}"
+PREFIX="${1:-results/$(date +%F)-server}"
 for suffix in core memsys5 lookaside rewrite; do
   if [ -e "$PREFIX-$suffix" ]; then
     echo "refusing to overwrite $PREFIX-$suffix" >&2

@@ -2,33 +2,14 @@
 \section{Q2: Overhead}
 \label{sec:perf}
 
-\paragraph{Method.} Benchmarks are built at \code{-O2 -g -fno-omit-frame-pointer}; ASan adds
-\code{-fsanitize=address}, and Memcheck runs the uninstrumented binary. Each configuration runs five
-times; we report median elapsed time, median peak resident set size (RSS), their observed minimum
-and maximum, and ratios against the
-uninstrumented baseline of the same configuration. SQLite and Lua use \code{/usr/bin/time} for
-both metrics. Allocator churn times its workload with \code{CLOCK\_MONOTONIC}, excluding process
-start-up and shutdown, and uses \code{/usr/bin/time} for peak RSS. Memcheck uses
-\code{--leak-check=full} for SQLite and Lua and \code{--leak-check=no} for churn, with
-\code{--error-exitcode=99} throughout. The SQLite and Lua bundles record \code{ASAN\_OPTIONS}
-and \code{LSAN\_OPTIONS} as unset. Memcheck's RSS includes the tool's own memory. The workloads are SQLite~3.50.4
-\code{speedtest1}~\cite{sqlitespeedtest} (\code{--memdb --size 100 --testset main}) in SQLite's
-default configuration and with memsys5 serving all allocations from a 256~MiB heap (minimum block 64
-bytes); a synthetic Lua~5.4.9 workload~\cite{lua} that builds, sorts and garbage-collects 20 rounds
-of 100{,}000 tables with strings, with Lua's stock allocator; and an allocator microbenchmark that
-runs 10{,}000 allocation and reuse cycles on Arena and Free list with annotation off and on, and on
-their rewrites. The first two ran on the VirtualBox VM and the third on EC2 (Table~\ref{tab:env});
-numbers are compared only within one machine. HWASan performance was not measured; its available
-host differs in architecture and virtualization environment, so the controlled performance
-comparison covers ASan and Memcheck only.
+\paragraph{Method.} Benchmarks are built at \code{-O2 -g -fno-omit-frame-pointer}; ASan adds \code{-fsanitize=address}, and Memcheck runs the uninstrumented binary. Each configuration runs five times; we report median elapsed time, median peak resident set size (RSS), their observed minimum and maximum, and ratios against the uninstrumented baseline of the same configuration. SQLite and Lua use \code{/usr/bin/time} for both metrics. Allocator churn times its workload with \code{CLOCK\_MONOTONIC}, excluding process start-up and shutdown, and uses \code{/usr/bin/time} for peak RSS. Memcheck uses \code{--leak-check=full} for SQLite and Lua and \code{--leak-check=no} for churn, with \code{--error-exitcode=99} throughout. The SQLite and Lua bundles record \code{ASAN\_OPTIONS} and \code{LSAN\_OPTIONS} as unset. Memcheck's RSS includes the tool's own memory. The workloads are SQLite~3.50.4 \code{speedtest1}~\cite{sqlitespeedtest} (\code{--memdb --size 100 --testset main}) in SQLite's default configuration and with memsys5 serving all allocations from a 256~MiB heap (minimum block 64 bytes); a synthetic Lua~5.4.9 workload~\cite{lua} that builds, sorts and garbage-collects 20 rounds of 100{,}000 tables with strings, with Lua's stock allocator; and an allocator microbenchmark that runs 10{,}000 allocation and reuse cycles on Arena and Free list with annotation off and on, and on their rewrites. The first two ran on the VirtualBox VM and the third on EC2 (Table~\ref{tab:env}); numbers are compared only within one machine. HWASan performance was not measured; its available host differs in architecture and virtualization environment, so the controlled performance comparison covers ASan and Memcheck only.
 
 \begin{table}[!htbp]
 \centering\small
 \setlength{\tabcolsep}{4pt}
 \input{tables/perf-tools}
 \caption{Tool overhead on real programs (VirtualBox VM). Time and RSS entries show the median and
-[minimum, maximum] of five runs; $\times$ is the ratio of medians to the same configuration's
-baseline. No custom annotations.}
+[minimum, maximum] of five runs; $\times$ is the ratio of medians to the same configuration's baseline. No custom annotations.}
 \label{tab:perf-tools}
 \end{table}
 
@@ -39,39 +20,19 @@ baseline. No custom annotations.}
 \label{fig:speedtest}
 \end{figure}
 
-\paragraph{Tool overhead.} Table~\ref{tab:perf-tools} and Figure~\ref{fig:speedtest} show runtime
-ratios of 2.2--3.0$\times$ for ASan and 24.5--28.7$\times$ for Memcheck. The allocator configuration
-has a larger effect on ASan's memory overhead. With SQLite's default allocator ASan's peak RSS is 7.9$\times$ the baseline
-(611~MiB); with memsys5 it is 1.4$\times$ (167~MiB), and its time overhead also drops, from
-2.64$\times$ to 2.16$\times$. On Lua, which allocates many small objects through the stock allocator,
-ASan's RSS reaches 15.9$\times$. The likely reason is the one behind Q1: ASan pays redzones and
-quarantine per \code{malloc} block, and under memsys5 there is a single 256~MiB block, so SQLite's
-objects carry no redzones and their frees enter no quarantine. The lower overhead is the price of
-the lost visibility measured in \S\ref{sec:q1-blind} --- a sanitizer run that is cheaper under a CMA
-is also checking less. Memcheck's overhead is dominated by binary translation and changes little.
+\paragraph{Tool overhead.} Table~\ref{tab:perf-tools} and Figure~\ref{fig:speedtest} show runtime ratios of 2.2--3.0$\times$ for ASan and 24.5--28.7$\times$ for Memcheck. The allocator configuration has a larger effect on ASan's memory overhead. With SQLite's default allocator ASan's peak RSS is 7.9$\times$ the baseline (611~MiB); with memsys5 it is 1.4$\times$ (167~MiB), and its time overhead also drops, from 2.64$\times$ to 2.16$\times$. On Lua, which allocates many small objects through the stock allocator, ASan's RSS reaches 15.9$\times$. The likely reason is the one behind Q1: ASan pays redzones and quarantine per \code{malloc} block, and under memsys5 there is a single 256~MiB block, so SQLite's objects carry no redzones and their frees enter no quarantine. The lower overhead is the price of the lost visibility measured in \S\ref{sec:q1-blind} --- a sanitizer run that is cheaper under a CMA is also checking less. Memcheck's overhead is dominated by binary translation and changes little.
 
 \begin{table}[t]
 \centering\footnotesize
 \setlength{\tabcolsep}{3pt}
 \input{tables/perf-churn}
 \caption{Annotation overhead on the allocator microbenchmark (EC2, five runs). ``off'' and ``on''
-times show median [minimum, maximum]; on/off is the ratio of medians. RSS and rewrite entries are
-medians. Complete time and RSS ranges are in \code{report/tables/perf-variability.csv}.}
+times show median [minimum, maximum]; on/off is the ratio of medians. RSS and rewrite entries are medians. Complete time and RSS ranges are in \code{report/tables/perf-variability.csv}.}
 \label{tab:perf-churn}
 \end{table}
 
-\paragraph{Annotation overhead.} On the allocation-heavy loop (Table~\ref{tab:perf-churn}), ASan's annotations increased median runtime by approximately 5--10\%:
-poisoning and unpoisoning a region are plain
-shadow-memory writes. Memcheck's annotations cost
-1.78$\times$ on Arena and 2.16$\times$ on Free list, because every pool request is a client request
-that Memcheck must process and record; the Free list issues more of them, since it also opens and
-closes its in-slot link. Median peak RSS remained approximately unchanged for both tools.
+\paragraph{Annotation overhead.} On the allocation-heavy loop (Table~\ref{tab:perf-churn}), ASan's annotations increased median runtime by approximately 5--10\%: poisoning and unpoisoning a region are plain shadow-memory writes. Memcheck's annotations cost 1.78$\times$ on Arena and 2.16$\times$ on Free list, because every pool request is a client request that Memcheck must process and record; the Free list issues more of them, since it also opens and closes its in-slot link. Median peak RSS remained approximately unchanged for both tools.
 
-The ranges describe run-to-run variation, not confidence intervals. In particular, the ASan
-annotation-time ranges overlap, so the 5--10\% median increases are descriptive results from this
-workload rather than evidence of a precise general overhead. The runs support a more consistent
-increase for Memcheck.
+The ranges describe run-to-run variation, not confidence intervals. In particular, the ASan annotation-time ranges overlap, so the 5--10\% median increases are descriptive results from this workload rather than evidence of a precise general overhead. The runs support a more consistent increase for Memcheck.
 
-The rewrites are faster under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB against 46~MiB), the
-per-object redzones and quarantine that make them detectable. They change the allocation algorithm
-and lifetimes, so their numbers are a different trade-off, not an annotation cost.
+The rewrites are faster under ASan (0.54~s against 1.5~s) but use 3.3$\times$ as much memory (154~MiB against 46~MiB), the per-object redzones and quarantine that make them detectable. They change the allocation algorithm and lifetimes, so their numbers are a different trade-off, not an annotation cost.

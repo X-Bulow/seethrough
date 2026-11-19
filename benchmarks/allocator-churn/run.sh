@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Linux runner; writes the same CSV schema as C's SQLite benchmark.
+# Linux runner; writes the shared benchmark CSV schema.
 set -euo pipefail
 export LC_ALL=C
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"

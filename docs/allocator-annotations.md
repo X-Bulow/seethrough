@@ -1,11 +1,6 @@
 # What the allocator annotations describe
 
-Both allocators use the same `st_alloc` interface and the same source for annotated and
-unannotated builds. `ST_ANNOT=0` makes every macro in `st_annot.h` a no-op. `ST_ANNOT=1`
-activates ASan's manual poison/unpoison calls for ASan builds, Valgrind's mempool and
-addressability requests for Memcheck builds, or HWASan's memory and pointer tagging for HWASan
-builds. Allocator bookkeeping is kept outside live
-objects, except for the free-list next link stored inside a freed slot.
+Both allocators use the same `st_alloc` interface and the same source for annotated and unannotated builds. `ST_ANNOT=0` makes every macro in `st_annot.h` a no-op. `ST_ANNOT=1` activates ASan's manual poison/unpoison calls for ASan builds, Valgrind's mempool and addressability requests for Memcheck builds, or HWASan's memory and pointer tagging for HWASan builds. Allocator bookkeeping is kept outside live objects, except for the free-list next link stored inside a freed slot.
 
 | Boundary or mistake | Arena with annotations | Free list with annotations | Limit |
 |---|---|---|---|
@@ -15,56 +10,10 @@ objects, except for the free-list next link stored inside a freed slot.
 | Ownership errors at `st_free` | Memcheck can report an invalid or repeated `MEMPOOL_FREE` | Same | ASan poison/unpoison alone cannot report a free call with no invalid memory access (cases 13 and 14). |
 | Whole-pool destruction | Underlying `free` ends the backing block | Same | A tool report here is about the outer block, not per-object tracking (case 12). |
 
-HWASan builds tag instead of poisoning. `st_alloc` gives each object's granules a fresh tag and
-returns a pointer that carries it; `st_free` hands the granules back to the pool's tag, the one
-HWASan's malloc gave the backing block. The allocator converts a pointer the caller hands back to
-the pool's tag (`ST_POOL_PTR`) before its side-table lookups and its own link-word writes, and where
-the ASan arm opens a link word, the HWASan arm retags that granule. A tag separates a stale pointer
-from the new owner of reissued storage (case 10) and an overflow from the live object it lands in
-(case 3), which no poisoning can. It is 16-byte precise, though: `__hwasan_tag_memory` cannot
-describe a short last granule, so an overflow into the rounding slack stays MISSED (cases 0-2), and
-like poisoning it cannot report a free call that touches nothing (cases 13 and 14).
+HWASan builds tag instead of poisoning. `st_alloc` gives each object's granules a fresh tag and returns a pointer that carries it; `st_free` hands the granules back to the pool's tag, the one HWASan's malloc gave the backing block. The allocator converts a pointer the caller hands back to the pool's tag (`ST_POOL_PTR`) before its side-table lookups and its own link-word writes, and where the ASan arm opens a link word, the HWASan arm retags that granule. A tag separates a stale pointer from the new owner of reissued storage (case 10) and an overflow from the live object it lands in (case 3), which no poisoning can. It is 16-byte precise, though: `__hwasan_tag_memory` cannot describe a short last granule, so an overflow into the rounding slack stays MISSED (cases 0-2), and like poisoning it cannot report a free call that touches nothing (cases 13 and 14).
 
-The Arena needs an external size/liveness table to re-poison a freed object without adding a
-header between objects. This is a design cost of annotation: the original no-op `st_free`
-could not report cases 8 and 9. The table is present in both `ST_ANNOT` configurations, so
-the annotated-versus-unannotated comparison changes only the tool requests. The Free list
-temporarily opens its in-slot next link while maintaining the list, then closes the slot again;
-otherwise allocator-internal reads would be misreported as user defects. Its `st_realloc`
-always moves, preserves the prefix, and ends the old slot's lifetime.
+The Arena needs an external size/liveness table to re-poison a freed object without adding a header between objects. This is a design cost of annotation: the original no-op `st_free` could not report cases 8 and 9. The table is present in both `ST_ANNOT` configurations, so the annotated-versus-unannotated comparison changes only the tool requests. The Free list temporarily opens its in-slot next link while maintaining the list, then closes the slot again; otherwise allocator-internal reads would be misreported as user defects. Its `st_realloc` always moves, preserves the prefix, and ends the old slot's lifetime.
 
 ## SQLite memsys5 extension
 
-The optional B3 memsys5 arm uses a generated patch against pinned SQLite
-3.53.3. The patch tracks rounded buddy blocks with ASan poison/unpoison and
-Valgrind mempool requests. It opens each in-band free-list link only while
-SQLite reads or writes it, then closes it. The adapter's side table tracks
-the exact `st_alloc(n)` request and poisons the remaining size-class slack;
-without it, a 24-byte request's `p[24]` lies inside a valid 32-byte buddy
-block. SQLite's own internal allocations retain rounded-block precision.
-Lookaside has no verified annotation arm.
-
-## Development checks, not report data
-
-On 2026-11-07, the two positive controls were DETECTED under ASan and Valgrind. All 16
-Free-list cases had CLEAN negative controls under ASan with annotations off and on. The
-Valgrind run covered all 16 cases for both Arena and Free list, both annotation settings;
-all negative controls were CLEAN. The raw development bundles are under
-`results/scratch-stage2-*` and are gitignored. ASan ran on macOS arm64; Valgrind 3.19.0 ran
-in a local arm64 Linux container. Neither is the project's citable x86-64 server environment.
-
-The development checks exposed two corpus predictions to revisit with A. ASan did not report
-an interior-pointer free in the annotated Free list (case 14): poisoning tracks access, not
-ownership. Arena cases 8, 9 and 11 changed after size tracking and `realloc` were implemented;
-annotated ASan and Memcheck now report their stale accesses. The annotated Arena also lets
-Memcheck report double and interior frees through `MEMPOOL_FREE`.
-
-Case 4 initially used `pool_bytes + 64`, which landed exactly in an adjacent valid metadata
-allocation under Valgrind and appeared as a miss. The corpus now uses `pool_bytes + 8192`;
-both ASan and Valgrind reported the outer-block over-read in local reruns. This offset still
-depends on the surrounding address space. In the formal x86-64 EC2 run, Valgrind reported
-the outer-block read, but ASan printed only `SEGV on unknown address` without a heap-boundary
-diagnosis. The Arena and Free-list ASan cases are correctly classified as
-`MISSED crashed SEGV`, including for their annotated arms. Annotated memsys5
-also missed case 4 but did not signal. See the raw case-4 stderr in the
-[core matrix](../results/2026-11-10-ec2-b-core/).
+The memsys5 arm uses a generated patch against pinned SQLite 3.53.3. The patch tracks rounded buddy blocks with ASan poison/unpoison and Valgrind mempool requests. It opens each in-band free-list link only while SQLite reads or writes it, then closes it. The adapter's side table tracks the exact `st_alloc(n)` request and poisons the remaining size-class slack; without it, a 24-byte request's `p[24]` lies inside a valid 32-byte buddy block. SQLite's own internal allocations retain rounded-block precision. Lookaside has no verified annotation arm.

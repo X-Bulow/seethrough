@@ -43,7 +43,7 @@ if [[ "$clang_version" != *'clang version 21.1.8 '* || "$valgrind_version" != 'v
   exit 1
 fi
 
-echo "== SQLite amalgamations (B3, A7): pinned, into vendor/ or \$SEETHROUGH_CACHE"
+echo "== SQLite amalgamations: pinned, into vendor/ or \$SEETHROUGH_CACHE"
 "$(dirname "$0")/fetch-sqlite.sh" 3.53.3
 "$(dirname "$0")/fetch-sqlite.sh" 3.22.0
 echo "SQLite speedtest1 uses a separate 3.50.4 source; fetch it with benchmarks/sqlite-speedtest1/fetch.sh"

@@ -1,13 +1,7 @@
 #include "harness.h"
 
-/* Case 9 -- use after free, read, with no allocation in between. Case 8's
- * twin. A stale read is the quietest memory-safety defect there is: it
- * corrupts nothing, so no later crash will ever point at it, and under an
- * allocator whose free is a no-op it returns the object's own old contents --
- * the program cannot tell, and neither can a tool that only knows malloc
- * lifetimes.
- *
- * NEGATIVE CONTROL: the read happens before the free. */
+/* Case 9: Read after free without reuse; control reads before free.
+ * Pool storage remains addressable unless the freed object is annotated. */
 ST_CASE(9) {
     unsigned char *a = st_alloc(24);
     memset(a, ST_FILL, 24);

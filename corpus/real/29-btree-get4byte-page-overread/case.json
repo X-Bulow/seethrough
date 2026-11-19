@@ -69,7 +69,7 @@
       "notes": "memsys5: both tools silent, exit 0; the over-read stays in memory they consider valid. Default: both report, but not against the page: ASan finds the read in heap redzone memory (wild pointer), Memcheck 296 bytes inside a freed 1,016-byte block; the read leaves the pcache bulk block. Rewrite: ASan reports 253 bytes after a 784-byte page block. The macOS development run had ASan detect the memsys5 arm 1.9 KB past the arena: whether this stride leaves the arena depends on the layout."
     }
   },
-  "status": "formal run 2026-11-16 on the lab server (A7.5): asan, valgrind x memsys5, default, rewrite; lowfat not run",
+  "status": "formal run 2026-11-16 on the lab server: asan, valgrind x memsys5, default, rewrite; lowfat not run",
   "capstone": {
     "repo": "project-starch/llvm-capstone",
     "branch": "dev",

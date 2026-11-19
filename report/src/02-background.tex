@@ -3,65 +3,21 @@
 
 \subsection{How the detectors track memory}
 
-\paragraph{AddressSanitizer.} ASan~\cite{serebryany2012asan} is compiler instrumentation. One shadow
-byte describes eight bytes of application memory and says how many of them are addressable. ASan's
-runtime replaces \code{malloc}: every block is surrounded by \emph{redzones} whose shadow is marked
-unaddressable, and a freed block is poisoned and kept in a \emph{quarantine} so that its memory is
-not handed out again soon. Every load and store is preceded by a shadow check. Large requests are
-served by a separate path that maps each block on its own. ASan therefore knows each block's
-requested size and whether it is live, but only for blocks it allocated itself. For memory it did
-not allocate, a program can describe addressability through \emph{manual poisoning},
-\code{ASAN\_POISON\_MEMORY\_REGION} and \code{ASAN\_UNPOISON\_MEMORY\_REGION}~\cite{asanpoison}.
-The interface describes bytes, not objects: nothing in it can say that an object was freed.
+\paragraph{AddressSanitizer.} ASan~\cite{serebryany2012asan} is compiler instrumentation. One shadow byte describes eight bytes of application memory and says how many of them are addressable. ASan's runtime replaces \code{malloc}: every block is surrounded by \emph{redzones} whose shadow is marked unaddressable, and a freed block is poisoned and kept in a \emph{quarantine} so that its memory is not handed out again soon. Every load and store is preceded by a shadow check. Large requests are served by a separate path that maps each block on its own. ASan therefore knows each block's requested size and whether it is live, but only for blocks it allocated itself. For memory it did not allocate, a program can describe addressability through \emph{manual poisoning}, \code{ASAN\_POISON\_MEMORY\_REGION} and \code{ASAN\_UNPOISON\_MEMORY\_REGION}~\cite{asanpoison}. The interface describes bytes, not objects: nothing in it can say that an object was freed.
 
-\paragraph{Valgrind Memcheck.} Memcheck~\cite{nethercote2007valgrind} runs an unmodified binary on a
-synthetic CPU and shadows every byte with an addressability bit and definedness bits. Its own
-\code{malloc} places a redzone (16 bytes by default) on each side of a block and delays reuse of
-freed blocks. A program can tell Memcheck about objects it manages itself through client
-requests~\cite{valgrindmanual}: \code{VALGRIND\_CREATE\_MEMPOOL} declares a pool,
-\code{VALGRIND\_MEMPOOL\_ALLOC} and \code{VALGRIND\_MEMPOOL\_FREE} declare an object's birth and
-death inside it, and \code{VALGRIND\_MAKE\_MEM\_NOACCESS} marks bytes unaddressable. Unlike ASan's
-poisoning, the pool requests model ownership, so Memcheck can report a free of something that was
-never allocated or was already freed.
+\paragraph{Valgrind Memcheck.} Memcheck~\cite{nethercote2007valgrind} runs an unmodified binary on a synthetic CPU and shadows every byte with an addressability bit and definedness bits. Its own \code{malloc} places a redzone (16 bytes by default) on each side of a block and delays reuse of freed blocks. A program can tell Memcheck about objects it manages itself through client requests~\cite{valgrindmanual}: \code{VALGRIND\_CREATE\_MEMPOOL} declares a pool, \code{VALGRIND\_MEMPOOL\_ALLOC} and \code{VALGRIND\_MEMPOOL\_FREE} declare an object's birth and death inside it, and \code{VALGRIND\_MAKE\_MEM\_NOACCESS} marks bytes unaddressable. Unlike ASan's poisoning, the pool requests model ownership, so Memcheck can report a free of something that was never allocated or was already freed.
 
-\paragraph{HWASan.} Hardware-assisted ASan follows the memory-tagging idea behind Arm
-MTE~\cite{serebryany2018mte,hwasandesign}. Memory is divided into 16-byte granules and each granule
-carries an 8-bit tag in shadow memory. \code{malloc} gives each new block a random tag, writes it to
-the block's granules and returns a pointer that carries the same tag in its top byte, and \code{free}
-retags the granules. Every access compares the pointer's tag with the granule's tag. An overflow into
-a neighbour or a use after free meets a different tag, without redzones or a quarantine. A block
-whose size is not a multiple of 16 ends in a \emph{short granule} whose shadow value records how many
-bytes are valid. Detection is probabilistic: two tags coincide with probability about 1/256. The
-hardware must ignore the tag bits when it dereferences a pointer, which AArch64 does (Top Byte
-Ignore) and x86-64 does only with Linear Address Masking (LAM). Allocators can tag their own memory
-with \code{\_\_hwasan\_tag\_memory} and \code{\_\_hwasan\_tag\_pointer}, an interface that works on
-whole granules only.
+\paragraph{HWASan.} Hardware-assisted ASan follows the memory-tagging idea behind Arm MTE~\cite{serebryany2018mte,hwasandesign}. Memory is divided into 16-byte granules and each granule carries an 8-bit tag in shadow memory. \code{malloc} gives each new block a random tag, writes it to the block's granules and returns a pointer that carries the same tag in its top byte, and \code{free} retags the granules. Every access compares the pointer's tag with the granule's tag. An overflow into a neighbour or a use after free meets a different tag, without redzones or a quarantine. A block whose size is not a multiple of 16 ends in a \emph{short granule} whose shadow value records how many bytes are valid. Detection is probabilistic: two tags coincide with probability about 1/256. The hardware must ignore the tag bits when it dereferences a pointer, which AArch64 does (Top Byte Ignore) and x86-64 does only with Linear Address Masking (LAM). Allocators can tag their own memory with \code{\_\_hwasan\_tag\_memory} and \code{\_\_hwasan\_tag\_pointer}, an interface that works on whole granules only.
 
-\paragraph{UBSan and LowFat.} We also investigated UBSan's \code{bounds} and \code{object-size}
-checks and LowFat~\cite{duck2016lowfat}. UBSan inserts local checks that rely on sizes the compiler
-can see and keeps no record of heap blocks at run time. LowFat allocates each size class from its own
-large region of virtual memory, so the bounds of an object can be computed from its address alone,
-and checks pointer arithmetic against them; it covers spatial errors only. \S\ref{sec:limits}
-explains why neither entered the detection matrix.
+\paragraph{UBSan and LowFat.} We also investigated UBSan's \code{bounds} and \code{object-size} checks and LowFat~\cite{duck2016lowfat}. UBSan inserts local checks that rely on sizes the compiler can see and keeps no record of heap blocks at run time. LowFat allocates each size class from its own large region of virtual memory, so the bounds of an object can be computed from its address alone, and checks pointer arithmetic against them; it covers spatial errors only. \S\ref{sec:limits} explains why neither entered the detection matrix.
 
 \subsection{Custom allocators and why they hide objects}
 
-A CMA takes a block from \code{malloc} (or a static array) and manages its interior itself. The
-allocators we study cover the common designs:
+A CMA takes a block from \code{malloc} (or a static array) and manages its interior itself. The allocators we study cover the common designs:
 \begin{itemize}
-\item \textbf{Arena (bump) allocator.} Objects are carved one after another from the block. Freeing
-  one object does not make its memory reusable, and the whole arena is released at once.
-\item \textbf{Size-class free list.} Each size class keeps a list of free slots: \code{free} pushes a
-  slot and the next request of that class pops it, so reuse is immediate. The link to the next free
-  slot is stored inside the free slot.
-\item \textbf{Buddy allocator} (SQLite memsys5~\cite{sqlitemalloc}). A fixed heap is split into
-  power-of-two blocks that are split and coalesced on demand.
-\item \textbf{Lookaside cache} (SQLite). Each database connection keeps a slab of small fixed-size
-  slots for short-lived objects and falls back to the general allocator for larger ones.
+\item \textbf{Arena (bump) allocator.} Objects are carved one after another from the block. Freeing one object does not make its memory reusable, and the whole arena is released at once.
+\item \textbf{Size-class free list.} Each size class keeps a list of free slots: \code{free} pushes a slot and the next request of that class pops it, so reuse is immediate. The link to the next free slot is stored inside the free slot.
+\item \textbf{Buddy allocator} (SQLite memsys5~\cite{sqlitemalloc}). A fixed heap is split into power-of-two blocks that are split and coalesced on demand.
+\item \textbf{Lookaside cache} (SQLite). Each database connection keeps a slab of small fixed-size slots for short-lived objects and falls back to the general allocator for larger ones.
 \end{itemize}
-To a \code{malloc}-granular detector all of these look the same: one live block. Four properties
-decide what it can still see. Objects are adjacent, with at most alignment slack between them and no
-redzones. A freed object is still inside a live block, so its memory stays addressable. Under
-immediate reuse a stale pointer and the pointer of the new owner hold the same address. And when the
-whole pool is released, the detector sees one large \code{free}, whatever objects were inside.
-Figure~\ref{fig:offsets} in \S\ref{sec:corpus} illustrates the resulting layout and fault sites.
+To a \code{malloc}-granular detector all of these look the same: one live block. Four properties decide what it can still see. Objects are adjacent, with at most alignment slack between them and no redzones. A freed object is still inside a live block, so its memory stays addressable. Under immediate reuse a stale pointer and the pointer of the new owner hold the same address. And when the whole pool is released, the detector sees one large \code{free}, whatever objects were inside. Figure~\ref{fig:offsets} in \S\ref{sec:corpus} illustrates the resulting layout and fault sites.

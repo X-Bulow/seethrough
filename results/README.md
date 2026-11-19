@@ -1,56 +1,20 @@
-# results
+# Results
 
-One directory per run: `YYYY-MM-DD-<label>/` with `env.txt`, `matrix.csv` (`real.csv` for `corpus/real/`, or the benchmark
-CSV) and the raw `.stdout` / `.stderr` of every run. Written by `harness/run-matrix.py`, `harness/run-real.py` or
-`benchmarks/*/run.sh`, committed as-is, never edited.
+Each bundle contains CSV measurements, `env.txt`, and raw output and timing files. Report generation and audits read these files directly.
 
-| bundle | what | status |
-|---|---|---|
-| [2026-11-10-ec2-b-pilot/](2026-11-10-ec2-b-pilot/) | EC2 positive-control pilot, case 0 malloc under ASan and Valgrind | complete; 4 rows, 2 CLEAN controls |
-| [2026-11-10-ec2-b-core/](2026-11-10-ec2-b-core/) | EC2 malloc, Arena and Free list; annotation off/on; ASan and Valgrind | complete; 384 rows, 192 CLEAN controls |
-| [2026-11-10-ec2-b-memsys5/](2026-11-10-ec2-b-memsys5/) | EC2 SQLite 3.53.3 memsys5; annotation off/on | complete; 128 rows, 64 CLEAN controls |
-| [2026-11-10-ec2-b-lookaside/](2026-11-10-ec2-b-lookaside/) | EC2 SQLite 3.53.3 lookaside, unannotated | complete; 64 rows, 32 CLEAN controls |
-| [2026-11-10-ec2-b-rewrite/](2026-11-10-ec2-b-rewrite/) | EC2 Arena and Free-list libc rewrites | complete; 128 rows, 64 CLEAN controls |
-| [2026-11-10-allocator-churn-IkUTIU/](2026-11-10-allocator-churn-IkUTIU/) | EC2 annotation overhead and rewrite performance | complete; 90 successful runs, five per setting |
-| [2026-11-13-lab-core/](2026-11-13-lab-core/) | Lab server, formal: malloc, Arena and Free list; annotation off/on; ASan and Valgrind | complete; 384 rows, 192 CLEAN controls |
-| [2026-11-13-lab-memsys5/](2026-11-13-lab-memsys5/) | Lab server, formal: SQLite 3.53.3 memsys5; annotation off/on | complete; 128 rows, 64 CLEAN controls |
-| [2026-11-13-lab-lookaside/](2026-11-13-lab-lookaside/) | Lab server, formal: SQLite 3.53.3 lookaside, unannotated | complete; 64 rows, 32 CLEAN controls |
-| [2026-11-13-lab-rewrite/](2026-11-13-lab-rewrite/) | Lab server, formal: Arena and Free-list libc rewrites | complete; 128 rows, 64 CLEAN controls |
-| [2026-11-13-lima-hwasan/](2026-11-13-lima-hwasan/) | HWASan (A5.8/A5.9): malloc, Arena and Free list; annotation off/on; aarch64 Lima VM on the M5 Mac | complete; 192 rows, 96 CLEAN controls; case 4 malloc MISSED by a tag collision (198 of 200 reruns detected, see [docs/hwasan.md](../docs/hwasan.md)) |
-| [2026-11-16-lab-real/](2026-11-16-lab-real/) | Lab server, formal (A7.5): 4 real SQLite 3.22.0 bugs (`corpus/real`) x memsys5, default, rewrite; ASan and Valgrind | complete; 24 rows; positive controls and the asan/rewrite gate passed; real bugs have no negative controls (see [corpus/real/README.md](../corpus/real/README.md)) |
+| Bundle | Experiment |
+|---|---|
+| [2026-11-10-ec2-b-pilot/](2026-11-10-ec2-b-pilot/)  |  EC2 positive-control pilot, case 0 malloc under ASan and Valgrind |
+| [2026-11-10-ec2-b-core/](2026-11-10-ec2-b-core/)  |  EC2 malloc, Arena and Free list; annotation off/on; ASan and Valgrind |
+| [2026-11-10-ec2-b-memsys5/](2026-11-10-ec2-b-memsys5/)  |  EC2 SQLite 3.53.3 memsys5; annotation off/on |
+| [2026-11-10-ec2-b-lookaside/](2026-11-10-ec2-b-lookaside/)  |  EC2 SQLite 3.53.3 lookaside, unannotated |
+| [2026-11-10-ec2-b-rewrite/](2026-11-10-ec2-b-rewrite/)  |  EC2 Arena and Free-list libc rewrites |
+| [2026-11-10-allocator-churn-IkUTIU/](2026-11-10-allocator-churn-IkUTIU/)  |  EC2 annotation overhead and rewrite performance |
+| [2026-11-13-lab-core/](2026-11-13-lab-core/)  |  Lab server, formal: malloc, Arena and Free list; annotation off/on; ASan and Valgrind |
+| [2026-11-13-lab-memsys5/](2026-11-13-lab-memsys5/)  |  Lab server, formal: SQLite 3.53.3 memsys5; annotation off/on |
+| [2026-11-13-lab-lookaside/](2026-11-13-lab-lookaside/)  |  Lab server, formal: SQLite 3.53.3 lookaside, unannotated |
+| [2026-11-13-lab-rewrite/](2026-11-13-lab-rewrite/)  |  Lab server, formal: Arena and Free-list libc rewrites |
+| [2026-11-13-lima-hwasan/](2026-11-13-lima-hwasan/)  |  HWASan: malloc, Arena and Free list; annotation off/on; aarch64 Lima VM on the M5 Mac |
+| [2026-11-16-lab-real/](2026-11-16-lab-real/)  |  Lab server, formal results: 4 real SQLite 3.22.0 bugs (`corpus/real`) x memsys5, default, rewrite; ASan and Valgrind |
 
-The five EC2 B bundles above use commit `2763402`, Ubuntu 26.04 x86-64,
-clang/ASan 21.1.8 and Valgrind 3.26.0. The four full detection bundles
-have 352 bug rows and 352 paired controls. All controls are CLEAN; there
-are no `TOOL-ERROR` or `FALSE-POSITIVE` verdicts. See
-[Part B report](../report/part-b.md) for counts and interpretation. The EC2
-performance bundle is separate from C's VirtualBox benchmark bundles below.
-
-The four lab bundles are the formal ASan and Valgrind results (A2.9, A5): commit `6b54739`, an
-LXD container on the lab server (Ubuntu 26.04.1, host kernel 6.12.111, Intel Xeon Gold 6230,
-glibc 2.43), clang/ASan 21.1.8 and Valgrind 3.26.0. All 352 controls are CLEAN, with no
-`TOOL-ERROR` or `FALSE-POSITIVE`, and every one of the 352 bug cells has the same verdict as the
-corresponding EC2 bundle, which therefore stands as a replication on a second x86-64 machine.
-
-The HWASan bundle uses commit `c214ad3`, Ubuntu 26.04.1 aarch64 (kernel
-7.0.0-43) in a Lima VM, clang 21.1.8 linked with lld. HWASan cannot run on
-the x86-64 machines (no LAM; the x86-64 aliasing mode does not check the
-allocators' 1 MiB pools), so its column comes from a different machine and
-architecture than the ASan and Valgrind columns.
-
-`scratch-*/` bundles are gitignored: laptop smoke runs go there and never into the table.
-
-A superseded bundle stays and gets a line here saying what replaced it and why.
-
-## SQLite speedtest1（2026-11-05）
-
-SQLite 3.50.4，VirtualBox Ubuntu 26.04。
-统一使用 --memdb --size 100 --testset main。
-每组 baseline、ASan、Valgrind 各运行五次，无自定义分配边界标注。
-
-| bundle | 配置 | 状态 |
-|---|---|---|
-| 2026-11-05-sqlite-speedtest1-A3VkNv/ | SQLite 默认配置 | 已完成，共 15 次 |
-| 2026-11-05-sqlite-speedtest1-memsys5-LGSfcu/ | memsys5，256 MiB 池，最小分配 64 字节 | 已完成，共 15 次 |
-
-统计摘要和复现命令见 benchmarks/sqlite-speedtest1/README.md。
+Application benchmarks also include dated `sqlite-speedtest1` and `lua` bundles. See [environment details](../docs/environment.md) and [reproduction instructions](../docs/reproducibility.md). `scratch-*` runs are ignored.

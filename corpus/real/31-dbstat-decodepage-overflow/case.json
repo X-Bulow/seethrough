@@ -69,7 +69,7 @@
       "notes": "memsys5: Memcheck silent (the arena is a static array and Memcheck has no redzones around global data); ASan reports a global-buffer-overflow 34,968 bytes after the 256 KiB arena sqlite_heap, i.e. the arena's bound, not the page's. Default and rewrite: both report, ASan in heap redzone memory (wild pointer), Memcheck 12 KB (default) and 51 KB (rewrite) into unallocated heap: the read strides far past the page in every arm."
     }
   },
-  "status": "formal run 2026-11-16 on the lab server (A7.5): asan, valgrind x memsys5, default, rewrite; lowfat not run",
+  "status": "formal run 2026-11-16 on the lab server: asan, valgrind x memsys5, default, rewrite; lowfat not run",
   "capstone": {
     "repo": "project-starch/llvm-capstone",
     "branch": "dev",

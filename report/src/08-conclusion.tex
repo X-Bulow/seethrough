@@ -1,20 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Custom allocators hide most object-level errors from unannotated ASan, Memcheck and HWASan runs.
-Annotations recover much of this detection, but poisoning, ownership tracking and tagging leave
-different gaps. Rewrites restore \code{malloc}-level detection while changing the allocator
-behaviour needed to reproduce some bugs. The ASan and Memcheck verdicts replicate across two
-machines, and four real SQLite defects demonstrate the same distinction between object-level
-errors and diagnostics at a container boundary or a later symptom.
+Custom allocators hide most object-level errors from unannotated ASan, Memcheck and HWASan runs. Annotations recover much of this detection, but poisoning, ownership tracking and tagging leave different gaps. Rewrites restore \code{malloc}-level detection while changing the allocator behaviour needed to reproduce some bugs. The ASan and Memcheck verdicts replicate across two machines, and four real SQLite defects demonstrate the same distinction between object-level errors and diagnostics at a container boundary or a later symptom.
 
-Performance depends on the remedy: ASan annotations added modest median overhead on our allocator
-microbenchmark, while Memcheck annotations roughly doubled runtime. These measurements support
-combining complementary detectors and choosing between annotation and rewriting according to the
-allocator semantics that testing must preserve. A clean run of an unannotated pool does not
-establish the safety of its individual objects.
+Performance depends on the remedy: ASan annotations added modest median overhead on our allocator microbenchmark, while Memcheck annotations roughly doubled runtime. These measurements support combining complementary detectors and choosing between annotation and rewriting according to the allocator semantics that testing must preserve. A clean run of an unannotated pool does not establish the safety of its individual objects.
 
-\paragraph{Team contributions.} Cheng Zefeng (A): corpus, controls, harness, formal detection,
-HWASan and miss audit. Wei Yuning (B): allocators, ASan/Memcheck annotations, rewrites, SQLite
-layers, EC2 matrices and allocator benchmark. Xu Ruofan (C): tool setup, feasibility checks, SQLite
-and Lua benchmarks. All three wrote the report.
+\paragraph{Team contributions.} Cheng Zefeng (A): corpus, controls, harness, formal detection, HWASan and miss audit. Wei Yuning (B): allocators, ASan/Memcheck annotations, rewrites, SQLite layers, EC2 matrices and allocator benchmark. Xu Ruofan (C): tool setup, feasibility checks, SQLite and Lua benchmarks. All three wrote the report.

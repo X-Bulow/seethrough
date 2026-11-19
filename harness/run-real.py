@@ -1,23 +1,8 @@
 #!/usr/bin/env python3
-"""Build and run every corpus/real case on every (tool, arm); write results/<bundle>/real.csv.
+"""Run real SQLite defects and write real.csv with raw outputs.
 
-    run-real.py --tools asan valgrind --arms memsys5 default rewrite --cases all \
-                --out results/2026-11-10-server-real
-
-Gates, in order (the Capstone corpus convention: an infrastructure failure never reads as a
-measurement):
-  1. per tool, the plain-malloc positive controls in corpus/controls/ must be DETECTED
-     (shared with run-matrix.py), or the tool gets no rows and the script exits 75;
-  2. per case, the `rewrite` arm under asan must be DETECTED. It is the case's own positive
-     control: every SQLite object is its own malloc block there, so a silent run means the
-     trigger did not reach the defect on this build, and the case's other rows are
-     UNSUPPORTED rather than MISSED. (Needs asan in --tools and rewrite in --arms; otherwise
-     the gate is skipped and the CSV says so in `note`.)
-  3. per run, the case's own reachability line (case.json "reached") must appear on stdout,
-     or the row is TOOL-ERROR "trigger not reached".
-
-The engine is built by `make real-image` (one sqlite3.o per tool x arm x engine group,
-cached under build/engine/). Raw stdout/stderr sit beside the CSV, named like the row.
+Requires tool positive controls and per-run reachability markers. When selected,
+ASan/rewrite gates each case; a failed gate makes its other arms UNSUPPORTED.
 """
 import argparse, csv, importlib, json, subprocess, sys
 from pathlib import Path

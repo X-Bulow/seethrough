@@ -1,9 +1,7 @@
 #include "harness.h"
 
-/* Case 6 -- heap underflow, read, 1 byte before the start. Case 5's twin;
- * see that file for why the two sides of an object are not symmetric.
- *
- * NEGATIVE CONTROL: reads a[0]. */
+/* Case 6: Read one byte before the object; control reads its first byte.
+ * Pooled objects lack individual redzones without annotations. */
 ST_CASE(6) {
     unsigned char *first = st_alloc(24);
     unsigned char *a = st_alloc(24);

@@ -1,22 +1,8 @@
 #!/usr/bin/env bash
-# Fetch one pinned SQLite amalgamation and print the directory holding sqlite3.c / sqlite3.h.
-#
-#   tools/fetch-sqlite.sh 3.22.0     # corpus/real: the engine bugs are live in this release
-#   tools/fetch-sqlite.sh 3.53.3     # allocators/sqlite (memsys5, lookaside) and benchmarks/sqlite-speedtest1
-#
-# The source is never committed (sqlite3.c alone is 8-9 MB). It lives in $SEETHROUGH_CACHE,
-# default <repo>/vendor/ (gitignored). Not /tmp: on the lab server /tmp is shared and cleared on
-# reboot, and a pin that has to be re-fetched is one reboot away from "which bytes did we run".
-#
-# Both pins are the ones project-starch/llvm-capstone (dev) uses, so our cells are comparable
-# with its bug-corpora: 3.22.0 is the release of capstone/bug-corpora/sqlite/engine-repros
-# (stock amalgamation sha256 7991acd0..., recorded in its corpus bundles), 3.53.3 is its general
-# port (capstone/ports/sqlite/fetch-sqlite.sh, SHA3-256 d45c688a... of the zip). The hashes below
-# were computed from sqlite.org downloads on 2026-11-05 and agree with capstone's.
-#
-# Only the zip hash gates the fetch. The sqlite3.c hash is checked too so that a cache that
-# someone edited in place (an annotation patch applied by hand, say) is refused rather than
-# silently built. Patches go through allocators/sqlite/*.patch at build time, never into vendor/.
+# Download pinned SQLite source and print its directory.
+# Usage: fetch-sqlite.sh 3.22.0 (real defects) or 3.53.3 (allocator adapters).
+# Cache: $SEETHROUGH_CACHE or the ignored vendor/ directory.
+# Verify both the archive and sqlite3.c; apply patches only to build copies.
 set -euo pipefail
 
 REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)

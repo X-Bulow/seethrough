@@ -1,20 +1,7 @@
 #include "harness.h"
 
-/* Case 2 -- heap overflow, write, inside the allocator's own alignment slack.
- *
- * Why this is not case 0. A 24-byte request is rounded up to 32 by any
- * 16-byte-aligned allocator, so bytes 24..31 belong to no object at all: they
- * are the allocator's slack, not the neighbour's data. a[28] is therefore past
- * what the program asked for but inside what the allocator handed out.
- *
- * That is the dividing line between tools that remember the REQUEST and tools
- * that only know the BLOCK. ASan records the request and poisons the slack, so
- * it reports. LowFat's bounds are the size class, so 28 is in bounds for it.
- * An annotated arena reports only if it poisons the slack as well as the gap
- * to the neighbour, which is why allocators/arena/arena.c unpoisons exactly n
- * and not the rounded size.
- *
- * NEGATIVE CONTROL: writes a[23], the last byte of the request. */
+/* Case 2: Write a[28] into alignment slack beyond a 24-byte request.
+ * Exact-size poisoning detects it; 16-byte tagging cannot. Control writes a[23]. */
 ST_CASE(2) {
     unsigned char *a = st_alloc(24);
     unsigned char *b = st_alloc(24);

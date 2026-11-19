@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot five-run benchmark medians from results bundles (C5.6)."""
+"""Plot five-run benchmark medians from results bundles."""
 
 import argparse
 import csv

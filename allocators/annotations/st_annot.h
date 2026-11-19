@@ -1,14 +1,5 @@
-/* st_annot.h -- annotation macros an allocator calls. Expand to nothing when
- * ST_ANNOT is 0, so the unannotated arm is byte-identical allocator code.
- *
- * ASan:     ASAN_POISON_MEMORY_REGION / ASAN_UNPOISON_MEMORY_REGION  (<sanitizer/asan_interface.h>)
- * Valgrind: VALGRIND_CREATE_MEMPOOL / MEMPOOL_ALLOC / MEMPOOL_FREE / MAKE_MEM_NOACCESS  (<valgrind/memcheck.h>)
- * HWASan:   __hwasan_tag_memory / __hwasan_tag_pointer  (<sanitizer/hwasan_interface.h>)
- *
- * The build defines ST_TOOL_ASAN, ST_TOOL_VALGRIND or ST_TOOL_HWASAN (tools/flags.mk)
- * so the right header is pulled in. ASan and Valgrind can both be on at once (Valgrind
- * on an ASan binary is not a configuration we run, but the macros do not conflict).
- */
+/* Shared ASan, Memcheck, and HWASan hooks; no-ops when ST_ANNOT=0.
+ * ST_TOOL_* selects the detector interface (tools/flags.mk). */
 #ifndef SEETHROUGH_ANNOT_H
 #define SEETHROUGH_ANNOT_H
 
@@ -40,14 +31,9 @@
 #  define ST_DEFINED(p, n)                  ((void)0)
 #endif
 
-/* HWASan describes which allocation a pointer belongs to, not whether a byte is addressable.
- * The allocator gives each new object a fresh tag on its granules and returns a pointer that
- * carries it; when the object ends, its granules go back to the pool's own tag (the one
- * HWASan's malloc gave the backing block). A stale pointer keeps the old tag, so it mismatches
- * even after the storage is reissued. The allocator keeps its own pointers under the pool's
- * tag; ST_POOL_PTR turns a pointer the caller hands back into that form. Tags cover whole
- * 16-byte granules: the public interface cannot describe a short last granule, so slack up
- * to the next 16 bytes stays addressable (malloc's own short-granule encoding is internal). */
+/* Fresh object tags distinguish stale pointers after reuse; free restores the pool tag.
+ * ST_POOL_PTR retags allocator bookkeeping accesses. Public tags cover 16-byte granules,
+ * so alignment slack cannot be checked at byte precision. */
 #if ST_ANNOT && defined(ST_TOOL_HWASAN)
 #  include <stdint.h>
 #  include <sanitizer/hwasan_interface.h>

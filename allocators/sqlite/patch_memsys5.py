@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the B3 annotated memsys5 amalgamation from pinned SQLite 3.53.3.
+"""Generate the annotated memsys5 amalgamation from pinned SQLite 3.53.3.
 
 The source in vendor/ stays pristine. Every replacement must match once, so
 an upstream version change fails closed instead of silently omitting a hook.

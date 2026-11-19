@@ -2,11 +2,7 @@
 \section{The test programs}
 \label{app:cases}
 
-All objects are requested with \code{st\_alloc(24)} unless stated otherwise. In the Arena and the
-memsys5 layer a 24-byte object occupies a 32-byte slot, and in the Free list a 32-byte class slot.
-``Live neighbour'' means an object allocated next to the first one and not freed. Each directory
-\code{corpus/cases/caseNN-*/} contains the program, its \code{case.json} with per-tool expectations
-and reasons, and a README with a layout diagram.
+All objects are requested with \code{st\_alloc(24)} unless stated otherwise. In the Arena and the memsys5 layer a 24-byte object occupies a 32-byte slot, and in the Free list a 32-byte class slot. ``Live neighbour'' means an object allocated next to the first one and not freed. Each directory \code{corpus/cases/caseNN-*/} contains the program, its \code{case.json} with per-tool expectations and reasons, and a README with a layout diagram.
 
 \begin{center}\small
 \begin{tabularx}{\textwidth}{rX>{\raggedright\arraybackslash}p{5.2cm}}
@@ -33,28 +29,18 @@ and reasons, and a README with a layout diagram.
 \end{tabularx}
 \end{center}
 
-Cases 10 and 15 require immediate reuse, case 11 a moving \code{realloc} and case 12 a pool. The
-programs print \code{ST NOTE reuse=1}, \code{moved=1} and \code{pool=1} when the property holds, and
-the harness records the row as unsupported when it does not.
+Cases 10 and 15 require immediate reuse, case 11 a moving \code{realloc} and case 12 a pool. The programs print \code{ST NOTE reuse=1}, \code{moved=1} and \code{pool=1} when the property holds, and the harness records the row as unsupported when it does not.
 
 \section{Reproducing the results}
 \label{app:repro}
 
-From a clean clone on Ubuntu 26.04 x86-64, the server runner builds the four ASan/Memcheck
-matrices and the allocator microbenchmark:
-{\small
+From a clean clone on Ubuntu 26.04 x86-64, the server runner builds the four ASan/Memcheck matrices and the allocator microbenchmark: {\small
 \begin{verbatim}
 bash tools/setup-server.sh
 P=results/$(date +%F)-lab
-bash tools/run-part-b-server.sh "$P"
+bash tools/run-allocator-experiments.sh "$P"
 python3 harness/render-matrix.py $P-* --check
 python3 harness/audit-missed.py $P-* --list
 python3 harness/run-real.py --tools asan valgrind --out $P-real
 \end{verbatim}}
-HWASan uses \code{-{}-tools hwasan} in the AArch64 VM described in \code{docs/hwasan.md}.
-SQLite and Lua have separate benchmark scripts under \code{benchmarks/}. Archived input bundles,
-tool environments and source revisions are indexed in \code{results/README.md}; the benchmark
-summary CSVs identify each performance bundle. \code{make -C report tables} regenerates report
-tables, and \code{python report/scripts/check-repro.py} verifies regeneration of tables and figures
-from archived results in an isolated copy. This artifact check does not rerun the experimental
-programs or replace a full clean-clone execution.
+HWASan uses \code{-{}-tools hwasan} in the AArch64 VM described in \code{docs/hwasan.md}. SQLite and Lua have separate benchmark scripts under \code{benchmarks/}. Archived input bundles, tool environments and source revisions are indexed in \code{results/README.md}; the benchmark summary CSVs identify each performance bundle. \code{make -C report tables} regenerates report tables, and \code{python report/scripts/check-repro.py} verifies regeneration of tables and figures from archived results in an isolated copy. This artifact check does not rerun the experimental programs or replace a full clean-clone execution.

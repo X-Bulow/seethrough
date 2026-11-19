@@ -1,4 +1,4 @@
--- Fixed allocation/sort/GC workload for C5.5.
+-- Fixed allocation/sort/GC workload for measuring Lua tool overhead.
 local rounds = tonumber(arg[1]) or 20
 local count = tonumber(arg[2]) or 100000
 assert(math.type(rounds) == "integer" and rounds > 0, "rounds must be a positive integer")

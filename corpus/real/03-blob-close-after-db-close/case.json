@@ -68,7 +68,7 @@
       "notes": "memsys5 hides the use after free from both tools (silent, exit 0). In SQLite as shipped and in the rewrite the connection is a plain malloc block, and both tools report the read 704 bytes into the freed 712-byte connection."
     }
   },
-  "status": "formal run 2026-11-16 on the lab server (A7.5): asan, valgrind x memsys5, default, rewrite; lowfat not run",
+  "status": "formal run 2026-11-16 on the lab server: asan, valgrind x memsys5, default, rewrite; lowfat not run",
   "capstone": {
     "repo": "project-starch/llvm-capstone",
     "branch": "dev",

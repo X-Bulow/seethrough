@@ -1,24 +1,8 @@
 #!/usr/bin/env python3
-"""Render one or more matrix.csv files as the Detection Matrix for the report.
+"""Render matrix.csv bundles as Markdown or LaTeX detection tables.
 
-    render-matrix.py results/2026-11-10-ec2-b-core                       # markdown to stdout
-    render-matrix.py results/A results/B --tools asan valgrind --format latex --out matrix.tex
-    render-matrix.py results/2026-11-10-ec2-b-core --check               # compare with case.json
-
-Rows are cases, columns are (tool, arm). An arm is the allocator, plus "+annot" when the
-annotations were on: the same names `case.json` uses under "expected" ("arena+annot").
-Columns follow the order of --tools and of the arms present in the data, unless --arms is given.
-
-Bug-row verdicts are abbreviated D / M / U / FP / TE (DETECTED, MISSED, UNSUPPORTED,
-FALSE-POSITIVE, TOOL-ERROR). A MISSED whose note says the program crashed in the tool's signal
-handler is shown as M*. Below the cases: how many cells were DETECTED out of those that could
-be constructed (UNSUPPORTED cells are left out of the denominator), and how many controls ran
-CLEAN. Every control that did not run clean is listed under the table.
-
-A cell measured in two bundles is an error: the script never picks one silently.
-
---check compares every bug cell with the first word of case.json's expected[tool][arm] and
-lists the cells that differ; it exits 1 if any do. Cells without an expectation are skipped.
+Rejects duplicate cells. --check compares expected verdicts and exits 1 on mismatch.
+M* denotes a missed defect followed by a crash; UNSUPPORTED is excluded from detection rates.
 """
 import argparse, csv, json, sys
 from pathlib import Path

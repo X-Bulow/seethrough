@@ -4,8 +4,7 @@
 
 Upstream fix `c8c9cdd9dd`. Collected in round R1 (NVD and upstream history).
 
-The reduction is argued in the case source's own header, reproduced here so the
-claim travels with the case rather than living only in the build tree.
+The reduction is argued in the case source's own header, reproduced here so the claim travels with the case rather than living only in the build tree.
 
 ```
 new-5 / sqlite-c8c9cdd9dd -- writing an R-Tree while a read cursor is open frees

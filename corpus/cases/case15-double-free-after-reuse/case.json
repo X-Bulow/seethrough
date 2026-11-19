@@ -66,7 +66,7 @@
         "arena+annot": "UNSUPPORTED precondition not met"
       }
     },
-    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+    "2026-11-07 macOS arm64 smoke, allocators with side-table bookkeeping and size-class reuse (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
       "asan": {
         "malloc": "UNSUPPORTED precondition not met",
         "malloc+annot": "UNSUPPORTED precondition not met",
@@ -84,7 +84,7 @@
         "freelist+annot": "MISSED"
       }
     },
-    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; development measurement)": {
       "hwasan": {
         "malloc": "DETECTED invalid-free",
         "malloc+annot": "DETECTED invalid-free",
@@ -133,5 +133,5 @@
       }
     }
   },
-  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM"
 }

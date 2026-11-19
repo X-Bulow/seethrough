@@ -1,25 +1,7 @@
 #!/usr/bin/env python3
-"""Build and run every cell of the matrix, write results/<bundle>/matrix.csv.
+"""Build paired bug/control images and write matrix.csv with raw outputs.
 
-    run-matrix.py --tools asan valgrind --allocs malloc arena --annots 0 1 \
-                  --cases all --out results/2026-11-05-server
-
-For every tool: first the positive controls (corpus/controls/*.c, plain malloc). If either is
-not DETECTED the tool gets no verdicts this run and the script exits 75 (the Capstone corpus
-convention: an infrastructure failure can never be read as a measurement).
-
-Then for every (tool, alloc, annot, case): build the bug image and the control image via
-`make image ...`, run each under the tool with a timeout, classify, and append a row. The raw
-stdout/stderr of every run is kept beside the CSV, named like the row, so a verdict can be
-re-read without re-running.
-
-A case may declare a precondition in case.json ("requires": {"marker", "why"}): the marker it
-prints when the allocator really has the property the case needs (reuse on free, a realloc that
-moves). A bug row whose marker is absent is UNSUPPORTED, so a case that could not be constructed
-on this allocator never reads as a missed detection.
-
-Nothing here is specific to the lab server except the assumption that the tools are on PATH
-(tools/setup-server.sh).
+Positive-control failure exits 75. Missing case preconditions yield UNSUPPORTED.
 """
 import argparse, csv, json, os, subprocess, sys, time
 from pathlib import Path

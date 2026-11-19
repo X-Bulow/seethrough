@@ -1,20 +1,8 @@
 #!/usr/bin/env python3
-"""A5.13: check that every MISSED / FALSE-POSITIVE in the given bundles is a real miss.
+"""Audit recorded misses, controls, build settings, and replica agreement.
 
-    harness/audit-missed.py BUNDLE... [--replica BUNDLE...] [--list]
-
-For every bug row the matrix calls MISSED it checks, from the raw files the bundle keeps:
-  reached   stdout has ST READY, so the defect line was executed
-  finished  stdout has ST DONE and exit 0, or the row is a recorded crash after READY
-  silent    stderr carries no report of any tool (a broader pattern set than classify.py's),
-            except the signal-handler SEGV line of a recorded crash; no ST TIMEOUT
-  memcheck  Valgrind rows end with "ERROR SUMMARY: 0 errors"
-and it reports, as context, whether the same case is DETECTED by that tool on malloc (which
-shows the access is instrumented and executed), what case.json predicted, and whether a
-replica bundle (--replica, e.g. the EC2 run) gave the same verdict. It also checks the build
-setup the verdicts rely on: -O0 detection builds, a clean tree in env.txt, CLEAN controls.
-
-Exit 1 if any mechanical check fails; the categories of the misses are in docs/missed-review.md.
+Checks execution markers and raw diagnostics; exits 1 on failed checks.
+See docs/missed-review.md for usage.
 """
 import argparse, csv, json, re, sys
 from collections import Counter, defaultdict

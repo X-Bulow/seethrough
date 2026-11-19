@@ -1,9 +1,8 @@
-# LowFat 构建与验证
+# LowFat build and validation
 
-环境：实验室 VirtualBox VM 内的 Ubuntu 18.04 Docker 容器，glibc `2.27-3ubuntu1.6`；生成的编译器为 clang 4.0.0。
-上游：https://github.com/GJDuck/LowFat；commit：`20f8075dd1fd6588700262353c7ba619d82cea8f`。
+Environment: Ubuntu 18.04 Docker container inside the lab VirtualBox VM, glibc `2.27-3ubuntu1.6`; the resulting compiler is clang 4.0.0. Upstream: https://github.com/GJDuck/LowFat; commit: `20f8075dd1fd6588700262353c7ba619d82cea8f`.
 
-在项目根目录构建（需要 Docker；以下目录和容器名尚未存在）：
+Build from the project root (requires Docker; the directory and container names below must not already exist):
 
 ```bash
 set -euo pipefail
@@ -24,9 +23,9 @@ sudo docker run --name seethrough-lowfat18 --cpuset-cpus=0,1 \
 sudo docker commit seethrough-lowfat18 seethrough-lowfat18:built
 ```
 
-编译器路径：容器内 `/work/build/bin/clang`。构建日志：`build/LowFat-ubuntu18/build.log`。
+Compiler path inside the container: `/work/build/bin/clang`. Build log: `build/LowFat-ubuntu18/build.log`.
 
-在宿主 Ubuntu 中创建边界验证程序：
+Create a boundary validation program on the Ubuntu host:
 
 ```bash
 mkdir -p build/lowfat-controls
@@ -48,7 +47,7 @@ int main(int argc, char **argv) {
 EOF
 ```
 
-在同一容器环境中编译并运行原有 controls 和边界验证程序：
+Compile and run the original controls and boundary validation program in the same container environment:
 
 ```bash
 sudo docker run --rm --volumes-from seethrough-lowfat18 \
@@ -75,13 +74,13 @@ sudo docker run --rm --volumes-from seethrough-lowfat18 \
   '
 ```
 
-验证结果：原版配置检查输出 `OK`，完整构建及自带测试通过。项目测试均使用 `-O0 -g -fsanitize=lowfat`。
+Validation: the upstream configuration check printed `OK`; the full build and bundled tests passed. All project tests use `-O0 -g -fsanitize=lowfat`.
 
-| 测试 | 结果 |
+| Test | Result |
 | --- | --- |
-| `positive-overflow.c`：`malloc(64)` 后写 `p[64]` | `ST DONE`，exit 0，未检测 |
-| `positive-uaf.c` | `ST DONE`，exit 0，未检测 |
-| 安全访问：`malloc(64)` 后写 `p[0]` | `ST DONE`，正常退出 |
-| 越界访问：同一程序写 `p[128]` | `LOWFAT ERROR: out-of-bounds error detected!`，exit 134 |
+| `positive-overflow.c`: write `p[64]` after `malloc(64)` | `ST DONE`, exit 0, not detected |
+| `positive-uaf.c` | `ST DONE`, exit 0, not detected |
+| Safe access: write `p[0]` after `malloc(64)` | `ST DONE`, normal exit |
+| Out-of-bounds access: write `p[128]` in the same program | `LOWFAT ERROR: out-of-bounds error detected!`, exit 134 |
 
-越界日志报告 `operation = write`、`size = 80`、`overflow = +48`：64 字节请求实际分配为 80 字节，`p[64]` 位于填充空间，`p[128]` 超出分配边界。已验证该容器中的分配边界检测；两个原有 positive controls 未通过，完整矩阵和性能实验尚未运行。
+The overflow log reports `operation = write`, `size = 80`, and `overflow = +48`: a 64-byte request receives an 80-byte allocation, so `p[64]` falls in padding while `p[128]` crosses the allocation boundary. Allocation-boundary detection was verified in this container; the two original positive controls did not pass, and the full matrix and performance experiments have not been run.

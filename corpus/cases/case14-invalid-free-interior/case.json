@@ -20,7 +20,7 @@
       "arena+annot": "DETECTED",
       "freelist": "MISSED",
       "freelist+annot": "DETECTED",
-      "why": "MEMPOOL_FREE of an address that is not a pool allocation is reported as an invalid free; both annotated pools pass a+8 to it (the arena since B1.2)."
+      "why": "MEMPOOL_FREE of an address that is not a pool allocation is reported as an invalid free; both annotated pools pass a+8 to it (including the arena)."
     },
     "hwasan": {
       "malloc": "MISSED",
@@ -62,7 +62,7 @@
         "arena+annot": "MISSED"
       }
     },
-    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+    "2026-11-07 macOS arm64 smoke, allocators with side-table bookkeeping and size-class reuse (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
       "asan": {
         "malloc": "DETECTED attempting",
         "malloc+annot": "DETECTED attempting",
@@ -80,7 +80,7 @@
         "freelist+annot": "MISSED"
       }
     },
-    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; development measurement)": {
       "hwasan": {
         "malloc": "MISSED",
         "malloc+annot": "MISSED",
@@ -129,5 +129,5 @@
       }
     }
   },
-  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM"
 }

@@ -1,13 +1,7 @@
 #include "harness.h"
 
-/* Case 0 -- heap overflow, write, 1 byte past the end.
- *
- * Two 24-byte objects allocated back to back. The defect writes a[24], which
- * under malloc lands in the allocator's padding / ASan redzone, and under an
- * arena lands in b[0] (or in b's header, if the arena has one).
- *
- * NEGATIVE CONTROL (-DST_NEGATIVE_CONTROL): the same two allocations, the same
- * memset, and the write goes to a[23] -- the last valid byte -- instead. */
+/* Case 0: Write a[24] past a 24-byte allocation; control writes a[23].
+ * Pool alignment slack hides the overflow unless annotated. */
 ST_CASE(0) {
     unsigned char *a = st_alloc(24);
     unsigned char *b = st_alloc(24);

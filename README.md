@@ -1,88 +1,35 @@
 # seethrough
 
-**Do Memory-Safety Detectors See Through Custom Allocators?**
-CS5439 Assignment 2 — Cheng Zefeng, Wei Yuning, Xu Ruofan. Due 2026-11-19.
+**Do Memory-Safety Detectors See Through Custom Allocators?** CS5439 Assignment 2 — Cheng Zefeng, Wei Yuning, Xu Ruofan.
 
-Two questions, one table and one set of plots:
+Memory-safety tools usually track individual allocations made through `malloc`. Custom allocators divide larger memory pools into smaller objects, which can hide object boundaries and lifetimes from those tools. An overflow or use-after-free inside a pool may therefore go undetected.
 
-- **Q1 Detection.** For the same bug, what does each tool lose when the object comes from a
-  custom memory allocator (CMA) instead of `malloc`, and what do the tool's own annotations
-  (ASan manual poisoning, Valgrind mempool requests) win back?
-- **Q2 Overhead.** What do the tools cost in time and peak memory on real programs that use
-  CMAs heavily, with and without annotations?
+We investigate two questions:
 
-The professor's feedback and what we do about each point is in
-[docs/professor-feedback.md](docs/professor-feedback.md). The task list, one line per task,
-is [TASKS.md](TASKS.md).
+- **Detection:** Which defects do ASan, Valgrind Memcheck, and HWASan miss with custom allocators, and how much detection can explicit tool annotations recover?
+- **Overhead:** What runtime and memory costs do the tools and annotations add, and how do they compare with replacing pooled allocation with individual malloc calls?
 
-## Layout
+The detection experiments run 16 constructed defects with paired controls across malloc, arena, free-list, and SQLite allocators. Four real SQLite defects test whether the same effects appear in an application. SQLite speedtest1, Lua, and an allocator-churn workload measure performance; churn isolates annotation and rewrite costs. The harness records verdicts and raw outputs, and report scripts turn the measurements into tables and figures.
 
-| directory | owner | what lives there |
-|---|---|---|
-| `corpus/` | A | the test programs. `cases/` holds 16 constructed defects with known ground truth (five classes, read and write forms, plus the variants that isolate one allocator property) and their negative controls; `include/alloc.h` is the unified allocator interface; `controls/` the positive controls; `real/` four real SQLite 3.22.0 defects ported from capstone's engine-repros (Tier 2) |
-| `allocators/` | B | one implementation of `alloc.h` per allocator layer: `malloc`, `arena`, `freelist`, `sqlite` (memsys5 / lookaside); `annotations/` holds the ASan and Valgrind annotation macros |
-| `harness/` | A | `run-matrix.py` builds and runs tool x allocator x annotation x case and writes one CSV; `run-real.py` does the same for `corpus/real/` over tool x arm; `classify.py` turns a tool's output into a verdict |
-| `tools/` | C | compile flags per tool (`flags.mk`), `setup-server.sh` that installs or builds the pinned tool versions on the lab server, `env.sh` that records them |
-| `benchmarks/` | C | Q2: SQLite speedtest1, PostgreSQL subset, Lua or CPython |
-| `results/` | all | raw outputs and CSVs, one directory per run, never edited by hand |
-| `docs/` | all | design notes, the test-program explanations, the environment record |
-| `report/` | all | pointer to the Overleaf report; figures regenerated from `results/` |
+## Repository layout
 
-## The experiment in one sentence
-
-Every case is compiled once per cell of the matrix
-
-    tool       x  allocator  x  annotation  x  case  x  {bug, control}
-    asan          malloc        off            7 classes   bug = defect present
-    valgrind      arena         on             (x read/     control = same allocation
-    hwasan        freelist                      write)      traffic, the invalid
-    ubsan         memsys5                                   access replaced
-    lowfat        lookaside                                 (x86-64 Linux, the lab server)
-
-and the run is read into one of five verdicts (see below). A tool x allocator cell is only
-trusted if the positive control for that tool (plain `malloc` use-after-free and overflow)
-was DETECTED in the same run; otherwise the whole cell is TOOL-ERROR, not MISSED.
-
-## Verdicts
-
-| verdict | meaning |
+| Directory | Contents |
 |---|---|
-| `DETECTED` | the tool reported the defect, at the right site, and the control image ran clean |
-| `MISSED` | the bug image produced no valid defect report and the control ran clean; a signal-handler SEGV alone does not count as detection |
-| `FALSE-POSITIVE` | the control image (no defect) produced a report |
-| `UNSUPPORTED` | the tool cannot build or run this configuration at all (e.g. HWASan on an x86-64 CPU without LAM) |
-| `TOOL-ERROR` | the positive control failed, or the tool crashed: the cell carries no information |
-| `CLEAN` | control rows only: the no-defect image ran to completion with no report, as it should |
+| [corpus](corpus/README.md) | Defect cases and controls |
+| [allocators](allocators/README.md) | Allocator implementations and annotations |
+| [harness](harness/README.md) | Build, run, classify, and audit tools |
+| [benchmarks](benchmarks/README.md) | SQLite, Lua, and allocator-churn workloads |
+| [tools](tools/README.md) | Environment setup, compiler flags, and downloads |
+| [results](results/README.md) | Measurements and raw experiment outputs |
+| [docs](docs/reproducibility.md) | Reproduction and platform guides |
+| [report](report/README.md) | LaTeX source and generated tables and figures |
 
-## Running
+## Getting started
 
-    make help                                  # all targets
-    make case CASE=case00-heap-overflow-write TOOL=asan ALLOC=malloc ANNOT=0
-    make control CASE=case00-heap-overflow-write TOOL=asan ALLOC=arena ANNOT=1
-    make case CASE=case08-use-after-free-write TOOL=asan ALLOC=memsys5 ANNOT=1
-    python3 harness/run-matrix.py --tools asan valgrind --allocs malloc arena --out results/$(date +%F)-local
-    python3 harness/render-matrix.py results/<bundle> --check            # Detection Matrix + diff against case.json
-    python3 harness/run-real.py   --tools asan valgrind --out results/$(date +%F)-local-real   # corpus/real, fetches SQLite 3.22.0 into vendor/
-    bash tools/run-part-b-server.sh results/$(date +%F)-server-b             # full Part B matrix and overhead
+Run `make help` for build targets. On Linux with the required tools installed:
 
-Part B's formal ASan/Valgrind detection and allocator-churn performance runs used an AWS EC2
-Ubuntu 26.04 x86-64 VM; C's SQLite speedtest runs used a separate VirtualBox Ubuntu 26.04
-x86-64 VM. The [results index](results/README.md) and [Part B report](report/part-b.md)
-label each environment. Tool versions are recorded by `tools/setup-server.sh` and
-`tools/env.sh`. LowFat uses the separate
-Ubuntu 18.04 container documented in `docs/lowfat.md`. Laptop and arm64 Docker runs are
-development checks only; they go under ignored `results/scratch-*/`, not committed bundles.
+```bash
+make case CASE=case00-heap-overflow-write TOOL=asan ALLOC=malloc ANNOT=0
+```
 
-## Conventions we took from the Capstone bug corpora
-
-The layout follows `capstone/bug-corpora` in project-starch/llvm-capstone (dev branch):
-
-- one directory per case, named `caseNN-<slug>` with dense numeric prefixes;
-- `case.c` holds the sequence inside `ST_CASE(NN)`; `case.json` holds the machine-readable claims
-  (class, access kind, object, expected fault site, per-arm verdicts with `verdict_from`);
-- every case has a **negative control** under `-DST_NEGATIVE_CONTROL` that keeps the allocation
-  and free traffic byte for byte and replaces only the invalid access;
-- every runner executes a **positive control** before any case and exits 75 with no verdict if
-  the control is not detected, so an infrastructure failure can never be read as a measurement;
-- results are a committed bundle under `results/<date>-<arm>/`, and every verdict in a
-  `case.json` names the bundle it came from.
+See [tool setup](tools/README.md) and [reproducibility](docs/reproducibility.md) for complete workflows.

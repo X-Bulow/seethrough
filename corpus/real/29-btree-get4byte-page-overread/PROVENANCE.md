@@ -4,8 +4,7 @@
 
 Upstream fix `FZ02`. Collected in round R2 (fuzz-corpus diff).
 
-The reduction is argued in the case source's own header, reproduced here so the
-claim travels with the case rather than living only in the build tree.
+The reduction is argued in the case source's own header, reproduced here so the claim travels with the case rather than living only in the build tree.
 
 ```
 fz02 -- R2 fuzz-corpus diff image, trigger re-derived 2026-10-03.

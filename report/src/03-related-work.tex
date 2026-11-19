@@ -1,24 +1,10 @@
 \section{Related work}
 \label{sec:related}
 
-\paragraph{Custom allocators and sanitizers.} CMASan~\cite{hong2025cmasan} extends ASan to recognise
-custom allocator functions and protect their objects, finding 19 previously missed bugs. We instead
-keep the tools unchanged and compare existing annotation interfaces and allocator rewrites across
-ASan, Memcheck and HWASan. Controlled defects separate missing object boundaries from limitations
-of the interfaces themselves.
+\paragraph{Custom allocators and sanitizers.} CMASan~\cite{hong2025cmasan} extends ASan to recognise custom allocator functions and protect their objects, finding 19 previously missed bugs. We instead keep the tools unchanged and compare existing annotation interfaces and allocator rewrites across ASan, Memcheck and HWASan. Controlled defects separate missing object boundaries from limitations of the interfaces themselves.
 
-\paragraph{Evaluating sanitizers.} Song et al.~\cite{song2019sok} survey sanitizer guarantees;
-MSET~\cite{vintila2025mset} systematically evaluates detection with generated test programs; and
-Jung et al.~\cite{jung2025practice} examine usability, performance and security guarantees.
-Juliet~\cite{nist2017juliet} and Song et al.'s cross-platform suite~\cite{song2021testsuite} cover
-defect classes. We add the allocator layer as an experimental dimension. Our case organisation
-and gated runs follow Capstone's bug corpora~\cite{capstone}, which also supplied the four real
-SQLite defects used for validation (\S\ref{sec:tier2}).
+\paragraph{Evaluating sanitizers.} Song et al.~\cite{song2019sok} survey sanitizer guarantees; MSET~\cite{vintila2025mset} systematically evaluates detection with generated test programs; and Jung et al.~\cite{jung2025practice} examine usability, performance and security guarantees. Juliet~\cite{nist2017juliet} and Song et al.'s cross-platform suite~\cite{song2021testsuite} cover defect classes. We add the allocator layer as an experimental dimension. Our case organisation and gated runs follow Capstone's bug corpora~\cite{capstone}, which also supplied the four real SQLite defects used for validation (\S\ref{sec:tier2}).
 
-\paragraph{Compiler effects.} Optimisations can remove undefined accesses before a sanitizer checks
-them~\cite{isemann2023ub}. Detection therefore uses \code{-O0}; performance uses \code{-O2}.
+\paragraph{Compiler effects.} Optimisations can remove undefined accesses before a sanitizer checks them~\cite{isemann2023ub}. Detection therefore uses \code{-O0}; performance uses \code{-O2}.
 
-\paragraph{Allocators and hardware memory safety.} Memory tagging~\cite{serebryany2018mte} and
-CHERI~\cite{watson2015cheri} also depend on allocator cooperation. A CHERI allocator must establish
-bounds and revoke stale capabilities~\cite{filardo2020cornucopia,bramley2023cheri}; our HWASan
-experiments show the analogous dependence on object tagging and annotation granularity.
+\paragraph{Allocators and hardware memory safety.} Memory tagging~\cite{serebryany2018mte} and CHERI~\cite{watson2015cheri} also depend on allocator cooperation. A CHERI allocator must establish bounds and revoke stale capabilities~\cite{filardo2020cornucopia,bramley2023cheri}; our HWASan experiments show the analogous dependence on object tagging and annotation granularity.

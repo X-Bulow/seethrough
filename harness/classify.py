@@ -1,18 +1,8 @@
 #!/usr/bin/env python3
-"""Turn one run (stdout, stderr, exit code, tool) into a verdict.
+"""Classify detector output using execution markers and report signatures.
 
-    DETECTED        the tool printed a report AND the stdout shows ST READY (the defect was reached)
-    MISSED          ST DONE printed, exit 0, no report
-    FALSE-POSITIVE  (decided by the caller) the control image got DETECTED
-    TOOL-ERROR      no ST READY, or a crash with no report, or a report before READY
-    UNSUPPORTED     (decided by the caller) the build failed for this tool x allocator, or the
-                    case's precondition marker from case.json "requires" is absent (run-matrix.py)
-
-Each tool's report signature is one regex. Add tools here only. Checked against real output:
-Valgrind on the four EC2 x86-64 bundles of 2026-11-10 (every error Memcheck printed is an
-Invalid read / write / free, and no row with a nonzero ERROR SUMMARY was classified MISSED);
-HWASan on the 192-row development run in the aarch64 VM, docs/hwasan.md (tag-mismatch and
-invalid-free only). The ubsan and lowfat patterns have not been run through the matrix yet.
+Reports before READY are TOOL-ERROR. Signal-handler crashes after READY count
+as MISSED, not defect detection. Callers handle controls and preconditions.
 """
 import re
 
@@ -32,17 +22,14 @@ def classify(tool, stdout, stderr, exit_code):
     # tool "none" is the plain run: it only tells reached / completed / crashed
     m = None if tool == "none" else (REPORT[tool].search(stderr) or REPORT[tool].search(stdout))
     if m and CRASH.match(m.group(1)):
-        # ASan/HWASan also print "ERROR: AddressSanitizer: SEGV on unknown address" from their
-        # signal handler. That is the hardware catching a wild pointer, not the tool catching the
-        # bug (seen on corpus/real case 19 under memsys5: a stale RtreeNode read yields 0x2).
+        # A sanitizer signal-handler report is a crash, not a defect diagnosis.
         return ("MISSED" if reached else "TOOL-ERROR"), f"crashed {m.group(1)} (tool signal handler, not a detection)"
     if m:
         return ("DETECTED" if reached else "TOOL-ERROR"), m.group(1)
     if done and exit_code == 0:
         return "MISSED", ""
     if reached:
-        # crashed after the defect with no report (e.g. SIGSEGV from a corrupted free list):
-        # the tool did not see it, the hardware did. Recorded as MISSED with the signal noted.
+        # Reached the defect but crashed without a detector report.
         return "MISSED", f"crashed exit={exit_code}"
     return "TOOL-ERROR", f"never reached READY exit={exit_code}"
 

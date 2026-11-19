@@ -47,11 +47,11 @@ def main():
 
     plot("sqlite", sqlite, "report/figures", "benchmark-summary.csv")
     plot("lua", [lua], "report/figures/lua", "lua-summary.csv")
-    plot("churn", [churn], "churn-figures", "part-b-churn-summary.csv",
+    plot("churn", [churn], "churn-figures", "allocator-churn-summary.csv",
          "--environment-label", "AWS EC2 Ubuntu 26.04 x86-64")
     for ext in ("png", "pdf"):
         shutil.copy2(target / f"churn-figures/benchmark-performance.{ext}",
-                     target / f"report/figures/part-b-churn-performance.{ext}")
+                     target / f"report/figures/allocator-churn-performance.{ext}")
     run("tables", "report/scripts/gen.py")
     run("audit-lab", "harness/audit-missed.py", *(f"results/{b}" for b in lab),
         "--replica", *(f"results/{b}" for b in replicas))

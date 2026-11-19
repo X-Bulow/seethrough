@@ -7,7 +7,7 @@
   "control": "reads through the pointer st_realloc returned",
   "requires": {
     "marker": "moved=1",
-    "why": "st_realloc must have succeeded AND moved the object. An allocator that returns NULL or grows in place has no stale pointer and no defect. The arena (since B1.2) and the free list always move."
+    "why": "st_realloc must have succeeded AND moved the object. An allocator that returns NULL or grows in place has no stale pointer and no defect. The arena and the free list always move."
   },
   "note": "The shape of SQLite's agginfo defect (capstone case 01) and of PostgreSQL's repalloc rows: no free() appears in the source, which is why it survives code review.",
   "expected": {
@@ -17,7 +17,7 @@
       "arena+annot": "DETECTED",
       "freelist": "MISSED",
       "freelist+annot": "DETECTED",
-      "why": "On malloc realloc's old block goes to the quarantine. Both pool allocators implement st_realloc as allocate, copy, st_free (B1.2, B1.3), so the old block is re-poisoned exactly when the annotated arm is on; unannotated, the old bytes stay readable inside the live pool."
+      "why": "On malloc realloc's old block goes to the quarantine. Both pool allocators implement st_realloc as allocate, copy, st_free, so the old block is re-poisoned exactly when the annotated arm is on; unannotated, the old bytes stay readable inside the live pool."
     },
     "valgrind": {
       "malloc": "DETECTED",
@@ -67,7 +67,7 @@
         "arena+annot": "UNSUPPORTED precondition not met"
       }
     },
-    "2026-11-07 macOS arm64 smoke, allocators after B1.2/B1.3 (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
+    "2026-11-07 macOS arm64 smoke, allocators with side-table bookkeeping and size-class reuse (dev machine, NOT citable: Apple clang, no Valgrind/LowFat/HWASan)": {
       "asan": {
         "malloc": "DETECTED heap-use-after-free",
         "malloc+annot": "DETECTED heap-use-after-free",
@@ -85,7 +85,7 @@
         "freelist+annot": "MISSED"
       }
     },
-    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; formal run pending A5.8/A5.9)": {
+    "2026-11-11 Apple M5 Lima VM smoke, HWASan (dev run from the working tree, NOT citable: Ubuntu 26.04.1 aarch64, clang 21.1.8 + lld; development measurement)": {
       "hwasan": {
         "malloc": "DETECTED tag-mismatch",
         "malloc+annot": "DETECTED tag-mismatch",
@@ -134,5 +134,5 @@
       }
     }
   },
-  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM (A2.9, A5)"
+  "status": "written; formal runs 2026-11-13: ASan and Valgrind on the lab server (x86-64), HWASan in the aarch64 Lima VM"
 }

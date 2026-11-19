@@ -1,79 +1,27 @@
 \section{Introduction}
 \label{sec:intro}
 
-Memory-safety errors remain the largest source of exploitable vulnerabilities in C and
-C++~\cite{szekeres2013sok}, and dynamic detectors are the main practical defence against them while
-the code is being tested and fuzzed~\cite{song2019sok}. AddressSanitizer
-(ASan)~\cite{serebryany2012asan}, Valgrind Memcheck~\cite{nethercote2007valgrind}, HWASan and
-LowFat~\cite{duck2016lowfat} use different checking mechanisms, but all depend on allocation
-boundaries exposed by the allocator. ASan, Memcheck and HWASan also track allocation lifetimes;
-LowFat provides spatial checks only.
+Memory-safety errors remain the largest source of exploitable vulnerabilities in C and C++~\cite{szekeres2013sok}, and dynamic detectors are the main practical defence against them while the code is being tested and fuzzed~\cite{song2019sok}. AddressSanitizer (ASan)~\cite{serebryany2012asan}, Valgrind Memcheck~\cite{nethercote2007valgrind}, HWASan and LowFat~\cite{duck2016lowfat} use different checking mechanisms, but all depend on allocation boundaries exposed by the allocator. ASan, Memcheck and HWASan also track allocation lifetimes; LowFat provides spatial checks only.
 
-Real programs often do not let the tools see their objects. SQLite, PostgreSQL, CPython, Apache,
-many games and most compilers take a large block from \code{malloc} and divide it among their own
-objects with an arena, a pool, a free list or a buddy allocator. These custom memory allocators
-(CMAs) exist for speed, for bulk deallocation or to bound memory use. To a detector the whole pool
-is one valid allocation: an overflow from one object into its neighbour, or a read through a pointer
-to an object the CMA has already freed, never leaves that block and is not reported. CMASan, an ASan
-extension that models custom allocators, found 19 such bugs in widely used projects that ASan had
-been missing, some for nine years~\cite{hong2025cmasan}. A ``clean'' sanitizer run of a program
-with a CMA therefore guarantees less than it appears to.
+Real programs often do not let the tools see their objects. SQLite, PostgreSQL, CPython, Apache, many games and most compilers take a large block from \code{malloc} and divide it among their own objects with an arena, a pool, a free list or a buddy allocator. These custom memory allocators (CMAs) exist for speed, for bulk deallocation or to bound memory use. To a detector the whole pool is one valid allocation: an overflow from one object into its neighbour, or a read through a pointer to an object the CMA has already freed, never leaves that block and is not reported. CMASan, an ASan extension that models custom allocators, found 19 such bugs in widely used projects that ASan had been missing, some for nine years~\cite{hong2025cmasan}. A ``clean'' sanitizer run of a program with a CMA therefore guarantees less than it appears to.
 
-The tools themselves offer a remedy: each exposes an interface through which an allocator can
-describe its objects. ASan has manual poisoning, Memcheck has memory-pool client requests, and
-HWASan lets an allocator tag memory and pointers. Where feasible, a second approach is to disable
-or rewrite the custom allocator so that each object is allocated directly through \code{malloc}.
+The tools themselves offer a remedy: each exposes an interface through which an allocator can describe its objects. ASan has manual poisoning, Memcheck has memory-pool client requests, and HWASan lets an allocator tag memory and pointers. Where feasible, a second approach is to disable or rewrite the custom allocator so that each object is allocated directly through \code{malloc}.
 \begin{samepage}
 We ask two questions.
 
 \begin{enumerate}[label=\textbf{Q\arabic*.},leftmargin=*,labelsep=0.6em]
-\item \textbf{Detection.} For the same bug, how much does each tool lose when the object comes from
-  a custom allocator instead of \code{malloc}, and how much do annotations or a rewrite to
-  \code{malloc} win back?
-\item \textbf{Overhead.} What do the tools and their annotations cost on programs that use custom
-  allocators?
+\item \textbf{Detection.} For the same bug, how much does each tool lose when the object comes from a custom allocator instead of \code{malloc}, and how much do annotations or a rewrite to \code{malloc} win back?
+\item \textbf{Overhead.} What do the tools and their annotations cost on programs that use custom allocators?
 \end{enumerate}
 \end{samepage}
 
-\paragraph{Approach.} For Q1 we wrote a corpus of 16 small programs, one per heap-bug variant, each
-with a negative control that has the same allocation traffic and differs only in the faulty line
-(\S\ref{sec:method}). Every program calls one allocator interface, so the same source runs on seven
-allocator layers: \code{malloc}; an arena and a free list we implemented; SQLite's memsys5 buddy
-allocator and its lookaside cache; and 14-line rewrites of our two allocators that hand every
-object to libc. Custom layers run with annotations disabled and, where implemented, enabled;
-HWASan covers only \code{malloc}, Arena and Free list. A harness builds and runs the resulting
-896 images under the applicable tools, gated by positive controls, and classifies
-the outcome from the program's own markers and the tool's report. For Q2 we measured the tools on
-SQLite's \code{speedtest1} with and without memsys5, on a Lua workload, and on an allocator
-microbenchmark with annotation off and on (\S\ref{sec:perf}). We also tested four real SQLite
-defects across three allocator configurations under ASan and Memcheck: 24 configurations that
-validate the controlled corpus's mechanisms (\S\ref{sec:tier2}).
+\paragraph{Approach.} For Q1 we wrote a corpus of 16 small programs, one per heap-bug variant, each with a negative control that has the same allocation traffic and differs only in the faulty line (\S\ref{sec:method}). Every program calls one allocator interface, so the same source runs on seven allocator layers: \code{malloc}; an arena and a free list we implemented; SQLite's memsys5 buddy allocator and its lookaside cache; and 14-line rewrites of our two allocators that hand every object to libc. Custom layers run with annotations disabled and, where implemented, enabled; HWASan covers only \code{malloc}, Arena and Free list. A harness builds and runs the resulting 896 images under the applicable tools, gated by positive controls, and classifies the outcome from the program's own markers and the tool's report. For Q2 we measured the tools on SQLite's \code{speedtest1} with and without memsys5, on a Lua workload, and on an allocator microbenchmark with annotation off and on (\S\ref{sec:perf}). We also tested four real SQLite defects across three allocator configurations under ASan and Memcheck: 24 configurations that validate the controlled corpus's mechanisms (\S\ref{sec:tier2}).
 
 \paragraph{Main findings.}
 \begin{itemize}
-\item \textbf{Custom allocators hide most object-level errors.} Across the tested custom allocators,
-  unannotated tools detected only 1--2 of 14--16 eligible bugs, while detecting most eligible bugs
-  under \code{malloc}. The detections retained under custom allocation concerned the backing pool's
-  bounds or lifetime, rather than individual objects within it (\S\ref{sec:q1}).
-\item \textbf{Annotations and allocator rewrites recover detection, with different limitations.}
-  Annotations recovered most eligible bugs, but their effectiveness depended on both the tool's
-  interface and the allocator's behaviour. Overflows into live neighbouring objects, stale pointers
-  after reuse, and invalid frees exposed different limits across the tools. Rewriting the allocator
-  to use \code{malloc} restored baseline detection, but removed the immediate-reuse and bulk-free
-  behaviour needed to reproduce some bugs. Formal runs on four real SQLite defects also showed
-  temporal errors hidden by memsys5 and spatial detections dependent on leaving the container
-  (\S\ref{sec:tier2}).
-\item \textbf{Detection gains come with different performance costs.} On the SQLite and Lua
-  workloads, ASan increased runtime by 2.2--3.0$\times$ and Memcheck by 24--29$\times$ relative to
-  their respective baselines. On the allocator microbenchmark, annotations increased median runtime
-  by approximately 5--10\% under ASan and 1.8--2.2$\times$ under Memcheck. These results illustrate
-  the trade-off between detection coverage and execution cost (\S\ref{sec:perf}).
+\item \textbf{Custom allocators hide most object-level errors.} Across the tested custom allocators, unannotated tools detected only 1--2 of 14--16 eligible bugs, while detecting most eligible bugs under \code{malloc}. The detections retained under custom allocation concerned the backing pool's bounds or lifetime, rather than individual objects within it (\S\ref{sec:q1}).
+\item \textbf{Annotations and allocator rewrites recover detection, with different limitations.} Annotations recovered most eligible bugs, but their effectiveness depended on both the tool's interface and the allocator's behaviour. Overflows into live neighbouring objects, stale pointers after reuse, and invalid frees exposed different limits across the tools. Rewriting the allocator to use \code{malloc} restored baseline detection, but removed the immediate-reuse and bulk-free behaviour needed to reproduce some bugs. Formal runs on four real SQLite defects also showed temporal errors hidden by memsys5 and spatial detections dependent on leaving the container (\S\ref{sec:tier2}).
+\item \textbf{Detection gains come with different performance costs.} On the SQLite and Lua workloads, ASan increased runtime by 2.2--3.0$\times$ and Memcheck by 24--29$\times$ relative to their respective baselines. On the allocator microbenchmark, annotations increased median runtime by approximately 5--10\% under ASan and 1.8--2.2$\times$ under Memcheck. These results illustrate the trade-off between detection coverage and execution cost (\S\ref{sec:perf}).
 \end{itemize}
 
-The project repository (\repourl) contains the test corpus, allocator implementations, harness,
-raw experimental results, and scripts used to generate the report's tables and figures.
-\S\ref{sec:background} introduces the detectors and explains how custom allocators obscure
-object boundaries and lifetimes. \S\ref{sec:related} reviews related research, and
-\S\ref{sec:method} describes the experimental methodology. \S\ref{sec:q1} and
-\S\ref{sec:perf} present the detection and performance results, respectively.
-\S\ref{sec:discussion} discusses their implications and limitations.
+The project repository (\repourl) contains the test corpus, allocator implementations, harness, raw experimental results, and scripts used to generate the report's tables and figures. \S\ref{sec:background} introduces the detectors and explains how custom allocators obscure object boundaries and lifetimes. \S\ref{sec:related} reviews related research, and \S\ref{sec:method} describes the experimental methodology. \S\ref{sec:q1} and \S\ref{sec:perf} present the detection and performance results, respectively. \S\ref{sec:discussion} discusses their implications and limitations.
